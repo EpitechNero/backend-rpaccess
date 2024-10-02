@@ -5,7 +5,6 @@ const fs = require("fs");
 const path = require('path');
 const app = express();
 const axios = require('axios');
-const { BigQuery } = require('@google-cloud/bigquery');
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
@@ -38,26 +37,6 @@ const upload = multer({
   dest: 'uploads/',
   storage: storage
 });
-
-const bigQueryClient = new BigQuery({
-    keyFilename: path.join(__dirname, '../client_secret_.apps.googleusercontent.com.json'),
-    projectId: 'fr-ist-isteau-rpaccef',
-  });
-  
-  app.get('/bigquery', async (req, res) => {
-    const query = `
-      SELECT * FROM fr-ist-isteau-rpaccef.RPA.BO - BASE FLUX LIMIT 10
-    `;
-  
-    try {
-      const [job] = await bigQueryClient.createQueryJob({ query });
-      const [rows] = await job.getQueryResults();
-      res.status(200).json(rows);
-    } catch (error) {
-      console.error('ERROR:', error);
-      res.status(500).send('Something went wrong with BigQuery');
-    }
-  });
 
 app.post('/create-ticket', upload.array('files', 10), async (req, res) => {
   const { subject, body, name, email, priority, type } = req.body;
