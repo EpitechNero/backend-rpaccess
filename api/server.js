@@ -106,6 +106,7 @@ async function createZendeskTicketWithAttachment(subject, body, name, email, pri
     );
     console.log('Ticket créé avec succès:', response.data.ticket.id);
   } catch (error) {
+    console.error(config)
     console.error(ticketData)
     console.error(auth);
     console.error('Erreur lors de la création du ticket:', error.response ? error.response.data : error.message);
