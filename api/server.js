@@ -39,6 +39,7 @@ app.get('/', (req, res) => {
 
 // Route pour créer un ticket avec pièces jointes
 app.post('/create-ticket', upload.array('files', 10), async (req, res) => {
+  console.log(req.body)
   const { subject, body, name, email, priority, type } = req.body;
   const files = req.files;
 
