@@ -20,7 +20,7 @@ const config = {
 };
 
 // Configuration du stockage des fichiers avec Multer
-const storage = multer.diskStorage({
+/*const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/');
   },
@@ -29,7 +29,13 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ dest: 'uploads/', storage: storage });
+const upload = multer({ dest: 'uploads/', storage: storage });*/
+const multer = require('multer');
+
+// Configure Multer pour stocker les fichiers en mémoire
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
 
 app.get('/', (req, res) => {
   console.log("test");
@@ -38,15 +44,15 @@ app.get('/', (req, res) => {
 
 app.post('/create-ticket', upload.array('files', 10), async (req, res) => {
   const { subject, body, name, email, priority, type } = req.body;
-  const files = req.files;
+  const files = req.files; // Fichiers reçus en mémoire
 
   try {
-    // Upload des fichiers à Zendesk
-    const uploadTokens = await Promise.all(files.map(file => uploadAttachment(file.path)));
-    
+    // Upload des fichiers à Zendesk directement depuis la mémoire
+    const uploadTokens = await Promise.all(files.map(file => uploadAttachment(file)));
+
     // Créer un ticket avec les fichiers uploadés
     await createZendeskTicketWithAttachment(subject, body, name, email, priority, type, uploadTokens);
-    
+
     res.status(200).send({ message: 'Ticket créé avec succès !' });
   } catch (error) {
     console.error('Erreur lors du téléversement:', error.response ? error.response.data : error.message);
@@ -54,18 +60,16 @@ app.post('/create-ticket', upload.array('files', 10), async (req, res) => {
   }
 });
 
-// Fonction pour téléverser les fichiers vers Zendesk
-async function uploadAttachment(filePath) {
+async function uploadAttachment(file) {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
-  const file = fs.createReadStream(filePath);
-  const form = new FormData(); // Utilisation de la librairie form-data pour Node.js
   
-  // Append du fichier avec son nom
-  form.append('file', file, path.basename(filePath));
+  // Créer un FormData avec le fichier en mémoire
+  const form = new FormData();
+  form.append('file', file.buffer, file.originalname); // Utiliser le buffer en mémoire et le nom original du fichier
 
   try {
     const response = await axios.post(
-      `https://${config.zendeskDomain}/api/v2/uploads.json?filename=${encodeURIComponent(path.basename(filePath))}`,
+      `https://${config.zendeskDomain}/api/v2/uploads.json?filename=${encodeURIComponent(file.originalname)}`,
       form,
       {
         headers: {
