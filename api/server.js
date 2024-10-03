@@ -1,10 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
-const fs = require("fs");
 const path = require('path');
 const axios = require('axios');
-const FormData = require('form-data'); // Utilisation correcte de FormData pour Node.js
+const FormData = require('form-data');
 const bodyParser = require('body-parser');
 require('dotenv').config();
 
@@ -19,20 +18,6 @@ const config = {
   apiToken: process.env.ZENDESK_API_TOKEN,
 };
 
-// Configuration du stockage des fichiers avec Multer
-/*const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  }
-});
-
-const upload = multer({ dest: 'uploads/', storage: storage });*/
-const multer = require('multer');
-
-// Configure Multer pour stocker les fichiers en mémoire
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
@@ -44,13 +29,10 @@ app.get('/', (req, res) => {
 
 app.post('/create-ticket', upload.array('files', 10), async (req, res) => {
   const { subject, body, name, email, priority, type } = req.body;
-  const files = req.files; // Fichiers reçus en mémoire
+  const files = req.files;
 
   try {
-    // Upload des fichiers à Zendesk directement depuis la mémoire
     const uploadTokens = await Promise.all(files.map(file => uploadAttachment(file)));
-
-    // Créer un ticket avec les fichiers uploadés
     await createZendeskTicketWithAttachment(subject, body, name, email, priority, type, uploadTokens);
 
     res.status(200).send({ message: 'Ticket créé avec succès !' });
@@ -63,9 +45,8 @@ app.post('/create-ticket', upload.array('files', 10), async (req, res) => {
 async function uploadAttachment(file) {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
   
-  // Créer un FormData avec le fichier en mémoire
   const form = new FormData();
-  form.append('file', file.buffer, file.originalname); // Utiliser le buffer en mémoire et le nom original du fichier
+  form.append('file', file.buffer, file.originalname);
 
   try {
     const response = await axios.post(
@@ -86,7 +67,6 @@ async function uploadAttachment(file) {
   }
 }
 
-// Fonction pour créer un ticket Zendesk avec pièces jointes
 async function createZendeskTicketWithAttachment(subject, body, name, email, priority, type, uploadTokens) {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
   try {
@@ -96,7 +76,7 @@ async function createZendeskTicketWithAttachment(subject, body, name, email, pri
         comment: {
           body: body,
           html_body: body,
-          uploads: uploadTokens // Ajout des tokens d'upload ici
+          uploads: uploadTokens
         },
         requester: {
           name: name,
