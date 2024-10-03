@@ -7,20 +7,17 @@ const axios = require('axios');
 const bodyParser = require('body-parser');
 require('dotenv').config()
 
-// Configuration
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Configuration Zendesk
 const config = {
   zendeskDomain: process.env.ZENDESK_DOMAIN,
   email: process.env.ZENDESK_EMAIL,
   apiToken: process.env.ZENDESK_API_TOKEN,
 };
 
-// Configuration du stockage des fichiers avec Multer
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/');
@@ -32,14 +29,12 @@ const storage = multer.diskStorage({
 
 const upload = multer({ dest: 'uploads/', storage: storage });
 
-// Route principale
 app.get('/', (req, res) => {
+  console.log("test")
   res.send('Its Home');
 });
 
-// Route pour créer un ticket avec pièces jointes
 app.post('/create-ticket', upload.array('files', 10), async (req, res) => {
-  console.log(req.body)
   const { subject, body, name, email, priority, type } = req.body;
   const files = req.files;
 
@@ -53,7 +48,6 @@ app.post('/create-ticket', upload.array('files', 10), async (req, res) => {
   }
 });
 
-// Fonction pour téléverser les fichiers vers Zendesk
 async function uploadAttachment(filePath) {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
   const file = fs.createReadStream(filePath);
@@ -79,7 +73,6 @@ async function uploadAttachment(filePath) {
   }
 }
 
-// Fonction pour créer un ticket Zendesk avec pièces jointes
 async function createZendeskTicketWithAttachment(subject, body, name, email, priority, type, uploadTokens) {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
   try {
@@ -113,9 +106,10 @@ async function createZendeskTicketWithAttachment(subject, body, name, email, pri
     );
     console.log('Ticket créé avec succès:', response.data.ticket.id);
   } catch (error) {
+    console.error(ticketData)
+    console.error(auth);
     console.error('Erreur lors de la création du ticket:', error.response ? error.response.data : error.message);
   }
 }
 
-// Exportation de l'application en tant que fonction serverless
 module.exports = app;
