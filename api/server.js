@@ -125,7 +125,7 @@ app.post('/create-maquette', async (req, res) => {
               parents: [targetFolderId],            },
       });
 
-    console.log('Fichier copié avec succès :', response.data.id);
+    console.log('Le fichier a été copié avec succès :', response.data.id);
     return response.data.id;
   } catch (error) {
       console.error('Erreur lors de la copie du fichier :', error);
