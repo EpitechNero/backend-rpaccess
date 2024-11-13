@@ -1,7 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
+const { google } = require('googleapis');
 const path = require('path');
+const fs = require('fs');
 const axios = require('axios');
 const FormData = require('form-data');
 const bodyParser = require('body-parser');
@@ -103,5 +105,31 @@ async function createZendeskTicketWithAttachment(subject, body, name, email, pri
     console.error('Erreur lors de la création du ticket:', error.response ? error.response.data : error.message);
   }
 }
+
+app.post('/create-maquette', async (req, res) => {
+  const { fileId, targetFolderId } = req.body;
+  const oAuth2Client = new google.auth.OAuth2(
+    process.env.CLIENT_ID,
+    process.env.CLIENT_SECRET,
+    process.env.REDIRECT_URI
+  );
+  const tokenPath = path.join(__dirname, 'token.json');
+  const token = JSON.parse(fs.readFileSync(tokenPath));
+  oAuth2Client.setCredentials(token);
+
+  const drive = google.drive({ version: 'v3', auth: oAuth2Client });
+  try {
+      const response = await drive.files.copy({
+          fileId: fileId,
+          resource: {
+              parents: [targetFolderId],            },
+      });
+
+    console.log('Fichier copié avec succès :', response.data.id);
+    return response.data.id;
+  } catch (error) {
+      console.error('Erreur lors de la copie du fichier :', error);
+  }
+})
 
 module.exports = app;

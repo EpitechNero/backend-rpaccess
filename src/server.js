@@ -39,13 +39,14 @@ const upload = multer({
 });
 
 app.post('/create-ticket', upload.array('files', 10), async (req, res) => {
-  const { subject, body, name, email, priority, type } = req.body;
+  const { subject, body, name, email, priority, type, ccEmails } = req.body;
   const files = req.files;
 
 
   try {
       const uploadTokens = await Promise.all(files.map(file => uploadAttachment(file.path)));
-      await createZendeskTicketWithAttachment(subject, body, name, email, priority, type, uploadTokens);
+      const ccEmailList = ccEmails ? ccEmails.split(',').map(email => email.trim()) : [];
+      await createZendeskTicketWithAttachment(subject, body, name, email, priority, type, uploadTokens, ccEmailList);
       res.status(200).send({ message: 'Ticket créé avec succès !' });
   } catch (error) {
       console.error('Erreur lors du televersement:', error.response ? error.response.data : error.message);
@@ -78,7 +79,7 @@ async function uploadAttachment(filePath) {
     }
 }
 
-async function createZendeskTicketWithAttachment(subject, body, name, email, priority, type, uploadTokens) {
+async function createZendeskTicketWithAttachment(subject, body, name, email, priority, type, uploadTokens, ccEmails = []) {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
   try {
       const ticketData = {
@@ -94,7 +95,8 @@ async function createZendeskTicketWithAttachment(subject, body, name, email, pri
                   email: email
               },
               priority: priority,
-              type: type
+              type: type,
+              email_ccs: ccEmails.map(ccEmail => ({ user_email: ccEmail }))
           }
       };
 
@@ -114,6 +116,31 @@ async function createZendeskTicketWithAttachment(subject, body, name, email, pri
       console.error('Erreur lors de la création du ticket:', error.response ? error.response.data : error.message);
   }
 }
+
+app.post('/create-maquette', upload.array('files', 10), async (req, res) => {
+    const { fileId, targetFolderId } = req.body;
+    const credentialsPath = path.join(__dirname, 'credentials.json');
+    const credentials = JSON.parse(fs.readFileSync(credentialsPath));
+    const { client_secret, client_id, redirect_uris } = credentials.web;
+    const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+    const tokenPath = path.join(__dirname, 'token.json');
+    const token = JSON.parse(fs.readFileSync(tokenPath));
+    oAuth2Client.setCredentials(token);
+  
+    const drive = google.drive({ version: 'v3', auth: oAuth2Client });
+    try {
+        const response = await drive.files.copy({
+            fileId: fileId,
+            resource: {
+                parents: [targetFolderId],            },
+        });
+  
+      console.log('Fichier copié avec succès :', response.data.id);
+      return response.data.id;
+    } catch (error) {
+        console.error('Erreur lors de la copie du fichier :', error);
+    }
+  })
 
 app.get('/', (req, res) => {
     res.send('Its Home');
