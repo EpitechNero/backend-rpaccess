@@ -140,6 +140,7 @@ app.post('/create-maquette', async (req, res) => {
     const response = await drive.files.copy({
       fileId,
       resource: { parents: [targetFolderId] },
+      supportsAllDrives: true,
     });
 
     res.status(200).json({ success: true, fileId: response.data.id });
