@@ -132,6 +132,7 @@ app.post('/create-maquette', async (req, res) => {
   if (!fileId || !targetFolderId) {
     return res.status(400).json({ error: 'fileId et targetFolderId sont requis.' });
   }
+  console.log('Tentative de copie du fichier avec ID :', fileId, 'dans le dossier :', targetFolderId);
 
   try {
     const accessToken = await getAccessToken();
@@ -143,10 +144,17 @@ app.post('/create-maquette', async (req, res) => {
       supportsAllDrives: true,
     });
 
-    res.status(200).json({ success: true, fileId: response.data.id });
+    console.log('Fichier copié avec succès :', response.data.id);
+    res.status(200).json({
+      success: true,
+      copiedFileId: response.data.id,
+    });
   } catch (error) {
-    console.error('Erreur lors de la copie du fichier :', error.message);
-    res.status(500).json({ error: 'Erreur lors de la copie du fichier.' });
+    console.error('Erreur lors de la copie du fichier:', error.response?.data || error.message);
+    res.status(500).json({
+      error: 'Erreur lors de la copie du fichier.',
+      details: error.response?.data || error.message,
+    });
   }
 });
 
