@@ -106,30 +106,47 @@ async function createZendeskTicketWithAttachment(subject, body, name, email, pri
   }
 }
 
+const oAuth2Client = new google.auth.OAuth2(
+  process.env.CLIENT_ID,
+  process.env.CLIENT_SECRET,
+  process.env.REDIRECT_URI
+);
+
+oAuth2Client.setCredentials({
+  refresh_token: process.env.ADMIN_REFRESH_TOKEN,
+});
+
+async function getAccessToken() {
+  try {
+    const { token } = await oAuth2Client.getAccessToken();
+    return token;
+  } catch (error) {
+    console.error('Erreur lors de la récupération du token :', error.message);
+    throw new Error('Impossible de récupérer le token.');
+  }
+}
+
 app.post('/create-maquette', async (req, res) => {
   const { fileId, targetFolderId } = req.body;
-  const oAuth2Client = new google.auth.OAuth2(
-    process.env.CLIENT_ID,
-    process.env.CLIENT_SECRET,
-    process.env.REDIRECT_URI
-  );
-  const tokenPath = path.join(__dirname, 'token.json');
-  const token = JSON.parse(fs.readFileSync(tokenPath));
-  oAuth2Client.setCredentials(token);
 
-  const drive = google.drive({ version: 'v3', auth: oAuth2Client });
-  try {
-      const response = await drive.files.copy({
-          fileId: fileId,
-          resource: {
-              parents: [targetFolderId],            },
-      });
-
-    console.log('Le fichier a été copié avec succès :', response.data.id);
-    return response.data.id;
-  } catch (error) {
-      console.error('Erreur lors de la copie du fichier :', error);
+  if (!fileId || !targetFolderId) {
+    return res.status(400).json({ error: 'fileId et targetFolderId sont requis.' });
   }
-})
+
+  try {
+    const accessToken = await getAccessToken();
+
+    const drive = google.drive({ version: 'v3', auth: oAuth2Client });
+    const response = await drive.files.copy({
+      fileId,
+      resource: { parents: [targetFolderId] },
+    });
+
+    res.status(200).json({ success: true, fileId: response.data.id });
+  } catch (error) {
+    console.error('Erreur lors de la copie du fichier :', error.message);
+    res.status(500).json({ error: 'Erreur lors de la copie du fichier.' });
+  }
+});
 
 module.exports = app;
