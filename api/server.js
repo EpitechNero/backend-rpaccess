@@ -10,7 +10,10 @@ const bodyParser = require('body-parser');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: 'https://fr-ist-isteau-rpaccef.web.app',
+  methods: ['GET', 'POST', 'OPTIONS'],
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
