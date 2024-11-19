@@ -127,7 +127,7 @@ async function getAccessToken() {
 }
 
 app.post('/create-maquette', async (req, res) => {
-  const { fileId, targetFolderId } = req.body;
+  const { fileId, targetFolderId, filename } = req.body;
 
   if (!fileId || !targetFolderId) {
     return res.status(400).json({ error: 'fileId et targetFolderId sont requis.' });
@@ -140,7 +140,10 @@ app.post('/create-maquette', async (req, res) => {
     const drive = google.drive({ version: 'v3', auth: oAuth2Client });
     const response = await drive.files.copy({
       fileId,
-      resource: { parents: [targetFolderId] },
+      resource: { 
+        parents: [targetFolderId],
+        name: filename,
+      },
       supportsAllDrives: true,
     });
 
