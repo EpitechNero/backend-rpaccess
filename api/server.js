@@ -137,10 +137,16 @@ app.post('/create-maquette', async (req, res) => {
   }
   console.log('Tentative de copie du fichier avec ID :', fileId, 'dans le dossier :', targetFolderId);
 
-  try {
-    const accessToken = await getAccessToken();
+  res.status(202).json({ message: 'Copie en cours de traitement.' });
 
+  try {
+    console.log('Obtention du token d\'accès...');
+    const accessToken = await getAccessToken();
+    console.log('Token obtenu avec succès.');
+
+    console.log('Initialisation du service Google Drive...');
     const drive = google.drive({ version: 'v3', auth: oAuth2Client });
+    console.log('Copie du fichier...');
     const response = await drive.files.copy({
       fileId,
       resource: { 
