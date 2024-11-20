@@ -129,16 +129,24 @@ async function getAccessToken() {
   }
 }
 
+const tasks = {}; // Stocker les tâches en mémoire
+
 app.post('/create-maquette', async (req, res) => {
   const { fileId, targetFolderId, filename } = req.body;
+  const taskId = generateUniqueId();
+
+  // Initialise l'état de la tâche
+  tasks[taskId] = { status: 'in_progress', copiedFileId: null };
 
   if (!fileId || !targetFolderId) {
     return res.status(400).json({ error: 'fileId et targetFolderId sont requis.' });
   }
-  console.log('Tentative de copie du fichier avec ID :', fileId, 'dans le dossier :', targetFolderId);
+  console.log('Tâche créée avec ID :', taskId);
 
-  res.status(202).json({ message: 'Copie en cours de traitement.' });
+  // Répondre immédiatement au front avec le `taskId`
+  res.status(202).json({ taskId });
 
+  // Effectuer la copie en arrière-plan
   try {
     console.log('Obtention du token d\'accès...');
     const accessToken = await getAccessToken();
@@ -146,6 +154,7 @@ app.post('/create-maquette', async (req, res) => {
 
     console.log('Initialisation du service Google Drive...');
     const drive = google.drive({ version: 'v3', auth: oAuth2Client });
+
     console.log('Copie du fichier...');
     const response = await drive.files.copy({
       fileId,
@@ -156,18 +165,27 @@ app.post('/create-maquette', async (req, res) => {
       supportsAllDrives: true,
     });
 
-    console.log('Fichier copié avec succès :', response.data.id);
-    res.status(200).json({
-      success: true,
-      copiedFileId: response.data.id,
-    });
+    const newFileId = response.data.id; // ID du fichier copié
+    console.log('Fichier copié avec succès :', newFileId);
+
+    // Mise à jour de l'état de la tâche et stockage de l'ID
+    tasks[taskId].status = 'completed';
+    tasks[taskId].copiedFileId = newFileId;
   } catch (error) {
     console.error('Erreur lors de la copie du fichier:', error.response?.data || error.message);
-    res.status(500).json({
-      error: 'Erreur lors de la copie du fichier.',
-      details: error.response?.data || error.message,
-    });
+    tasks[taskId].status = 'error'; // Mise à jour en cas d'erreur
   }
 });
 
+app.get('/task-status/:taskId', (req, res) => {
+  const taskId = req.params.taskId;
+
+  // Vérifiez si la tâche existe
+  if (tasks[taskId]) {
+    const task = tasks[taskId];
+    res.json({ status: task.status, copiedFileId: task.copiedFileId });
+  } else {
+    res.status(404).json({ error: 'Tâche introuvable' });
+  }
+});
 module.exports = app;
