@@ -131,6 +131,10 @@ async function getAccessToken() {
 
 const tasks = {}; // Stocker les tâches en mémoire
 
+function generateUniqueId() {
+  return Date.now().toString(36) + Math.random().toString(36).substring(2, 10);
+}
+
 app.post('/create-maquette', async (req, res) => {
   const { fileId, targetFolderId, filename } = req.body;
   const taskId = generateUniqueId();
