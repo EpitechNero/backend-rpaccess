@@ -29,7 +29,6 @@ const upload = multer({ storage: storage });
 const bucketName = 'your-bucket-name';
 
 app.get('/', (req, res) => {
-  console.log("test");
   res.send('Its Home');
 });
 
@@ -187,4 +186,10 @@ app.get('/task-status/:taskId', (req, res) => {
     res.status(404).json({ error: 'Tâche introuvable' });
   }
 });
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 Serveur démarré sur le port ${PORT}`);
+});
+
 module.exports = app;
