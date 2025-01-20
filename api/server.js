@@ -26,6 +26,7 @@ const config = {
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
+const bucketName = 'your-bucket-name';
 
 app.get('/', (req, res) => {
   console.log("test");
@@ -129,7 +130,7 @@ async function getAccessToken() {
   }
 }
 
-const tasks = {}; // Stocker les tâches en mémoire
+const tasks = {};
 
 function generateUniqueId() {
   return Date.now().toString(36) + Math.random().toString(36).substring(2, 10);
@@ -138,8 +139,6 @@ function generateUniqueId() {
 app.post('/create-maquette', async (req, res) => {
   const { fileId, targetFolderId, filename } = req.body;
   const taskId = generateUniqueId();
-
-  // Initialise l'état de la tâche
   tasks[taskId] = { status: 'in_progress', copiedFileId: null };
 
   if (!fileId || !targetFolderId) {
@@ -147,10 +146,8 @@ app.post('/create-maquette', async (req, res) => {
   }
   console.log('Tâche créée avec ID :', taskId);
 
-  // Répondre immédiatement au front avec le `taskId`
   res.status(202).json({ taskId });
 
-  // Effectuer la copie en arrière-plan
   try {
     console.log('Obtention du token d\'accès...');
     const accessToken = await getAccessToken();
@@ -169,22 +166,20 @@ app.post('/create-maquette', async (req, res) => {
       supportsAllDrives: true,
     });
 
-    const newFileId = response.data.id; // ID du fichier copié
+    const newFileId = response.data.id;
     console.log('Fichier copié avec succès :', newFileId);
 
-    // Mise à jour de l'état de la tâche et stockage de l'ID
     tasks[taskId].status = 'completed';
     tasks[taskId].copiedFileId = newFileId;
   } catch (error) {
     console.error('Erreur lors de la copie du fichier:', error.response?.data || error.message);
-    tasks[taskId].status = 'error'; // Mise à jour en cas d'erreur
+    tasks[taskId].status = 'error';
   }
 });
 
 app.get('/task-status/:taskId', (req, res) => {
   const taskId = req.params.taskId;
 
-  // Vérifiez si la tâche existe
   if (tasks[taskId]) {
     const task = tasks[taskId];
     res.json({ status: task.status, copiedFileId: task.copiedFileId });
