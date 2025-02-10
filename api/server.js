@@ -198,6 +198,8 @@ app.listen(PORT, () => {
 });
 
 async function authenticate() {
+  console.log('authenticate')
+  console.log(configAutomationAnywhere.username)
     try {
         const response = await axios.post(`${controlRoomUrl}/v1/authentication`, {
             username: configAutomationAnywhere.username,
@@ -211,6 +213,7 @@ async function authenticate() {
 }
 
 async function launchBot(botName) {
+  console.log('launch')
     try {
         const response = await axios.post(
             `${controlRoomUrl}/v2/automations/deploy`,
@@ -242,6 +245,7 @@ async function checkBotStatus() {
 // 3. Exécution
 app.post('/aa/launch'), async (req, res) => {
   const { botName } = req.body;
+  console.log(botName);
   await authenticate();
   await launchBot(botName);
 }
