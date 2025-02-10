@@ -23,10 +23,15 @@ const config = {
   apiToken: process.env.ZENDESK_API_TOKEN,
 };
 
+const configAutomationAnywhere = {
+   username: process.env.USERNAME,
+   password: process.env.PASSWORD,
+   controlRoomUrl: process.env.CONTROL_ROOM_URL,
+}
+let authToken = "";
+
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-
-const bucketName = 'your-bucket-name';
 
 app.get('/', (req, res) => {
   res.send('Its Home');
@@ -191,5 +196,59 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Serveur démarré sur le port ${PORT}`);
 });
+
+async function authenticate() {
+    try {
+        const response = await axios.post(`${controlRoomUrl}/v1/authentication`, {
+            username: configAutomationAnywhere.username,
+            password: configAutomationAnywhere.password
+        });
+        authToken = response.data.token;
+        console.log("✅ Authentification réussie, Token obtenu.");
+    } catch (error) {
+        console.error("❌ Erreur d'authentification :", error.response?.data || error.message);
+    }
+}
+
+async function launchBot(botName) {
+    try {
+        const response = await axios.post(
+            `${controlRoomUrl}/v2/automations/deploy`,
+            {
+                automationName: botName,
+                runAsUser: configAutomationAnywhere.username
+            },
+            {
+                headers: { Authorization: `Bearer ${authToken}` }
+            }
+        );
+        console.log("🚀 Bot lancé :", response.data);
+    } catch (error) {
+        console.error("❌ Erreur au lancement du bot :", error.response?.data || error.message);
+    }
+}
+
+async function checkBotStatus() {
+  try {
+      const response = await axios.get(`${controlRoomUrl}/v2/activity/list`, {
+          headers: { Authorization: `Bearer ${authToken}` }
+      });
+      console.log("📊 Statut des Bots :", response.data);
+  } catch (error) {
+      console.error("❌ Erreur de récupération du statut :", error.response?.data || error.message);
+  }
+}
+
+// 3. Exécution
+app.post('/aa/launch'), async (req, res) => {
+  const { botName } = req.body;
+  await authenticate();
+  await launchBot(botName);
+}
+
+app.get('/aa/check'), async (req, res) => {
+  await authenticate();
+  await checkBotStatus();
+}
 
 module.exports = app;
