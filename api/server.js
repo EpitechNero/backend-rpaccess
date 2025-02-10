@@ -199,9 +199,8 @@ app.listen(PORT, () => {
 
 async function authenticate() {
   console.log('authenticate')
-  console.log(configAutomationAnywhere.username)
     try {
-        const response = await axios.post(`${controlRoomUrl}/v1/authentication`, {
+        const response = await axios.post(`${configAutomationAnywhere.controlRoomUrl}/v1/authentication`, {
             username: configAutomationAnywhere.username,
             password: configAutomationAnywhere.password
         });
@@ -216,7 +215,7 @@ async function launchBot(botName) {
   console.log('launch')
     try {
         const response = await axios.post(
-            `${controlRoomUrl}/v2/automations/deploy`,
+            `${configAutomationAnywhere.controlRoomUrl}/v2/automations/deploy`,
             {
                 automationName: botName,
                 runAsUser: configAutomationAnywhere.username
@@ -233,7 +232,7 @@ async function launchBot(botName) {
 
 async function checkBotStatus() {
   try {
-      const response = await axios.get(`${controlRoomUrl}/v2/activity/list`, {
+      const response = await axios.get(`${configAutomationAnywhere.controlRoomUrl}/v2/activity/list`, {
           headers: { Authorization: `Bearer ${authToken}` }
       });
       console.log("📊 Statut des Bots :", response.data);
@@ -245,8 +244,6 @@ async function checkBotStatus() {
 // 3. Exécution
 app.post('/aa/launch', async (req, res) => {
   const { botName } = req.body;
-  console.log(botName);
-  console.log("ok")
   await authenticate();
   await launchBot(botName);
   res.status(200).json({ message: "Bot lancé avec succès !" });
