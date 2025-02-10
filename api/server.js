@@ -248,11 +248,13 @@ app.post('/aa/launch', async (req, res) => {
   console.log(botName);
   await authenticate();
   await launchBot(botName);
+  res.status(200).json({ message: "Bot lancé avec succès !" });
 });
 
 app.get('/aa/check', async (req, res) => {
   await authenticate();
   await checkBotStatus();
+  res.status(200).json({ message: "Statut bot récupéré avec succès !" });
 });
 
 module.exports = app;
