@@ -243,16 +243,16 @@ async function checkBotStatus() {
 }
 
 // 3. Exécution
-app.post('/aa/launch'), async (req, res) => {
+app.post('/aa/launch', async (req, res) => {
   const { botName } = req.body;
   console.log(botName);
   await authenticate();
   await launchBot(botName);
-}
+});
 
-app.get('/aa/check'), async (req, res) => {
+app.get('/aa/check', async (req, res) => {
   await authenticate();
   await checkBotStatus();
-}
+});
 
 module.exports = app;
