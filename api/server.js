@@ -246,6 +246,7 @@ async function checkBotStatus() {
 app.post('/aa/launch', async (req, res) => {
   const { botName } = req.body;
   console.log(botName);
+  console.log("ok")
   await authenticate();
   await launchBot(botName);
   res.status(200).json({ message: "Bot lancé avec succès !" });
