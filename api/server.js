@@ -197,21 +197,18 @@ app.listen(PORT, () => {
   console.log(`🚀 Serveur démarré sur le port ${PORT}`);
 });
 
-async function authenticate() {
-  console.log('authenticate')
-    try {
-        const response = await axios.post(`${configAutomationAnywhere.controlRoomUrl}/v1/authentication`, {
-            username: configAutomationAnywhere.username,
-            password: configAutomationAnywhere.password
-        });
-        authToken = response.data.token;
-        console.log("✅ Authentification réussie, Token obtenu.");
-    } catch (error) {
-        console.error("❌ Erreur d'authentification :", error.response?.data || error.message);
-    }
-}
-
 async function launchBot(botName) {
+  console.log('authenticate')
+  try {
+      const response = await axios.post(`${configAutomationAnywhere.controlRoomUrl}/v1/authentication`, {
+          username: configAutomationAnywhere.username,
+          password: configAutomationAnywhere.password
+      });
+      authToken = response.data.token;
+      console.log("✅ Authentification réussie, Token obtenu.");
+  } catch (error) {
+      console.error("❌ Erreur d'authentification :", error.response?.data || error.message);
+  }
   console.log('launch')
     try {
         const response = await axios.post(
@@ -244,13 +241,11 @@ async function checkBotStatus() {
 // 3. Exécution
 app.post('/aa/launch', async (req, res) => {
   const { botName } = req.body;
-  await authenticate();
   await launchBot(botName);
   res.status(200).json({ message: "Bot lancé avec succès !" });
 });
 
 app.get('/aa/check', async (req, res) => {
-  await authenticate();
   await checkBotStatus();
   res.status(200).json({ message: "Statut bot récupéré avec succès !" });
 });
