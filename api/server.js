@@ -257,7 +257,7 @@ async function launchBot(botId, botParam1, botParam2) {
 // 3. Exécution
 app.post('/aa/launch', async (req, res) => {
   const { botId, botParam1, botParam2 } = req.body;
-  await launchBot(botName, botId, botParam1, botParam2);
+  await launchBot(botId, botParam1, botParam2);
   res.status(200).json({ message: "Bot lancé avec succès !" });
 });
 
