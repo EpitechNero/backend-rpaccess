@@ -305,7 +305,7 @@ app.post('/aa/launch', async (req, res) => {
 });
 
 
-app.get('/aa/check', async (req, res) => {
+app.post('/aa/check', async (req, res) => {
   await checkBotStatus();
   res.status(200).json({ message: "Statut bot récupéré avec succès !" });
 });
