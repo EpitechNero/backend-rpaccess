@@ -7,10 +7,6 @@ const fs = require('fs');
 const axios = require('axios');
 const FormData = require('form-data');
 const bodyParser = require('body-parser');
-const authRoutes = require('./routes/authRoutes');
-const auditRoutes = require('./routes/auditRoutes');
-const blmRoutes = require('./routes/blmRoutes');
-const botInsightRoutes = require('./routes/botInsightRoutes');
 require('dotenv').config();
 
 const app = express();
