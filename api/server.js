@@ -199,7 +199,7 @@ const configAutomationAnywhere = {
 
 async function launchBot(botId, botParam1, botParam2) {
   console.log('authenticate')
-  const authToken = "";
+  let authToken = "";
   try {
       const response = await axios.post(`${configAutomationAnywhere.controlRoomUrl}/v2/authentication`, {
           username: configAutomationAnywhere.username,
