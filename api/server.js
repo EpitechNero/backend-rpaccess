@@ -279,25 +279,26 @@ async function checkBotStatus() {
         }
      }
 
-      axios.post(`${configAutomationAnywhere.controlRoomUrl}/v3/activity/list`, payload, {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Authorization': authToken
+     try {
+      const activityResponse = await axios.post(
+        `${configAutomationAnywhere.controlRoomUrl}/v3/activity/list`,
+        payload,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Authorization': authToken
+          }
         }
-      })
-      .then(response => {
-        return(response.data);
-      })
-      .catch(error => {
-        if (error.response) {
-          console.error('Erreur de la réponse :', error.response.status, error.response.data);
-        } else {
-          console.error('Erreur :', error.message);
-        }
-      });
+      );
+  
+      console.log("✅ Activités récupérées avec succès.");
+      return activityResponse.data; // ✅ Retourne les données au route handler
+    } catch (error) {
+      console.error('❌ Erreur lors de la récupération des activités :', error.response?.data || error.message);
+      throw new Error('Erreur lors de la récupération des activités');
+    }
 }
 
-// 3. Exécution
 app.post('/aa/launch', async (req, res) => {
   const { botId, botParam1, botParam2 } = req.body;
   await launchBot(botId, botParam1, botParam2);
@@ -306,8 +307,12 @@ app.post('/aa/launch', async (req, res) => {
 
 
 app.post('/aa/check', async (req, res) => {
-  let data = await checkBotStatus();
-  res.status(200).json({ data: data });
+  try {
+    const data = await checkBotStatus();
+    res.status(200).json(data); 
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 module.exports = app;
