@@ -286,7 +286,7 @@ async function checkBotStatus() {
         }
       })
       .then(response => {
-        console.log('Réponse de l\'API :', response.data);
+        return(response.data);
       })
       .catch(error => {
         if (error.response) {
@@ -306,8 +306,8 @@ app.post('/aa/launch', async (req, res) => {
 
 
 app.post('/aa/check', async (req, res) => {
-  await checkBotStatus();
-  res.status(200).json({ message: "Statut bot récupéré avec succès !" });
+  let data = await checkBotStatus();
+  res.status(200).json({ data: data });
 });
 
 module.exports = app;
