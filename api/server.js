@@ -7,6 +7,10 @@ const fs = require('fs');
 const axios = require('axios');
 const FormData = require('form-data');
 const bodyParser = require('body-parser');
+const authRoutes = require('./routes/authRoutes');
+const auditRoutes = require('./routes/auditRoutes');
+const blmRoutes = require('./routes/blmRoutes');
+const botInsightRoutes = require('./routes/botInsightRoutes');
 require('dotenv').config();
 
 const app = express();
@@ -22,13 +26,6 @@ const config = {
   email: process.env.ZENDESK_EMAIL,
   apiToken: process.env.ZENDESK_API_TOKEN,
 };
-
-const configAutomationAnywhere = {
-   username: process.env.USERNAME,
-   password: process.env.PASSWORD,
-   controlRoomUrl: process.env.CONTROL_ROOM_URL,
-}
-let authToken = "";
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -197,12 +194,19 @@ app.listen(PORT, () => {
   console.log(`🚀 Serveur démarré sur le port ${PORT}`);
 });
 
-async function launchBot(botName) {
+
+const configAutomationAnywhere = {
+  username: process.env.USERNAME,
+  apiKey: process.env.APIKEY,
+  controlRoomUrl: process.env.CONTROL_ROOM_URL,
+}
+
+async function launchBot(botId, botParam1, botParam2) {
   console.log('authenticate')
   try {
-      const response = await axios.post(`${configAutomationAnywhere.controlRoomUrl}/v1/authentication`, {
+      const response = await axios.post(`${configAutomationAnywhere.controlRoomUrl}/v2/authentication`, {
           username: configAutomationAnywhere.username,
-          password: configAutomationAnywhere.password
+          apiKey: configAutomationAnywhere.apiKey
       });
       authToken = response.data.token;
       console.log("✅ Authentification réussie, Token obtenu.");
@@ -210,38 +214,53 @@ async function launchBot(botName) {
       console.error("❌ Erreur d'authentification :", error.response?.data || error.message);
   }
   console.log('launch')
-    try {
-        const response = await axios.post(
-            `${configAutomationAnywhere.controlRoomUrl}/v2/automations/deploy`,
-            {
-                automationName: botName,
-                runAsUser: configAutomationAnywhere.username
-            },
-            {
-                headers: { Authorization: `Bearer ${authToken}` }
-            }
-        );
-        console.log("🚀 Bot lancé :", response.data);
-    } catch (error) {
-        console.error("❌ Erreur au lancement du bot :", error.response?.data || error.message);
-    }
-}
-
-async function checkBotStatus() {
-  try {
-      const response = await axios.get(`${configAutomationAnywhere.controlRoomUrl}/v2/activity/list`, {
-          headers: { Authorization: `Bearer ${authToken}` }
+      const payload = {
+        fileId: botId,
+        runAsUserIds: [197],
+        poolIds: [],
+        overrideDefaultDevice: false,
+        callbackInfo: {
+          url: 'https://callbackserver.com/storeBotExecutionStatus',
+          headers: {
+            'X-Authorization': callbackToken
+          }
+        }
+        /*
+        botInput: {
+          sInput1: {
+            type: "STRING",
+            string: botParam1
+          },
+          sInput2: {
+            type: "STRING",
+            string: botParam2
+          }
+        }
+        */
+      };
+      
+      axios.post(`${controlRoomURL}/v3/automations/deploy`, payload, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(response => {
+        console.log('Réponse de l\'API :', response.data);
+      })
+      .catch(error => {
+        if (error.response) {
+          console.error('Erreur de la réponse :', error.response.status, error.response.data);
+        } else {
+          console.error('Erreur :', error.message);
+        }
       });
-      console.log("📊 Statut des Bots :", response.data);
-  } catch (error) {
-      console.error("❌ Erreur de récupération du statut :", error.response?.data || error.message);
-  }
 }
 
 // 3. Exécution
 app.post('/aa/launch', async (req, res) => {
-  const { botName } = req.body;
-  await launchBot(botName);
+  const { botId, botParam1, botParam2 } = req.body;
+  await launchBot(botName, botId, botParam1, botParam2);
   res.status(200).json({ message: "Bot lancé avec succès !" });
 });
 
