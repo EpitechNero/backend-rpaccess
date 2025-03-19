@@ -247,7 +247,7 @@ async function launchBot(botId, botParam1, botParam2) {
       });
 }
 
-async function launchBot(botId, botParam1, botParam2) {
+async function checkBotStatus() {
   let authToken = "";
   try {
       const response = await axios.post(`${configAutomationAnywhere.controlRoomUrl}/v2/authentication`, {
