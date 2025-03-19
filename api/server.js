@@ -204,7 +204,7 @@ async function launchBot(botId, botParam1, botParam2) {
           username: configAutomationAnywhere.username,
           apiKey: configAutomationAnywhere.apiKey
       });
-      authToken = response.data.token;
+      var authToken = response.data.token;
       console.log("✅ Authentification réussie, Token obtenu.");
   } catch (error) {
       console.error("❌ Erreur d'authentification :", error.response?.data || error.message);
@@ -212,13 +212,14 @@ async function launchBot(botId, botParam1, botParam2) {
   console.log('launch')
       const payload = {
         fileId: botId,
-        runAsUserIds: [197],
+        runAsUserIds: [182],
         poolIds: [],
         overrideDefaultDevice: false,
         callbackInfo: {
           url: 'https://callbackserver.com/storeBotExecutionStatus',
           headers: {
-            'X-Authorization': callbackToken
+            'X-Authorization': authToken,
+            'Content-Type': 'application/json',
           }
         }
         /*
@@ -238,7 +239,7 @@ async function launchBot(botId, botParam1, botParam2) {
       axios.post(`${controlRoomURL}/v3/automations/deploy`, payload, {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'X-Authorization': `${authToken}`
         }
       })
       .then(response => {
