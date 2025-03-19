@@ -199,29 +199,24 @@ const configAutomationAnywhere = {
 
 async function launchBot(botId, botParam1, botParam2) {
   console.log('authenticate')
+  const authToken = "";
   try {
       const response = await axios.post(`${configAutomationAnywhere.controlRoomUrl}/v2/authentication`, {
           username: configAutomationAnywhere.username,
           apiKey: configAutomationAnywhere.apiKey
       });
-      var authToken = response.data.token;
+      authToken = response.data.token;
       console.log("✅ Authentification réussie, Token obtenu.");
   } catch (error) {
       console.error("❌ Erreur d'authentification :", error.response?.data || error.message);
   }
+
   console.log('launch')
       const payload = {
         fileId: botId,
         runAsUserIds: [182],
         poolIds: [],
         overrideDefaultDevice: false,
-        callbackInfo: {
-          url: 'https://callbackserver.com/storeBotExecutionStatus',
-          headers: {
-            'X-Authorization': authToken,
-            'Content-Type': 'application/json',
-          }
-        }
         /*
         botInput: {
           sInput1: {
@@ -235,6 +230,9 @@ async function launchBot(botId, botParam1, botParam2) {
         }
         */
       };
+
+      console.log(authToken);
+      console.log(`${configAutomationAnywhere.controlRoomUrl}/v3/automations/deploy`)
       
       axios.post(`${configAutomationAnywhere.controlRoomUrl}/v3/automations/deploy`, payload, {
         headers: {
