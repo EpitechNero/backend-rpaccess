@@ -231,13 +231,12 @@ async function launchBot(botId, botParam1, botParam2) {
         */
       };
 
-      console.log(authToken);
-      console.log(`${configAutomationAnywhere.controlRoomUrl}/v3/automations/deploy`)
+      console.log(payload);
       
       axios.post(`${configAutomationAnywhere.controlRoomUrl}/v3/automations/deploy`, payload, {
         headers: {
           'Content-Type': 'application/json',
-          'X-Authorization': `${authToken}`
+          'X-Authorization': authToken
         }
       })
       .then(response => {
