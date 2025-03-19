@@ -198,7 +198,6 @@ const configAutomationAnywhere = {
 }
 
 async function launchBot(botId, botParam1, botParam2) {
-  console.log('authenticate')
   let authToken = "";
   try {
       const response = await axios.post(`${configAutomationAnywhere.controlRoomUrl}/v2/authentication`, {
@@ -211,7 +210,6 @@ async function launchBot(botId, botParam1, botParam2) {
       console.error("❌ Erreur d'authentification :", error.response?.data || error.message);
   }
 
-  console.log('launch')
       const payload = {
         fileId: botId,
         runAsUserIds: [182],
@@ -231,9 +229,57 @@ async function launchBot(botId, botParam1, botParam2) {
         */
       };
 
-      console.log(payload);
-      
       axios.post(`${configAutomationAnywhere.controlRoomUrl}/v3/automations/deploy`, payload, {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Authorization': authToken
+        }
+      })
+      .then(response => {
+        console.log('Réponse de l\'API :', response.data);
+      })
+      .catch(error => {
+        if (error.response) {
+          console.error('Erreur de la réponse :', error.response.status, error.response.data);
+        } else {
+          console.error('Erreur :', error.message);
+        }
+      });
+}
+
+async function launchBot(botId, botParam1, botParam2) {
+  let authToken = "";
+  try {
+      const response = await axios.post(`${configAutomationAnywhere.controlRoomUrl}/v2/authentication`, {
+          username: configAutomationAnywhere.username,
+          apiKey: configAutomationAnywhere.apiKey
+      });
+      authToken = response.data.token;
+      console.log("✅ Authentification réussie, Token obtenu.");
+  } catch (error) {
+      console.error("❌ Erreur d'authentification :", error.response?.data || error.message);
+  }
+
+      const payload = {
+        sort:[
+           {
+              field:"createdOn",
+              direction:"desc"
+           }
+        ],
+        filter: {
+             operator: "eq",
+             value: "ccefr3",
+             field: "userName"
+         },
+        fields:[],
+        page:{
+           length:10,
+           offset:0
+        }
+     }
+
+      axios.post(`${configAutomationAnywhere.controlRoomUrl}/v3/activity/list`, payload, {
         headers: {
           'Content-Type': 'application/json',
           'X-Authorization': authToken
@@ -257,6 +303,7 @@ app.post('/aa/launch', async (req, res) => {
   await launchBot(botId, botParam1, botParam2);
   res.status(200).json({ message: "Bot lancé avec succès !" });
 });
+
 
 app.get('/aa/check', async (req, res) => {
   await checkBotStatus();
