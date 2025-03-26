@@ -146,14 +146,8 @@ app.post('/create-maquette', async (req, res) => {
   res.status(202).json({ taskId });
 
   try {
-    console.log('Obtention du token d\'accès...');
     const accessToken = await getAccessToken();
-    console.log('Token obtenu avec succès.');
-
-    console.log('Initialisation du service Google Drive...');
     const drive = google.drive({ version: 'v3', auth: oAuth2Client });
-
-    console.log('Copie du fichier...');
     const response = await drive.files.copy({
       fileId,
       resource: { 
@@ -164,8 +158,6 @@ app.post('/create-maquette', async (req, res) => {
     });
 
     const newFileId = response.data.id;
-    console.log('Fichier copié avec succès :', newFileId);
-
     tasks[taskId].status = 'completed';
     tasks[taskId].copiedFileId = newFileId;
   } catch (error) {
@@ -205,7 +197,6 @@ async function launchBot(botId, botParam1, botParam2) {
           apiKey: configAutomationAnywhere.apiKey
       });
       authToken = response.data.token;
-      console.log("✅ Authentification réussie, Token obtenu.");
   } catch (error) {
       console.error("❌ Erreur d'authentification :", error.response?.data || error.message);
   }
@@ -255,7 +246,6 @@ async function checkBotStatus() {
           apiKey: configAutomationAnywhere.apiKey
       });
       authToken = response.data.token;
-      console.log("✅ Authentification réussie, Token obtenu.");
   } catch (error) {
       console.error("❌ Erreur d'authentification :", error.response?.data || error.message);
   }
@@ -291,8 +281,7 @@ async function checkBotStatus() {
         }
       );
   
-      console.log("✅ Activités récupérées avec succès.");
-      return activityResponse.data; // ✅ Retourne les données au route handler
+      return activityResponse.data;
     } catch (error) {
       console.error('❌ Erreur lors de la récupération des activités :', error.response?.data || error.message);
       throw new Error('Erreur lors de la récupération des activités');
