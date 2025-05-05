@@ -18,7 +18,6 @@ async function copyDriveFile(fileId, targetFolderId, filename) {
     logger.info('📁 Fichier copié dans Google Drive', {
       newFileId: response.data.id,
       filename,
-      taskId,
     });
 
     return response.data.id;
