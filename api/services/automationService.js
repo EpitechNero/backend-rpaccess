@@ -1,5 +1,6 @@
 const axios = require('axios');
 const config = require('../config/automationAnywhere');
+const logger = require('../utils/logger');
 
 async function getAuthToken() {
   try {
@@ -26,7 +27,6 @@ async function launchBot(botId) {
     runAsUserIds: [182],
     poolIds: [],
     overrideDefaultDevice: false,
-    // Ajoute les params si nécessaire
   };
 
   try {

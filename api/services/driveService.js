@@ -1,6 +1,7 @@
 const { google, oAuth2Client } = require('../config/google');
 const tasks = {};
 const generateUniqueId = require('../utils/generateId');
+const logger = require('../utils/logger');
 
 async function copyDriveFile(fileId, targetFolderId, filename) {
   try {
