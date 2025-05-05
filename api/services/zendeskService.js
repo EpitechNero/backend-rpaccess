@@ -10,7 +10,7 @@ const uploadAttachment = async (file) => {
 
   try {
     const response = await axios.post(
-      `https://${config.zendeskDomain}/api/v2/uploads.json?filename=${encodeURIComponent(file.originalname)}`,
+      `https://${config.domain}/api/v2/uploads.json?filename=${encodeURIComponent(file.originalname)}`,
       form,
       {
         headers: {
@@ -49,7 +49,7 @@ const createZendeskTicketWithAttachment = async (subject, body, name, email, pri
 
   try {
     const response = await axios.post(
-      `https://${config.zendeskDomain}/api/v2/tickets.json`,
+      `https://${config.domain}/api/v2/tickets.json`,
       ticketData,
       {
         headers: {

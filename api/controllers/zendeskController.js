@@ -1,4 +1,4 @@
-const { uploadAttachment, createZendeskTicket, createZendeskTicketWithAttachment } = require('../services/zendeskService');
+const { uploadAttachment, createZendeskTicketWithAttachment } = require('../services/zendeskService');
 
 exports.createTicket = async (req, res) => {
   const { subject, body, name, email, priority, type } = req.body;
