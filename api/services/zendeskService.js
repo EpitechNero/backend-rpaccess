@@ -1,6 +1,6 @@
 const axios = require('axios');
 const FormData = require('form-data');
-const config = require('../config/zendesk.config');
+const config = require('../config/zendesk');
 const logger = require('../utils/logger');
 
 const uploadAttachment = async (file) => {
