@@ -1,4 +1,4 @@
-const express = require('express');
+/*const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
 const { google } = require('googleapis');
@@ -217,7 +217,7 @@ async function launchBot(botId, botParam1, botParam2) {
             string: botParam2
           }
         }
-        */
+        
       };
 
       axios.post(`${configAutomationAnywhere.controlRoomUrl}/v3/automations/deploy`, payload, {
@@ -304,4 +304,4 @@ app.post('/aa/check', async (req, res) => {
   }
 });
 
-module.exports = app;
+module.exports = app;*/
