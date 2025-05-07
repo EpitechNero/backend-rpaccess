@@ -62,7 +62,7 @@ function buildBotInput(bot, inputData) {
 
 
 async function launchBot(bot, inputData) {
-  const token = await authenticate();
+  const token = await getAuthToken();
 
   const botInput = buildBotInput(bot, inputData);
 
@@ -99,7 +99,7 @@ async function launchBot(bot, inputData) {
 }
 
 async function checkBotStatus() {
-  const token = await authenticate();
+  const token = await getAuthToken();
 
   const payload = {
     sort: [{ field: 'createdOn', direction: 'desc' }],
