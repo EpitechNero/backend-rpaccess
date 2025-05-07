@@ -23,6 +23,7 @@ function buildBotInput(bot, inputData) {
   const botInput = {};
 
   for (let i = 1; i <= 3; i++) {
+    logger.info("Je build le bot input ", i)
     const key = `vInput${i}`;
     const typeKey = `vInput${i}type`;
     const formKey = `input${i}`;
@@ -52,11 +53,11 @@ function buildBotInput(bot, inputData) {
           };
           break;
         default:
-          console.warn(`Type ${type} non géré pour ${key}`);
+          logger.warn(`Type ${type} non géré pour ${key}`);
       }
     }
   }
-
+  logger.info(botInput);
   return botInput;
 }
 
