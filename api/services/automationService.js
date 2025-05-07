@@ -19,15 +19,62 @@ async function getAuthToken() {
   }
 }
 
-async function launchBot(botId) {
+function buildBotInput(bot, inputData) {
+  const botInput = {};
+
+  for (let i = 1; i <= 3; i++) {
+    const key = `vInput${i}`;
+    const typeKey = `vInput${i}type`;
+    const formKey = `input${i}`;
+
+    if (bot[key] === 'O' && inputData[formKey] !== undefined) {
+      const type = bot[typeKey];
+
+      let value = inputData[formKey];
+
+      switch (type) {
+        case 'STRING':
+          botInput[key] = {
+            type: 'STRING',
+            string: value
+          };
+          break;
+        case 'NUMBER':
+          botInput[key] = {
+            type: 'NUMBER',
+            number: Number(value)
+          };
+          break;
+        case 'BOOLEAN':
+          botInput[key] = {
+            type: 'BOOLEAN',
+            boolean: value === 'true' || value === true
+          };
+          break;
+        default:
+          console.warn(`Type ${type} non géré pour ${key}`);
+      }
+    }
+  }
+
+  return botInput;
+}
+
+
+async function launchBot(bot, inputData) {
   const token = await authenticate();
 
+  const botInput = buildBotInput(bot, inputData);
+
   const payload = {
-    fileId: botId,
+    fileId: bot.botId,
     runAsUserIds: [182],
     poolIds: [],
     overrideDefaultDevice: false,
+    botInput,
   };
+
+  logger.info(payload);
 
   try {
     const response = await axios.post(
@@ -41,7 +88,7 @@ async function launchBot(botId) {
       }
     );
 
-    logger.info('🤖 Bot lancé avec succès', { botId });
+    logger.info('🤖 Bot lancé avec succès', { bot });
     return response.data;
   } catch (error) {
     logger.error('❌ Erreur lors du lancement du bot', {
