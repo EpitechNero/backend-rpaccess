@@ -2,8 +2,8 @@ const { launchBot, checkBotStatus } = require('../services/automationService');
 
 exports.launchBot = async (req, res) => {
   try {
-    const { botId } = req.body;
-    await launchBot(botId);
+    const { bot, inputData } = req.body;
+    await launchBot(bot, inputData);
     res.status(200).json({ message: 'Bot lancé avec succès !' });
   } catch (error) {
     res.status(500).json({ error: error.message });
