@@ -1,4 +1,5 @@
 const { launchBot, checkBotStatus } = require('../services/automationService');
+const logger = require('../utils/logger');
 
 exports.launchBot = async (req, res) => {
   try {
