@@ -1,6 +1,6 @@
 const { selectUsers, selectCentreDesCouts, selectEOTP } = require('../services/psqlService.js');
 
-export const getUsers = async (req, res) => {
+exports.getUsers = async (req, res) => {
   try {
     const users = await selectUsers();
     res.status(200).json(users);
@@ -9,7 +9,7 @@ export const getUsers = async (req, res) => {
   }
 };
 
-export const getCentreDesCouts = async (req, res) => {
+exports.getCentreDesCouts = async (req, res) => {
   try {
     const centres = await selectCentreDesCouts();
     res.status(200).json(centres);
@@ -18,7 +18,7 @@ export const getCentreDesCouts = async (req, res) => {
   }
 };
 
-export const getEOTP = async (req, res) => {
+exports.getEOTP = async (req, res) => {
   try {
     const eotp = await selectEOTP();
     res.status(200).json(eotp);
