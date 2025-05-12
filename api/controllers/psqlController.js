@@ -1,4 +1,4 @@
-import { selectUsers, selectCentreDesCouts, selectEOTP } from '../services/psqlService.js';
+const { selectUsers, selectCentreDesCouts, selectEOTP } = require('../services/psqlService.js');
 
 export const getUsers = async (req, res) => {
   try {

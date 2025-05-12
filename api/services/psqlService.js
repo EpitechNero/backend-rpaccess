@@ -1,4 +1,4 @@
-import {client} from '../config/psql.js';
+const { client } = require('../config/psql.js');
 
 const connectToDatabase = async () => {
   try {

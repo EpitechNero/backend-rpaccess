@@ -1,7 +1,5 @@
-import { Client } from 'pg'; // TODO : importation différente 
-import dotenv from 'dotenv';
-
-dotenv.config();
+const { Client } = require('pg');
+const dotenv = require('dotenv').config();
 
 const client = new Client({
     user: process.env.DB_USER,
@@ -10,4 +8,4 @@ const client = new Client({
     database: process.env.DB_NAME || 'rpaproject',
 });
 
-export { client };
+module.exports = {client};
