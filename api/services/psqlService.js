@@ -44,4 +44,4 @@ const selectEOTP = async () => {
   }
 };
 
-export { connectToDatabase, selectUsers, selectCentreDesCouts, selectEOTP };
+module.exports = { connectToDatabase, selectUsers, selectCentreDesCouts, selectEOTP };
