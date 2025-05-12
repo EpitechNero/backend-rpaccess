@@ -64,8 +64,7 @@ function buildBotInput(bot, inputData) {
       }
     }
     } catch (error) {
-      logger.info("BUILD INPUT ERROR");
-      logger.error(error);
+      next(error);
       break;
     }
   }
@@ -113,6 +112,7 @@ async function launchBot(bot, inputData) {
     logger.info('🤖 Bot lancé avec succès', { bot });
     return response.data;
   } catch (error) {
+    next(error);
     logger.error('❌ Erreur lors du lancement du bot', {
       error: error.response?.data || error.message,
     });
