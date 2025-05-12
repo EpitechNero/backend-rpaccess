@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const zendeskRoutes = require('./routes/zendeskRoutes');
 const driveRoutes = require('./routes/driveRoutes');
 const automationRoutes = require('./routes/automationRoutes');
+const psqlRoutes = require('./routes/psqlRoutes');
 
 const requestLogger = require('./middlewares/requestLogger');
 
@@ -17,6 +18,7 @@ app.use(requestLogger);
 app.use('/zendesk', zendeskRoutes);
 app.use('/drive', driveRoutes);
 app.use('/aa', automationRoutes);
+app.use('/db', psqlRoutes);
 
 app.get('/', (req, res) => res.send('Its Home'));
 
