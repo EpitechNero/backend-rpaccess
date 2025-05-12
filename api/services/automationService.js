@@ -31,9 +31,8 @@ function buildBotInput(bot, inputData) {
       const typeKey = `vInput${i}type`;
       const formKey = `input${i}`;
 
-      logger.info("LOG DATA")
-      logger.info(inputData);
-      logger.info("LOG DATA FIN");
+      logger.info("LOG DATA ==>")
+      logger.info(JSON.stringify(inputData));
 
     if (bot[key] === 'O' && inputData[formKey] !== undefined) {
       const type = bot[typeKey];
@@ -67,7 +66,7 @@ function buildBotInput(bot, inputData) {
       break;
     }
   }
-  logger.info(botInput);
+  logger.info(JSON.stringify(botInput));
   return botInput;
 }
 
