@@ -23,7 +23,8 @@ function buildBotInput(bot, inputData) {
   const botInput = {};
 
   for (let i = 1; i <= 3; i++) {
-    logger.info("Je build le bot input ", i)
+    logger.info("Je build le bot input " + i);
+    try {
     const key = `vInput${i}`;
     const typeKey = `vInput${i}type`;
     const formKey = `input${i}`;
@@ -56,6 +57,10 @@ function buildBotInput(bot, inputData) {
           logger.warn(`Type ${type} non géré pour ${key}`);
       }
     }
+    } catch (error) {
+      logger.info(error);
+      break;
+    }
   }
   logger.info(botInput);
   return botInput;
@@ -72,8 +77,13 @@ async function launchBot(bot, inputData) {
     runAsUserIds: [182],
     poolIds: [],
     overrideDefaultDevice: false,
-    botInput,
   };
+
+  if (botInput && botInput.length > 0) {
+    payload.botInput = botInput;
+  } else {
+    logger.info("Pas de variables d'input")
+  }
 
   logger.info(payload);
 
