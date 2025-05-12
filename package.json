@@ -3,7 +3,6 @@
     "version": "1.0.0",
     "description": "Backend des formulaires CCEF",
     "main": "api/server.js",
-    "type": "module",
     "scripts": {
         "setup": "npm install && npm update",
         "test": "mocha"
