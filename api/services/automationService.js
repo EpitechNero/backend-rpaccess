@@ -80,7 +80,10 @@ async function launchBot(bot, inputData) {
     return {};
   }
 
-  const botInput = Object.keys(inputData).length > 0 ? buildBotInput(bot, inputData) : undefined;
+  const botInput = (inputData && Object.keys(inputData).length > 0)
+  ? buildBotInput(bot, inputData)
+  : undefined;
+
   logger.info("BUILD INPUT PASSE");
   //const botInput = buildBotInput(bot, inputData);
 
