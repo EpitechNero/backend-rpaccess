@@ -3,10 +3,10 @@ const logger = require('../utils/logger');
 
 exports.launchBot = async (req, res) => {
   try {
-    logger.info(req.body)
+    logger.info("🔍 Contenu de req.body :", JSON.stringify(req.body, null, 2));
     const { bot, inputData } = req.body;
     logger.info("🎯 Reçu dans controller.launchBot", { bot });
-    logger.info("🎯 Reçu dans controller.launchBot", { inputData });
+    logger.info("🎯 Reçu dans controller.launchBot, input DATA", { inputData });
 
 
     await launchBot(bot, inputData);
