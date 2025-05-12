@@ -14,15 +14,6 @@ const requestLogger = (req, res, next) => {
     });
   });
 
-  res.on('error', (err) => {
-    logger.error('❌ Erreur lors du traitement de la réponse', {
-      method: req.method,
-      url: req.originalUrl,
-      body: req.body,
-      error: err.message,
-    });
-  });
-
   next();
 };
 

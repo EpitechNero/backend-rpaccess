@@ -20,16 +20,4 @@ app.use('/aa', automationRoutes);
 
 app.get('/', (req, res) => res.send('Its Home'));
 
-app.use((err, req, res, next) => {
-    logger.error('❌ Erreur survenue durant la requête', {
-      method: req.method,
-      url: req.originalUrl,
-      body: req.body,
-      error: err.message,
-      stack: err.stack,
-    });
-  
-    res.status(500).json({ error: 'Erreur interne du serveur' });
-  });
-
 module.exports = app;
