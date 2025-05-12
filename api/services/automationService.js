@@ -58,7 +58,7 @@ function buildBotInput(bot, inputData) {
       }
     }
     } catch (error) {
-      logger.info(error);
+      logger.error(error);
       break;
     }
   }
@@ -70,7 +70,8 @@ function buildBotInput(bot, inputData) {
 async function launchBot(bot, inputData) {
   const token = await getAuthToken();
 
-  const botInput = buildBotInput(bot, inputData);
+  const botInput = Object.keys(inputData).length > 0 ? buildBotInput(bot, inputData) : undefined;
+  //const botInput = buildBotInput(bot, inputData);
 
   const payload = {
     fileId: bot.botId,
@@ -79,11 +80,13 @@ async function launchBot(bot, inputData) {
     overrideDefaultDevice: false,
   };
 
-  if (botInput && botInput.length > 0) {
+  if (botInput && Object.keys(botInput).length > 0) {
     payload.botInput = botInput;
   } else {
-    logger.info("Pas de variables d'input")
+    logger.info("📭 Pas de variables d'input à envoyer");
   }
+
+  logger.info("📝 Payload préparé :", payload);
 
   logger.info(payload);
 
