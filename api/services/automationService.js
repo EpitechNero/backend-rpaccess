@@ -64,7 +64,6 @@ function buildBotInput(bot, inputData) {
       }
     }
     } catch (error) {
-      next(error);
       break;
     }
   }
@@ -75,6 +74,11 @@ function buildBotInput(bot, inputData) {
 
 async function launchBot(bot, inputData) {
   const token = await getAuthToken();
+
+  if (!bot) {
+    logger.error("❌ bot est undefined dans buildBotInput");
+    return {};
+  }
 
   const botInput = Object.keys(inputData).length > 0 ? buildBotInput(bot, inputData) : undefined;
   logger.info("BUILD INPUT PASSE");
@@ -93,9 +97,7 @@ async function launchBot(bot, inputData) {
     logger.info("📭 Pas de variables d'input à envoyer");
   }
 
-  logger.info("📝 Payload préparé :", payload);
-
-  logger.info(payload);
+  logger.info("📝 Payload préparé :", JSON.stringify(payload, null, 2));
 
   try {
     const response = await axios.post(
@@ -112,7 +114,6 @@ async function launchBot(bot, inputData) {
     logger.info('🤖 Bot lancé avec succès', { bot });
     return response.data;
   } catch (error) {
-    next(error);
     logger.error('❌ Erreur lors du lancement du bot', {
       error: error.response?.data || error.message,
     });
