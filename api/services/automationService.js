@@ -22,17 +22,11 @@ async function getAuthToken() {
 function buildBotInput(bot, inputData) {
   const botInput = {};
 
-  logger.info("BUILD INPUT");
-
   for (let i = 1; i <= 3; i++) {
-    logger.info("Je build le bot input " + i);
     try {
       const key = `vInput${i}`;
       const typeKey = `vInput${i}type`;
       const formKey = `input${i}`;
-
-      logger.info("LOG DATA ==>")
-      logger.info(JSON.stringify(inputData));
 
     if (bot[key] === 'O' && inputData[formKey] !== undefined) {
       const type = bot[typeKey];
@@ -66,7 +60,6 @@ function buildBotInput(bot, inputData) {
       break;
     }
   }
-  logger.info(JSON.stringify(botInput));
   return botInput;
 }
 
@@ -82,9 +75,6 @@ async function launchBot(bot, inputData) {
   const botInput = (inputData && Object.keys(inputData).length > 0)
   ? buildBotInput(bot, inputData)
   : undefined;
-
-  logger.info("BUILD INPUT PASSE");
-  //const botInput = buildBotInput(bot, inputData);
 
   const payload = {
     fileId: bot.botId,
