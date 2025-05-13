@@ -16,7 +16,7 @@ const connectToDatabase = async () => {
 const selectUsers = async () => {
   try {
     connectToDatabase();
-    const res = await client.query('SELECT datname FROM pg_database WHERE datistemplate = false');
+    const res = await client.query('SELECT * FROM users');
     console.log(res.rows);
     return res.rows;
   } catch (error) {
