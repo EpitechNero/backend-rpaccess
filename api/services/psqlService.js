@@ -13,7 +13,7 @@ const selectUsers = async () => {
 
 const selectCentreDesCouts = async () => {
   try {
-    const res = await pool.query('SELECT * FROM centresdecouts');
+    const res = await pool.query('SELECT * FROM centredecout');
     console.log('✅ Centres de couts récupérés avec succès');
     return res.rows;
   } catch (error) {
