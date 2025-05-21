@@ -1,3 +1,4 @@
+import logger from '../utils/logger.js';
 const { selectUsers, selectCentreDesCouts, selectEOTP, selectList, selectActivity, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess } = require('../services/psqlService.js');
 
 exports.getUsers = async (req, res) => {
