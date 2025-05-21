@@ -11,7 +11,6 @@ const pool = new Pool({
 
 pool.connect()
   .then(client => {
-    logger.info('✅ Connecté à la base de données', client);
     client.release();
   })
   .catch(err => {

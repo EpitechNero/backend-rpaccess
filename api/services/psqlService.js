@@ -60,10 +60,10 @@ const insertActivity = async (activity) => {
     const res = await pool.query('INSERT INTO activity (type_activity, nom_activity, prenom_activity, email_activity, activity_process, activity_region, date_activity) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', 
       [activity.type, activity.nom, activity.prenom, activity.email, activity.process, activity.region, activity.date]);
     logger.info('✅ Activité insérée avec succès', res);
-    return res.rows;
+    return res.json(res.rows);
   } catch (error) {
     logger.error('❌ Erreur lors de l\'insertion de l\'activité :', error);
-    throw error;
+    res.status(500).json({ error: err.message });
   }
 };
 
