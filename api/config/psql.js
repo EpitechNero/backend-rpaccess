@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { Pool } = require('pg');
+import logger from '../utils/logger';
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -10,11 +11,11 @@ const pool = new Pool({
 
 pool.connect()
   .then(client => {
-    console.log('✅ Connecté à la base de données');
+    logger.info('✅ Connecté à la base de données', client);
     client.release();
   })
   .catch(err => {
-    console.error('❌ Erreur de connexion à la base de données', err.stack);
+    logger.error('❌ Erreur de connexion à la base de données', err.stack);
   });
 
 module.exports = {pool};
