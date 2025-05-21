@@ -1,4 +1,4 @@
-const { selectUsers, selectCentreDesCouts, selectEOTP, selectList, selectActivity, insertActivity } = require('../services/psqlService.js');
+const { selectUsers, selectCentreDesCouts, selectEOTP, selectList, selectActivity, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess } = require('../services/psqlService.js');
 
 exports.getUsers = async (req, res) => {
   try {
@@ -39,6 +39,51 @@ exports.getList = async (req, res) => {
 exports.getActivity = async (req, res) => {
   try {
     const activity = await selectActivity();
+    res.status(200).json(activity);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getBot = async (req, res) => {
+  try {
+    const activity = await selectBot();
+    res.status(200).json(activity);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getUsageByProcess = async (req, res) => {
+  try {
+    const activity = await selectUsageByProcess();
+    res.status(200).json(activity);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getUsageByMonth = async (req, res) => {
+  try {
+    const activity = await selectUsageByMonth();
+    res.status(200).json(activity);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getMaquettesByRegion = async (req, res) => {
+  try {
+    const activity = await selectMaquettesByRegion();
+    res.status(200).json(activity);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getTopUsers = async (req, res) => {
+  try {
+    const activity = await selectTopUsers();
     res.status(200).json(activity);
   } catch (error) {
     res.status(500).json({ error: error.message });

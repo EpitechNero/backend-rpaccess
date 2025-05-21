@@ -67,4 +67,90 @@ const insertActivity = async (activity) => {
   }
 };
 
-module.exports = { selectUsers, selectCentreDesCouts, selectEOTP, selectActivity, insertActivity, selectList };
+// 1. Liste des bots lancés (total et %)
+const selectBot = async () => {
+  try {
+    const totalRes = await db.query(
+      "SELECT COUNT(*)::int AS total FROM activity WHERE type_activity = 'bot'"
+    );
+    const total = totalRes.rows[0].total;
+
+    const result = await db.query(`
+      SELECT process_activity, COUNT(*)::int AS count,
+             ROUND(COUNT(*) * 100.0 / $1, 2) AS percentage
+      FROM activity
+      WHERE type_activity = 'bot'
+      GROUP BY process_activity
+      ORDER BY count DESC
+    `, [total]);
+
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// 2. Nombre d'utilisations par process_activity
+const selectUsageByProcess = async () => {
+  try {
+    const result = await db.query(`
+      SELECT process_activity, COUNT(*)::int AS count
+      FROM activity
+      GROUP BY process_activity
+      ORDER BY count DESC
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// 3. Nombre de process par mois
+const selectUsageByMonth = async () => {
+  try {
+    const result = await db.query(`
+      SELECT TO_CHAR(date_activity, 'YYYY-MM') AS month, COUNT(*)::int AS count
+      FROM activity
+      GROUP BY month
+      ORDER BY month
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// 4. Nombre de maquettes par région
+const selectMaquettesByRegion = async () => {
+  try {
+    const result = await db.query(`
+      SELECT region_activity, COUNT(*)::int AS count
+      FROM activity
+      WHERE type_activity IN ('maquettes', 'maquettes_auxiliaire')
+      GROUP BY region_activity
+      ORDER BY count DESC
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// 5. Top 25 utilisateurs les plus actifs
+const selectTopUsers = async () => {
+  try {
+    const result = await db.query(`
+      SELECT nom_activity COUNT(*)::int AS process_count
+      FROM activity
+      GROUP BY nom_activity
+      ORDER BY process_count DESC
+      LIMIT 25
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+module.exports = { selectUsers, selectCentreDesCouts, selectEOTP, selectActivity, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess };

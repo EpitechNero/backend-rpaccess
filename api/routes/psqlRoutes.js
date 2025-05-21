@@ -8,6 +8,12 @@ router.get('/geteotp', controller.getEOTP);
 router.get('/getlist', controller.getList);
 router.get('/getactivity', controller.getActivity);
 
+router.get('/getbot', controller.getBot);
+router.get('/getusagebyprocess', controller.getUsageByProcess);
+router.get('/getusagebymonth', controller.getUsageByMonth);
+router.get('/getmaquettesbyregion', controller.getMaquettesByRegion);
+router.get('/gettopusers', controller.getTopUsers);
+
 router.post('/create-activity', controller.setActivity);
 
 module.exports = router;
