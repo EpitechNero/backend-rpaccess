@@ -57,7 +57,7 @@ const selectActivity = async () => {
 
 const insertActivity = async (activity) => {
   try {
-    const res = await pool.query('INSERT INTO activity (type_activity, nom_activity, prenom_activity, email_activity, activity_process, activity_region, date_activity) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', 
+    const res = await pool.query('INSERT INTO activity (type_activity, nom_activity, prenom_activity, email_activity, process_activity, region_activity, date_activity) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', 
       [activity.type, activity.nom, activity.prenom, activity.email, activity.process, activity.region, activity.date]);
     logger.info('✅ Activité insérée avec succès', res.rows[0]);
     return res.rows[0];
