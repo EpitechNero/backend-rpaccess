@@ -1,6 +1,6 @@
 require('dotenv').config();
 const { Pool } = require('pg');
-import logger from '../utils/logger';
+const logger = require('../utils/logger');
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
