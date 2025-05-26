@@ -84,9 +84,9 @@ const selectBot = async () => {
       ORDER BY count DESC
     `, [total]);
 
-    res.json(result.rows);
+    return result.rows;
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    throw err
   }
 };
 
@@ -99,9 +99,9 @@ const selectUsageByProcess = async () => {
       GROUP BY process_activity
       ORDER BY count DESC
     `);
-    res.json(result.rows);
+    return result.rows;
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    throw err
   }
 };
 
@@ -114,9 +114,9 @@ const selectUsageByMonth = async () => {
       GROUP BY month
       ORDER BY month
     `);
-    res.json(result.rows);
+    return result.rows;
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    throw err
   }
 };
 
@@ -130,9 +130,9 @@ const selectMaquettesByRegion = async () => {
       GROUP BY region_activity
       ORDER BY count DESC
     `);
-    res.json(result.rows);
+    return result.rows;
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    throw err
   }
 };
 
@@ -146,9 +146,9 @@ const selectTopUsers = async () => {
       ORDER BY process_count DESC
       LIMIT 25
     `);
-    res.json(result.rows);
+    return result.rows;
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    throw err
   }
 };
 
