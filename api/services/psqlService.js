@@ -140,7 +140,7 @@ const selectMaquettesByRegion = async () => {
 const selectTopUsers = async () => {
   try {
     const result = await pool.query(`
-      SELECT nom_activity COUNT(*)::int AS process_count
+      SELECT nom_activity, COUNT(*)::int AS process_count
       FROM activity
       GROUP BY nom_activity
       ORDER BY process_count DESC
