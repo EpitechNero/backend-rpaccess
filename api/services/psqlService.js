@@ -95,7 +95,7 @@ const selectUsageByProcess = async (start, end) => {
     const result = await pool.query(`
       SELECT process_activity, COUNT(*)::int AS count
       FROM activity
-      WHERE date_activity >= $1 AND < ($2::date + INTERVAL '1 day')
+      WHERE date_activity >= $1 AND date_activity < ($2::date + INTERVAL '1 day')
       GROUP BY process_activity
       ORDER BY count DESC
     `, [start || '1970-01-01', end || new Date()]);
@@ -124,7 +124,7 @@ const selectMaquettesByRegion = async (start, end) => {
     const result = await pool.query(`
       SELECT region_activity, COUNT(*)::int AS count
       FROM activity
-      WHERE type_activity IN ('maquette', 'maquette_auxiliaire') AND date_activity >= $1 AND < ($2::date + INTERVAL '1 day')
+      WHERE type_activity IN ('maquette', 'maquette_auxiliaire') AND date_activity >= $1 AND date_activity < ($2::date + INTERVAL '1 day')
       GROUP BY region_activity
       ORDER BY count DESC
     `, [start || '1970-01-01', end || new Date()]);
@@ -139,7 +139,7 @@ const selectTopUsers = async (start, end) => {
     const result = await pool.query(`
       SELECT nom_activity, COUNT(*)::int AS process_count
       FROM activity
-      WHERE date_activity >= $1 AND < ($2::date + INTERVAL '1 day')
+      WHERE date_activity >= $1 AND date_activity < ($2::date + INTERVAL '1 day')
       GROUP BY nom_activity
       ORDER BY process_count DESC
       LIMIT 25
