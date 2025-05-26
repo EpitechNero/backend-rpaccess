@@ -82,7 +82,7 @@ const selectBot = async (start, end) => {
       WHERE type_activity = 'bot' AND date_activity >= $2 AND date_activity < ($3::date + INTERVAL '1 day')
       GROUP BY process_activity
       ORDER BY count DESC
-    `, [total, normalizeStartofDay(start) || '1970-01-01', normalizeEndOfDay(end) || new Date()]);
+    `, [total, normalizeStartOfDay(start) || '1970-01-01', normalizeEndOfDay(end) || new Date()]);
 
     return result.rows;
   } catch (err) {
@@ -98,7 +98,7 @@ const selectUsageByProcess = async (start, end) => {
       WHERE date_activity >= $1 AND date_activity < ($2::date + INTERVAL '1 day')
       GROUP BY process_activity
       ORDER BY count DESC
-    `, [normalizeStartofDay(start) || '1970-01-01', normalizeEndOfDay(end) || new Date()]);
+    `, [normalizeStartOfDay(start) || '1970-01-01', normalizeEndOfDay(end) || new Date()]);
     return result.rows;
   } catch (err) {
     throw err
@@ -127,7 +127,7 @@ const selectMaquettesByRegion = async (start, end) => {
       WHERE type_activity IN ('maquette', 'maquette_auxiliaire') AND date_activity >= $1 AND date_activity < ($2::date + INTERVAL '1 day')
       GROUP BY region_activity
       ORDER BY count DESC
-    `, [normalizeStartofDay(start) || '1970-01-01', normalizeEndOfDay(end) || new Date()]);
+    `, [normalizeStartOfDay(start) || '1970-01-01', normalizeEndOfDay(end) || new Date()]);
     return result.rows;
   } catch (err) {
     throw err
@@ -143,7 +143,7 @@ const selectTopUsers = async (start, end) => {
       GROUP BY nom_activity
       ORDER BY process_count DESC
       LIMIT 25
-    `, [normalizeStartofDay(start) || '1970-01-01', normalizeEndOfDay(end) || new Date()]);
+    `, [normalizeStartOfDay(start) || '1970-01-01', normalizeEndOfDay(end) || new Date()]);
     return result.rows;
   } catch (err) {
     throw err
