@@ -48,7 +48,8 @@ exports.getActivity = async (req, res) => {
 
 exports.getBot = async (req, res) => {
   try {
-    const activity = await selectBot();
+    const { start, end } = req.query;
+    const activity = await selectBot(start, end);
     res.status(200).json(activity);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -57,7 +58,8 @@ exports.getBot = async (req, res) => {
 
 exports.getUsageByProcess = async (req, res) => {
   try {
-    const activity = await selectUsageByProcess();
+    const { start, end } = req.query;
+    const activity = await selectUsageByProcess(start, end);
     res.status(200).json(activity);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -75,7 +77,8 @@ exports.getUsageByMonth = async (req, res) => {
 
 exports.getMaquettesByRegion = async (req, res) => {
   try {
-    const activity = await selectMaquettesByRegion();
+    const { start, end } = req.query;
+    const activity = await selectMaquettesByRegion(start, end);
     res.status(200).json(activity);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -84,7 +87,8 @@ exports.getMaquettesByRegion = async (req, res) => {
 
 exports.getTopUsers = async (req, res) => {
   try {
-    const activity = await selectTopUsers();
+    const { start, end } = req.query;
+    const activity = await selectTopUsers(start, end);
     res.status(200).json(activity);
   } catch (error) {
     res.status(500).json({ error: error.message });

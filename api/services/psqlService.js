@@ -69,10 +69,11 @@ const insertActivity = async (activity) => {
 };
 
 // 1. Liste des bots lancés (total et %)
-const selectBot = async () => {
+const selectBot = async (start, end) => {
   try {
     const totalRes = await pool.query(
-      "SELECT COUNT(*)::int AS total FROM activity WHERE type_activity = 'bot'"
+      "SELECT COUNT(*)::int AS total FROM activity WHERE type_activity = 'bot' AND date_activity >= $1 AND date_activity <= $2",
+      [start || '1970-01-01', end || new Date()]
     );
     const total = totalRes.rows[0].total;
 
@@ -91,14 +92,15 @@ const selectBot = async () => {
   }
 };
 
-const selectUsageByProcess = async () => {
+const selectUsageByProcess = async (start, end) => {
   try {
     const result = await pool.query(`
       SELECT process_activity, COUNT(*)::int AS count
       FROM activity
+      WHERE date_activity >= $1 AND date_activity <= $2
       GROUP BY process_activity
       ORDER BY count DESC
-    `);
+    `, [start || '1970-01-01', end || new Date()]);
     return result.rows;
   } catch (err) {
     throw err
@@ -119,30 +121,31 @@ const selectUsageByMonth = async () => {
   }
 };
 
-const selectMaquettesByRegion = async () => {
+const selectMaquettesByRegion = async (start, end) => {
   try {
     const result = await pool.query(`
       SELECT region_activity, COUNT(*)::int AS count
       FROM activity
-      WHERE type_activity IN ('maquette', 'maquette_auxiliaire')
+      WHERE type_activity IN ('maquette', 'maquette_auxiliaire') AND date_activity >= $1 AND date_activity <= $2
       GROUP BY region_activity
       ORDER BY count DESC
-    `);
+    `, [start || '1970-01-01', end || new Date()]);
     return result.rows;
   } catch (err) {
     throw err
   }
 };
 
-const selectTopUsers = async () => {
+const selectTopUsers = async (start, end) => {
   try {
     const result = await pool.query(`
       SELECT nom_activity, COUNT(*)::int AS process_count
       FROM activity
+      WHERE date_activity >= $1 AND date_activity <= $2
       GROUP BY nom_activity
       ORDER BY process_count DESC
       LIMIT 25
-    `);
+    `, [start || '1970-01-01', end || new Date()]);
     return result.rows;
   } catch (err) {
     throw err
