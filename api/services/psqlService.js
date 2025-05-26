@@ -1,4 +1,5 @@
 const { pool } = require('../config/psql.js');
+const logger = require('../utils/logger');
 
 const selectUsers = async () => {
   try {
@@ -90,7 +91,6 @@ const selectBot = async () => {
   }
 };
 
-// 2. Nombre d'utilisations par process_activity
 const selectUsageByProcess = async () => {
   try {
     const result = await pool.query(`
@@ -105,7 +105,6 @@ const selectUsageByProcess = async () => {
   }
 };
 
-// 3. Nombre de process par mois
 const selectUsageByMonth = async () => {
   try {
     const result = await pool.query(`
@@ -120,7 +119,6 @@ const selectUsageByMonth = async () => {
   }
 };
 
-// 4. Nombre de maquettes par région
 const selectMaquettesByRegion = async () => {
   try {
     const result = await pool.query(`
@@ -136,7 +134,6 @@ const selectMaquettesByRegion = async () => {
   }
 };
 
-// 5. Top 25 utilisateurs les plus actifs
 const selectTopUsers = async () => {
   try {
     const result = await pool.query(`
@@ -151,6 +148,5 @@ const selectTopUsers = async () => {
     throw err
   }
 };
-
 
 module.exports = { selectUsers, selectCentreDesCouts, selectEOTP, selectActivity, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess };
