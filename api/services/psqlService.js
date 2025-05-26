@@ -70,12 +70,12 @@ const insertActivity = async (activity) => {
 // 1. Liste des bots lancés (total et %)
 const selectBot = async () => {
   try {
-    const totalRes = await db.query(
+    const totalRes = await pool.query(
       "SELECT COUNT(*)::int AS total FROM activity WHERE type_activity = 'bot'"
     );
     const total = totalRes.rows[0].total;
 
-    const result = await db.query(`
+    const result = await pool.query(`
       SELECT process_activity, COUNT(*)::int AS count,
              ROUND(COUNT(*) * 100.0 / $1, 2) AS percentage
       FROM activity
@@ -93,7 +93,7 @@ const selectBot = async () => {
 // 2. Nombre d'utilisations par process_activity
 const selectUsageByProcess = async () => {
   try {
-    const result = await db.query(`
+    const result = await pool.query(`
       SELECT process_activity, COUNT(*)::int AS count
       FROM activity
       GROUP BY process_activity
@@ -108,7 +108,7 @@ const selectUsageByProcess = async () => {
 // 3. Nombre de process par mois
 const selectUsageByMonth = async () => {
   try {
-    const result = await db.query(`
+    const result = await pool.query(`
       SELECT TO_CHAR(date_activity, 'YYYY-MM') AS month, COUNT(*)::int AS count
       FROM activity
       GROUP BY month
@@ -123,7 +123,7 @@ const selectUsageByMonth = async () => {
 // 4. Nombre de maquettes par région
 const selectMaquettesByRegion = async () => {
   try {
-    const result = await db.query(`
+    const result = await pool.query(`
       SELECT region_activity, COUNT(*)::int AS count
       FROM activity
       WHERE type_activity IN ('maquettes', 'maquettes_auxiliaire')
@@ -139,7 +139,7 @@ const selectMaquettesByRegion = async () => {
 // 5. Top 25 utilisateurs les plus actifs
 const selectTopUsers = async () => {
   try {
-    const result = await db.query(`
+    const result = await pool.query(`
       SELECT nom_activity COUNT(*)::int AS process_count
       FROM activity
       GROUP BY nom_activity
