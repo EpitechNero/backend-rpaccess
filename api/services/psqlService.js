@@ -68,12 +68,10 @@ const insertActivity = async (activity) => {
   }
 };
 
-// 1. Liste des bots lancés (total et %)
 const selectBot = async (start, end) => {
   try {
     const totalRes = await pool.query(
-      "SELECT COUNT(*)::int AS total FROM activity WHERE type_activity = 'bot' AND date_activity >= $1 AND date_activity <= $2",
-      [start || '1970-01-01', end || new Date()]
+      "SELECT COUNT(*)::int AS total FROM activity WHERE type_activity = 'bot'",
     );
     const total = totalRes.rows[0].total;
 
@@ -81,10 +79,10 @@ const selectBot = async (start, end) => {
       SELECT process_activity, COUNT(*)::int AS count,
              ROUND(COUNT(*) * 100.0 / $1, 2) AS percentage
       FROM activity
-      WHERE type_activity = 'bot'
+      WHERE type_activity = 'bot' AND date_activity >= $2 AND date_activity <= $3
       GROUP BY process_activity
       ORDER BY count DESC
-    `, [total]);
+    `, [total, start || '1970-01-01', end || new Date()]);
 
     return result.rows;
   } catch (err) {
