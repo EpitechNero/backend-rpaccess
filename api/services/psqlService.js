@@ -126,7 +126,7 @@ const selectMaquettesByRegion = async () => {
     const result = await pool.query(`
       SELECT region_activity, COUNT(*)::int AS count
       FROM activity
-      WHERE type_activity IN ('maquettes', 'maquettes_auxiliaire')
+      WHERE type_activity IN ('maquette', 'maquette_auxiliaire')
       GROUP BY region_activity
       ORDER BY count DESC
     `);
