@@ -56,6 +56,28 @@ const selectActivity = async () => {
   }
 };
 
+const selectMaquettes = async () => {
+  try {
+    const res = await pool.query('SELECT * FROM maquettes');
+    console.log('✅ Maquettes récupérée avec succès');
+    return res.rows;
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des maquettes :', error);
+    throw error;
+  }
+};
+
+const selectReferentielMaquettes = async () => {
+  try {
+    const res = await pool.query('SELECT * FROM referentiel_maquettes');
+    console.log('✅ Référentiel des maquettes récupéré avec succès');
+    return res.rows;
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération du référentiel des maquettes :', error);
+    throw error;
+  }
+};
+
 const insertActivity = async (activity) => {
   try {
     const res = await pool.query('INSERT INTO activity (type_activity, nom_activity, prenom_activity, email_activity, process_activity, region_activity, date_activity) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', 
@@ -166,4 +188,4 @@ const normalizeEndOfDay = (date) => {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
 };
 
-module.exports = { selectUsers, selectCentreDesCouts, selectEOTP, selectActivity, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess };
+module.exports = { selectUsers, selectCentreDesCouts, selectEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess };

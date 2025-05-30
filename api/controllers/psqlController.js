@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const { selectUsers, selectCentreDesCouts, selectEOTP, selectList, selectActivity, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess } = require('../services/psqlService.js');
+const { selectUsers, selectCentreDesCouts, selectEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess } = require('../services/psqlService.js');
 
 exports.getUsers = async (req, res) => {
   try {
@@ -41,6 +41,24 @@ exports.getActivity = async (req, res) => {
   try {
     const activity = await selectActivity();
     res.status(200).json(activity);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getMaquettes = async (req, res) => {
+  try {
+    const maquettes = await selectMaquettes();
+    res.status(200).json(maquettes);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getReferentielMaquettes = async (req, res) => {
+  try {
+    const referentiel_maquettes = await selectReferentielMaquettes();
+    res.status(200).json(referentiel_maquettes);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
