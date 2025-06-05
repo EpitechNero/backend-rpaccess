@@ -28,13 +28,12 @@ exports.uploadContrat = async (req, res) => {
   }
 
   const file = req.file;
-  console.log(file);
-  const fileBuffer = file.buffer; // Contenu du fichier
-  const fileName = file.originalname; // Nom du fichier original
+  const fileBuffer = file.buffer;
+  const fileName = file.originalname; 
 
   try {
     const fileData = await uploadDriveFile(fileBuffer, fileName);
-    res.status(200).json({ success: true, fileId: fileData.id });
+    res.status(200).json({ success: true, fileId: fileData});
   } catch (err) {
     console.error('Erreur lors de l\'upload du contrat :', err.message);
     res.status(500).json({ success: false, error: err.message });

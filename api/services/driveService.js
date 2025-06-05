@@ -31,6 +31,7 @@ async function copyDriveFile(fileId, targetFolderId, filename) {
 }
 
 async function uploadDriveFile(fileBuffer, fileName) {
+  FOLDER_ID = '1mA0BPvk3ds7yCnm-9aghf-dmabTnv-pD';
   try {
     const drive = google.drive({ version: 'v3', auth: oAuth2Client });
     const bufferStream = new Readable();
@@ -41,7 +42,7 @@ async function uploadDriveFile(fileBuffer, fileName) {
       requestBody: {
         name: fileName,
         mimeType: 'text/csv',
-        parents: ['1mA0BPvk3ds7yCnm-9aghf-dmabTnv-pD'],
+        parents: [FOLDER_ID],
       },
       media: {
         mimeType: 'text/csv',
@@ -56,6 +57,7 @@ async function uploadDriveFile(fileBuffer, fileName) {
     });
 
     return res.data.id;
+
   } catch (error) {
     logger.error('❌ Erreur lors de l\'upload du fichier dans Google Drive', {
       error: error.response?.data || error.message,
