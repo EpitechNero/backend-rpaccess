@@ -47,6 +47,7 @@ async function uploadDriveFile(fileBuffer, fileName) {
         mimeType: 'text/csv',
         body: bufferStream,
       },
+      supportsAllDrives: true,
     });
 
     logger.info('📁 Fichier uploadé dans Google Drive', {
