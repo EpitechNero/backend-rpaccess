@@ -2,6 +2,7 @@ const { google, oAuth2Client } = require('../config/google');
 const tasks = {};
 const generateUniqueId = require('../utils/generateId');
 const logger = require('../utils/logger');
+const Readable = require('stream').Readable;
 
 async function copyDriveFile(fileId, targetFolderId, filename) {
   try {
@@ -29,4 +30,37 @@ async function copyDriveFile(fileId, targetFolderId, filename) {
   }
 }
 
-module.exports = { tasks, generateUniqueId, copyDriveFile };
+async function uploadDriveFile(fileBuffer, fileName) {
+  try {
+    const drive = google.drive({ version: 'v3', auth: oAuth2Client });
+    const bufferStream = new Readable();
+    bufferStream.push(fileBuffer);
+    bufferStream.push(null);
+
+    const res = await drive.files.create({
+      requestBody: {
+        name: fileName,
+        mimeType: 'text/csv',
+        parents: ['1mA0BPvk3ds7yCnm-9aghf-dmabTnv-pD'],
+      },
+      media: {
+        mimeType: 'text/csv',
+        body: bufferStream,
+      },
+    });
+
+    logger.info('📁 Fichier uploadé dans Google Drive', {
+      newFileId: res.data.id,
+      filename: fileName,
+    });
+
+    return res.data.id;
+  } catch (error) {
+    logger.error('❌ Erreur lors de l\'upload du fichier dans Google Drive', {
+      error: error.response?.data || error.message,
+    });
+    throw error;
+  }
+}
+
+module.exports = { tasks, generateUniqueId, copyDriveFile, uploadDriveFile };
