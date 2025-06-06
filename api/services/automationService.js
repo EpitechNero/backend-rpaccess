@@ -24,8 +24,8 @@ function buildBotInput(bot, inputData) {
 
   for (let i = 1; i <= 3; i++) {
     try {
-      const key = `vInput${i}_list`;
-      const typeKey = `vInput${i}type_list`;
+      const key = `vinput${i}_list`;
+      const typeKey = `vinput${i}type_list`;
       const formKey = `input${i}_list`;
 
     if (bot[key] === 'O' && inputData[formKey] !== undefined) {
