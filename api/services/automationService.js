@@ -26,7 +26,7 @@ function buildBotInput(bot, inputData) {
     try {
       const key = `vinput${i}_list`;
       const typeKey = `vinput${i}type_list`;
-      const formKey = `input${i}_list`;
+      const formKey = `input${i}`;
 
     if (bot[key] === 'O' && inputData[formKey] !== undefined) {
       const type = bot[typeKey];
