@@ -77,7 +77,7 @@ async function launchBot(bot, inputData) {
   : undefined;
 
   const payload = {
-    fileId: bot.botId,
+    fileId: bot.bot_id_list	,
     runAsUserIds: [182],
     poolIds: [],
     overrideDefaultDevice: false,
