@@ -24,6 +24,7 @@ function buildBotInput(bot, inputData) {
 
   for (let i = 1; i <= 3; i++) {
     try {
+      const botKey = `vInput${i}`;
       const key = `vinput${i}_list`;
       const typeKey = `vinput${i}type_list`;
       const formKey = `input${i}`;
@@ -35,19 +36,19 @@ function buildBotInput(bot, inputData) {
 
       switch (type) {
         case 'STRING':
-          botInput[key] = {
+          botInput[botKey] = {
             type: 'STRING',
             string: value
           };
           break;
         case 'NUMBER':
-          botInput[key] = {
+          botInput[botKey] = {
             type: 'NUMBER',
             number: Number(value)
           };
           break;
         case 'BOOLEAN':
-          botInput[key] = {
+          botInput[botKey] = {
             type: 'BOOLEAN',
             boolean: value === 'true' || value === true
           };
