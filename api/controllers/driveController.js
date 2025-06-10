@@ -29,7 +29,7 @@ exports.uploadContrat = async (req, res) => {
 
   const file = req.file;
   const fileBuffer = file.buffer;
-  const fileName = file.originalname; 
+  const fileName = req.body.filename;
 
   try {
     const fileData = await uploadDriveFile(fileBuffer, fileName);
