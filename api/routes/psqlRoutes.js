@@ -17,6 +17,7 @@ router.get('/getmaquettesbyregion', controller.getMaquettesByRegion);
 router.get('/gettopusers', controller.getTopUsers);
 
 router.get('/getmoyennenotes', controller.getMoyenneNotes);
+router.get('/getcomments', controller.getComments);
 
 router.post('/create-activity', controller.setActivity);
 

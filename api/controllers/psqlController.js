@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const { selectUsers, selectCentreDesCouts, selectEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess } = require('../services/psqlService.js');
+const { selectUsers, selectCentreDesCouts, selectEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectAvgNotes, selectComments } = require('../services/psqlService.js');
 
 exports.getUsers = async (req, res) => {
   try {
@@ -128,10 +128,18 @@ exports.setActivity = async (req, res) => {
 
 exports.getMoyenneNotes = async (req, res) => {
   try {
-    const moyenneNotes = await calculateMoyenneNotes();
+    const moyenneNotes = await selectAvgNotes();
     res.status(200).json({ success: true, moyenneNotes });
   } catch (err) {
-    console.error('Erreur lors de la récupération de la moyenne des notes :', err.message);
     res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+exports.getComments = async (req, res) => {
+  try {
+    const comments = await selectComments();
+    res.status(200).json(comments);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };

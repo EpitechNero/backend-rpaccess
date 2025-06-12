@@ -197,4 +197,13 @@ const selectAvgNotes = async () => {
   }
 };
 
-module.exports = { selectUsers, selectCentreDesCouts, selectEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectAvgNotes };
+const selectComments = async () => {
+  try {
+    const result = await pool.query(`SELECT commentaire_form FROM form`);
+    return result.rows;
+  } catch (err) {
+    throw err
+  }
+}
+
+module.exports = { selectUsers, selectCentreDesCouts, selectEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectAvgNotes, selectComments };
