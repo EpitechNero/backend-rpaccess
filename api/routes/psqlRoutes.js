@@ -16,6 +16,8 @@ router.get('/getusagebymonth', controller.getUsageByMonth);
 router.get('/getmaquettesbyregion', controller.getMaquettesByRegion);
 router.get('/gettopusers', controller.getTopUsers);
 
+router.get('/getmoyennenotes', controller.getMoyenneNotes);
+
 router.post('/create-activity', controller.setActivity);
 
 module.exports = router;

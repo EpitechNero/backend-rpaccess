@@ -188,4 +188,13 @@ const normalizeEndOfDay = (date) => {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
 };
 
-module.exports = { selectUsers, selectCentreDesCouts, selectEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess };
+const selectAvgNotes = async () => {
+    try {
+    const result = await pool.query(`SELECT ROUND(AVG(note_form),1) FROM form`);
+    return result.rows[0];
+  } catch (err) {
+    throw err
+  }
+};
+
+module.exports = { selectUsers, selectCentreDesCouts, selectEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectAvgNotes };
