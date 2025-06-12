@@ -125,3 +125,13 @@ exports.setActivity = async (req, res) => {
     });
   }
 };
+
+exports.getMoyenneNotes = async (req, res) => {
+  try {
+    const moyenneNotes = await calculateMoyenneNotes();
+    res.status(200).json({ success: true, moyenneNotes });
+  } catch (err) {
+    console.error('Erreur lors de la récupération de la moyenne des notes :', err.message);
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
