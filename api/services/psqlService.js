@@ -188,6 +188,15 @@ const normalizeEndOfDay = (date) => {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
 };
 
+const selectCountForm = async () => {
+  try {
+    const result = await pool.query(`SELECT COUNT(*) FROM form`);
+    return result.rows[0];
+  } catch (err) {
+    throw err
+  }
+};
+
 const selectAvgNotes = async () => {
     try {
     const result = await pool.query(`SELECT ROUND(AVG(note_form),1) FROM form`);
@@ -206,4 +215,22 @@ const selectComments = async () => {
   }
 }
 
-module.exports = { selectUsers, selectCentreDesCouts, selectEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectAvgNotes, selectComments };
+const selectAttentes = async () => {
+  try {
+    const result = await pool.query(`SELECT attentes_form,COUNT(attentes_form) FROM form GROUP BY attentes_form`);
+    return result.rows;
+  } catch (err) {
+    throw err
+  }
+}
+
+const selectZendesk = async () => {
+  try {
+    const result = await pool.query(`SELECT zendesk_form,COUNT(zendesk_form) FROM form GROUP BY zendesk_form`);
+    return result.rows;
+  } catch (err) {
+    throw err
+  }
+}
+
+module.exports = { selectUsers, selectCentreDesCouts, selectEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectComments, selectAttentes, selectZendesk };

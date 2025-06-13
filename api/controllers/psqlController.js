@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const { selectUsers, selectCentreDesCouts, selectEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectAvgNotes, selectComments } = require('../services/psqlService.js');
+const { selectUsers, selectCentreDesCouts, selectEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectComments, selectAttentes, selectZendesk } = require('../services/psqlService.js');
 
 exports.getUsers = async (req, res) => {
   try {
@@ -126,6 +126,15 @@ exports.setActivity = async (req, res) => {
   }
 };
 
+exports.getCountForm = async (req, res) => {
+  try {
+    const countForm = await selectCountForm();
+    res.status(200).json({ success: true, countForm });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
 exports.getMoyenneNotes = async (req, res) => {
   try {
     const moyenneNotes = await selectAvgNotes();
@@ -139,6 +148,24 @@ exports.getComments = async (req, res) => {
   try {
     const comments = await selectComments();
     res.status(200).json(comments);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getAttentes = async (req, res) => {
+  try {
+    const attentes = await selectAttentes();
+    res.status(200).json(attentes);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getZendesk = async (req, res) => {
+  try {
+    const zendesk = await selectZendesk();
+    res.status(200).json(zendesk);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

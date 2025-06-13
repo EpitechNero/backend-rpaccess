@@ -16,8 +16,11 @@ router.get('/getusagebymonth', controller.getUsageByMonth);
 router.get('/getmaquettesbyregion', controller.getMaquettesByRegion);
 router.get('/gettopusers', controller.getTopUsers);
 
+router.get('/getcountform', controller.getCountForm);
 router.get('/getmoyennenotes', controller.getMoyenneNotes);
 router.get('/getcomments', controller.getComments);
+router.get('/getattentes', controller.getAttentes);
+router.get('/getzendesk', controller.getZendesk);
 
 router.post('/create-activity', controller.setActivity);
 
