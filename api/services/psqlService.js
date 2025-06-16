@@ -233,4 +233,20 @@ const selectZendesk = async () => {
   }
 }
 
-module.exports = { selectUsers, selectCentreDesCouts, selectEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectComments, selectAttentes, selectZendesk };
+const insertForm = async (formData) => {
+  try {
+    const res = await pool.query(
+      `INSERT INTO form (
+        note_form, mot1_form, mot2_form, mot3_form, portail_form, raison_portail_form, zendesk_form, raison_zendesk_form
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+      [formData.satisfactionLevel,formData.mot1,formData.mot2,formData.mot3,formData.portail,formData.portailReason,formData.zendesk,formData.zendeskReason]
+    );
+    logger.info('✅ Formulaire inséré avec succès', JSON.stringify(res.rows[0]));
+    return res.rows[0];
+  } catch (error) {
+    logger.error('❌ Erreur lors de l\'insertion du formulaire :', error.message);
+    throw error;
+  }
+};
+
+module.exports = { selectUsers, selectCentreDesCouts, selectEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectComments, selectAttentes, selectZendesk, insertForm };

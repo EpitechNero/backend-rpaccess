@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const { selectUsers, selectCentreDesCouts, selectEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectComments, selectAttentes, selectZendesk } = require('../services/psqlService.js');
+const { selectUsers, selectCentreDesCouts, selectEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectComments, selectAttentes, selectZendesk, insertForm } = require('../services/psqlService.js');
 
 exports.getUsers = async (req, res) => {
   try {
@@ -168,5 +168,18 @@ exports.getZendesk = async (req, res) => {
     res.status(200).json(zendesk);
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+exports.setForm = async (req, res) => {
+  logger.info('📥 Requête reçue pour setForm :', JSON.stringify(req.body));
+  try {
+    const result = await insertForm(req.body);
+    res.status(201).json({ message: 'Formulaire inséré avec succès', data: result });
+  } catch (error) {
+    res.status(500).json({
+      error: 'Erreur serveur lors de l\'insertion du formulaire',
+      details: error.message,
+    });
   }
 };
