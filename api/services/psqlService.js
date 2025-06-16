@@ -217,7 +217,7 @@ const selectComments = async () => {
 
 const selectAttentes = async () => {
   try {
-    const result = await pool.query(`SELECT portail_form,COUNT(attentes_form) FROM form GROUP BY portail_form`);
+    const result = await pool.query(`SELECT portail_form,COUNT(portail_form) FROM form GROUP BY portail_form`);
     return result.rows;
   } catch (err) {
     throw err
