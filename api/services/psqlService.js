@@ -289,11 +289,60 @@ const selectAvgServices = async () => {
 
 const insertForm = async (formData) => {
   try {
+    const services = formData.services || [];
+    const getService = (name) => services.find(s => s.name === name) || { ratings: { reactivity: 0, expertise: 0 } };
+
+    const rever = getService('Reversements');
+    const amoa = getService('AMOA & RPA');
+    const actbanc = getService('Activité bancaire clientèle');
+    const depspe = getService('Dépenses spécifiques et factures manuelles');
+    const caubanc = getService('Cautions bancaires');
+    const comptag = getService('Comptabilité Générale / Gestion des immobilisations');
+    const fiscal = getService('Fiscalité locale');
+
     const res = await pool.query(
       `INSERT INTO form (
-        note_form, mot1_form, mot2_form, mot3_form, portail_form, raison_portail_form, zendesk_form, raison_zendesk_form
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
-      [formData.satisfactionLevel, formData.mot1, formData.mot2, formData.mot3, formData.portail, formData.portailReason, formData.zendesk, formData.zendeskReason]
+        note_form, mot1_form, mot2_form, mot3_form, portail_form, raison_portail_form, zendesk_form, raison_zendesk_form,
+        service_reac_rever_form, service_exper_rever_form,
+        service_reac_amoa_form, service_exper_amoa_form,
+        service_reac_actbanc_form, service_exper_actbanc_form,
+        service_reac_depspe_form, service_exper_depspe_form,
+        service_reac_caubanc_form, service_exper_caubanc_form,
+        service_reac_comptag_form, service_exper_comptag_form,
+        service_reac_fiscal_form, service_exper_fiscal_form,
+        mail_form, region_form, service_form, commentaire_form
+      ) VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8,
+        $9, $10,
+        $11, $12,
+        $13, $14,
+        $15, $16,
+        $17, $18,
+        $19, $20,
+        $21, $22,
+        $23, $24, $25, $26
+      ) RETURNING *`,
+      [
+        formData.satisfactionLevel,
+        formData.mot1,
+        formData.mot2,
+        formData.mot3,
+        formData.portail,
+        formData.portailReason,
+        formData.zendesk,
+        formData.zendeskReason,
+        rever.ratings.reactivity, rever.ratings.expertise,
+        amoa.ratings.reactivity, amoa.ratings.expertise,
+        actbanc.ratings.reactivity, actbanc.ratings.expertise,
+        depspe.ratings.reactivity, depspe.ratings.expertise,
+        caubanc.ratings.reactivity, caubanc.ratings.expertise,
+        comptag.ratings.reactivity, comptag.ratings.expertise,
+        fiscal.ratings.reactivity, fiscal.ratings.expertise,
+        formData.email,
+        formData.region,
+        formData.service,
+        formData.comments
+      ]
     );
     logger.info('✅ Formulaire inséré avec succès', JSON.stringify(res.rows[0]));
     return res.rows[0];
