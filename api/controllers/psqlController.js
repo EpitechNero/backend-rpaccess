@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const { selectUsers, selectCentreDesCouts, selectEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices } = require('../services/psqlService.js');
+const { selectUsers, selectCentreDesCouts, selectEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices, selectForm } = require('../services/psqlService.js');
 
 exports.getUsers = async (req, res) => {
   try {
@@ -123,6 +123,15 @@ exports.setActivity = async (req, res) => {
       error: 'Erreur serveur lors de l\'insertion de l\'activité',
       details: error.message,
     });
+  }
+};
+
+exports.getForm = async (req, res) => {
+  try {
+    const form = await selectForm();
+    res.status(200).json(form);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
 

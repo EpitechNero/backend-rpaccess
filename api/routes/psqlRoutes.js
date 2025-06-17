@@ -16,6 +16,7 @@ router.get('/getusagebymonth', controller.getUsageByMonth);
 router.get('/getmaquettesbyregion', controller.getMaquettesByRegion);
 router.get('/gettopusers', controller.getTopUsers);
 
+router.get('/getform', controller.getForm);
 router.get('/getcountform', controller.getCountForm);
 router.get('/getmoyennenotes', controller.getMoyenneNotes);
 router.get('/getmots', controller.getMots);
