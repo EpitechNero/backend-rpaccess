@@ -18,9 +18,11 @@ router.get('/gettopusers', controller.getTopUsers);
 
 router.get('/getcountform', controller.getCountForm);
 router.get('/getmoyennenotes', controller.getMoyenneNotes);
+router.get('/getmots', controller.getMots);
 router.get('/getcomments', controller.getComments);
-router.get('/getattentes', controller.getAttentes);
+router.get('/getportail', controller.getPortail);
 router.get('/getzendesk', controller.getZendesk);
+router.get('/getservices', controller.getServices);
 router.post('/create-form', controller.setForm);
 
 router.post('/create-activity', controller.setActivity);

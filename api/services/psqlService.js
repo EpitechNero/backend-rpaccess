@@ -80,7 +80,7 @@ const selectReferentielMaquettes = async () => {
 
 const insertActivity = async (activity) => {
   try {
-    const res = await pool.query('INSERT INTO activity (type_activity, nom_activity, prenom_activity, email_activity, process_activity, region_activity, date_activity) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', 
+    const res = await pool.query('INSERT INTO activity (type_activity, nom_activity, prenom_activity, email_activity, process_activity, region_activity, date_activity) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
       [activity.type, activity.nom, activity.prenom, activity.email, activity.process, activity.region, new Date(activity.date)]);
     logger.info('✅ Activité insérée avec succès', JSON.stringify(res.rows[0]));
     return res.rows[0];
@@ -198,7 +198,7 @@ const selectCountForm = async () => {
 };
 
 const selectAvgNotes = async () => {
-    try {
+  try {
     const result = await pool.query(`SELECT ROUND(AVG(note_form),1) FROM form`);
     return result.rows[0];
   } catch (err) {
@@ -206,16 +206,25 @@ const selectAvgNotes = async () => {
   }
 };
 
+const selectMots = async () => {
+  try {
+    const result = await pool.query(`SELECT mot, SUM(somme_ponderation) AS somme_ponderation FROM(SELECT mot1_form AS mot, SUM(ponderation) AS somme_ponderation FROM (SELECT LOWER(mot1_form) AS mot1_form, 3  AS ponderation FROM form) GROUP BY mot1_form UNION SELECT mot2_form AS mot, SUM(ponderation) AS somme_ponderation FROM (SELECT LOWER(mot2_form) AS mot2_form, 2  AS ponderation FROM form) GROUP BY mot2_form UNION SELECT mot3_form AS mot, SUM(ponderation) AS somme_ponderation FROM (SELECT LOWER(mot3_form) AS mot3_form, 1  AS ponderation FROM form) GROUP BY mot3_form) GROUP BY mot ORDER BY somme_ponderation DESC LIMIT 20`);
+    return result.rows;
+  } catch (err) {
+    throw err
+  }
+};
+
 const selectComments = async () => {
   try {
-    const result = await pool.query(`SELECT commentaire_form FROM form`);
+    const result = await pool.query(`SELECT mail_form, commentaire_form FROM form`);
     return result.rows;
   } catch (err) {
     throw err
   }
 }
 
-const selectAttentes = async () => {
+const selectPortail = async () => {
   try {
     const result = await pool.query(`SELECT portail_form,COUNT(portail_form) FROM form GROUP BY portail_form`);
     return result.rows;
@@ -233,13 +242,22 @@ const selectZendesk = async () => {
   }
 }
 
+const selectServices = async () => {
+  try {
+    const result = await pool.query(`SELECT 'Reversements'  AS service, COUNT(*) FROM form WHERE service_reac_rever_form IS NOT NULL AND service_exper_rever_form IS NOT NULL UNION SELECT 'AMOA & RPA' AS service, COUNT(*) FROM form WHERE service_reac_amoa_form IS NOT NULL AND service_exper_amoa_form IS NOT NULL UNION SELECT 'Activité bancaire clientèle' AS service, COUNT(*) FROM form WHERE service_reac_actbanc_form IS NOT NULL AND service_exper_actbanc_form IS NOT NULL UNION SELECT 'Dépenses spécifiques et factures manuelles' AS service, COUNT(*) FROM form WHERE service_reac_depspe_form IS NOT NULL AND service_exper_depspe_form IS NOT NULL UNION SELECT 'Cautions bancaires' AS service, COUNT(*) FROM form WHERE service_reac_caubanc_form IS NOT NULL AND service_exper_caubanc_form IS NOT NULL UNION SELECT 'Comptabilité Générale / Gestion des immobilisations' AS service, COUNT(*) FROM form WHERE service_reac_comptag_form IS NOT NULL AND service_exper_comptag_form IS NOT NULL UNION SELECT 'Fiscalité locale' AS service, COUNT(*) FROM form WHERE service_reac_fiscal_form IS NOT NULL AND service_exper_fiscal_form IS NOT NULL`);
+    return result.rows;
+  } catch (err) {
+    throw err;
+  }
+};
+
 const insertForm = async (formData) => {
   try {
     const res = await pool.query(
       `INSERT INTO form (
         note_form, mot1_form, mot2_form, mot3_form, portail_form, raison_portail_form, zendesk_form, raison_zendesk_form
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
-      [formData.satisfactionLevel,formData.mot1,formData.mot2,formData.mot3,formData.portail,formData.portailReason,formData.zendesk,formData.zendeskReason]
+      [formData.satisfactionLevel, formData.mot1, formData.mot2, formData.mot3, formData.portail, formData.portailReason, formData.zendesk, formData.zendeskReason]
     );
     logger.info('✅ Formulaire inséré avec succès', JSON.stringify(res.rows[0]));
     return res.rows[0];
@@ -249,4 +267,4 @@ const insertForm = async (formData) => {
   }
 };
 
-module.exports = { selectUsers, selectCentreDesCouts, selectEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectComments, selectAttentes, selectZendesk, insertForm };
+module.exports = { selectUsers, selectCentreDesCouts, selectEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectMots, selectComments, selectPortail, selectZendesk, selectServices, insertForm };

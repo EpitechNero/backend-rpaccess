@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const { selectUsers, selectCentreDesCouts, selectEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectComments, selectAttentes, selectZendesk, insertForm } = require('../services/psqlService.js');
+const { selectUsers, selectCentreDesCouts, selectEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectMots, selectComments, selectPortail, selectZendesk, insertForm, selectServices } = require('../services/psqlService.js');
 
 exports.getUsers = async (req, res) => {
   try {
@@ -144,6 +144,15 @@ exports.getMoyenneNotes = async (req, res) => {
   }
 };
 
+exports.getMots = async (req, res) => {
+  try {
+    const mots = await selectMots();
+    res.status(200).json(mots);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 exports.getComments = async (req, res) => {
   try {
     const comments = await selectComments();
@@ -153,10 +162,10 @@ exports.getComments = async (req, res) => {
   }
 };
 
-exports.getAttentes = async (req, res) => {
+exports.getPortail = async (req, res) => {
   try {
-    const attentes = await selectAttentes();
-    res.status(200).json(attentes);
+    const portail = await selectPortail();
+    res.status(200).json(portail);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -166,6 +175,15 @@ exports.getZendesk = async (req, res) => {
   try {
     const zendesk = await selectZendesk();
     res.status(200).json(zendesk);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getServices = async (req, res) => {
+  try {
+    const services = await selectServices();
+    res.status(200).json(services);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
