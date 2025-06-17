@@ -233,6 +233,15 @@ const selectPortail = async () => {
   }
 }
 
+const selectCommentsPortail = async () => {
+  try {
+    const result = await pool.query(`SELECT raison_portail_form FROM form WHERE raison_portail_form IS NOT NULL`);
+    return result.rows;
+  } catch (err) {
+    throw err
+  }
+}
+
 const selectZendesk = async () => {
   try {
     const result = await pool.query(`SELECT zendesk_form,COUNT(zendesk_form) FROM form GROUP BY zendesk_form`);
@@ -242,9 +251,27 @@ const selectZendesk = async () => {
   }
 }
 
+const selectCommentsZendesk = async () => {
+  try {
+    const result = await pool.query(`SELECT raison_zendesk_form FROM form WHERE raison_zendesk_form IS NOT NULL`);
+    return result.rows;
+  } catch (err) {
+    throw err
+  }
+}
+
 const selectServices = async () => {
   try {
-    const result = await pool.query(`SELECT 'Reversements'  AS service, COUNT(*) FROM form WHERE service_reac_rever_form IS NOT NULL AND service_exper_rever_form IS NOT NULL UNION SELECT 'AMOA & RPA' AS service, COUNT(*) FROM form WHERE service_reac_amoa_form IS NOT NULL AND service_exper_amoa_form IS NOT NULL UNION SELECT 'Activité bancaire clientèle' AS service, COUNT(*) FROM form WHERE service_reac_actbanc_form IS NOT NULL AND service_exper_actbanc_form IS NOT NULL UNION SELECT 'Dépenses spécifiques et factures manuelles' AS service, COUNT(*) FROM form WHERE service_reac_depspe_form IS NOT NULL AND service_exper_depspe_form IS NOT NULL UNION SELECT 'Cautions bancaires' AS service, COUNT(*) FROM form WHERE service_reac_caubanc_form IS NOT NULL AND service_exper_caubanc_form IS NOT NULL UNION SELECT 'Comptabilité Générale / Gestion des immobilisations' AS service, COUNT(*) FROM form WHERE service_reac_comptag_form IS NOT NULL AND service_exper_comptag_form IS NOT NULL UNION SELECT 'Fiscalité locale' AS service, COUNT(*) FROM form WHERE service_reac_fiscal_form IS NOT NULL AND service_exper_fiscal_form IS NOT NULL`);
+    const result = await pool.query(`SELECT 'Reversements'  AS service, COUNT(*) FROM form WHERE service_reac_rever_form IS NOT NULL AND service_exper_rever_form IS NOT NULL UNION SELECT 'AMOA & RPA' AS service, COUNT(*) FROM form WHERE service_reac_amoa_form IS NOT NULL AND service_exper_amoa_form IS NOT NULL UNION SELECT 'Activité bancaire clientèle' AS service, COUNT(*) FROM form WHERE service_reac_actbanc_form IS NOT NULL AND service_exper_actbanc_form IS NOT NULL UNION SELECT 'Dépenses spé & factures manuelles' AS service, COUNT(*) FROM form WHERE service_reac_depspe_form IS NOT NULL AND service_exper_depspe_form IS NOT NULL UNION SELECT 'Cautions bancaires' AS service, COUNT(*) FROM form WHERE service_reac_caubanc_form IS NOT NULL AND service_exper_caubanc_form IS NOT NULL UNION SELECT 'Compta Générale / Gestion des immo' AS service, COUNT(*) FROM form WHERE service_reac_comptag_form IS NOT NULL AND service_exper_comptag_form IS NOT NULL UNION SELECT 'Fiscalité locale' AS service, COUNT(*) FROM form WHERE service_reac_fiscal_form IS NOT NULL AND service_exper_fiscal_form IS NOT NULL`);
+    return result.rows;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const selectAvgServices = async () => {
+  try {
+    const result = await pool.query(`SELECT 'Reversements' AS service, ROUND(AVG(service_reac_rever_form),1) AS Reactivite , ROUND(AVG(service_exper_rever_form),1) AS Expertise FROM form UNION SELECT 'AMOA & RPA' AS service, ROUND(AVG(service_reac_amoa_form),1) AS Reactivite , ROUND(AVG(service_exper_amoa_form),1) AS Expertise FROM form UNION SELECT 'Activité bancaire clientèle' AS service, ROUND(AVG(service_reac_actbanc_form),1) AS Reactivite , ROUND(AVG(service_exper_actbanc_form),1) AS Expertise FROM form UNION SELECT 'Dépenses spécifiques et factures manuelles' AS service, ROUND(AVG(service_reac_depspe_form),1) AS Reactivite , ROUND(AVG(service_exper_depspe_form),1) AS Expertise FROM form UNION SELECT 'Cautions bancaires' AS service, ROUND(AVG(service_reac_caubanc_form),1) AS Reactivite , ROUND(AVG(service_exper_caubanc_form),1) AS Expertise FROM form UNION SELECT 'Comptabilité Générale / Gestion des immobilisations' AS service, ROUND(AVG(service_reac_comptag_form),1) AS Reactivite , ROUND(AVG(service_exper_comptag_form),1) AS Expertise FROM form UNION SELECT 'Fiscalité locale' AS service, ROUND(AVG(service_reac_fiscal_form),1) AS Reactivite , ROUND(AVG(service_exper_fiscal_form),1) AS Expertise FROM form`);
     return result.rows;
   } catch (err) {
     throw err;
@@ -267,4 +294,4 @@ const insertForm = async (formData) => {
   }
 };
 
-module.exports = { selectUsers, selectCentreDesCouts, selectEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectMots, selectComments, selectPortail, selectZendesk, selectServices, insertForm };
+module.exports = { selectUsers, selectCentreDesCouts, selectEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm };

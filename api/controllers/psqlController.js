@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const { selectUsers, selectCentreDesCouts, selectEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectMots, selectComments, selectPortail, selectZendesk, insertForm, selectServices } = require('../services/psqlService.js');
+const { selectUsers, selectCentreDesCouts, selectEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices } = require('../services/psqlService.js');
 
 exports.getUsers = async (req, res) => {
   try {
@@ -171,10 +171,28 @@ exports.getPortail = async (req, res) => {
   }
 };
 
+exports.getCommentsPortail = async (req, res) => {
+  try {
+    const commentsPortail = await selectCommentsPortail();
+    res.status(200).json(commentsPortail);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 exports.getZendesk = async (req, res) => {
   try {
     const zendesk = await selectZendesk();
     res.status(200).json(zendesk);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getCommentsZendesk = async (req, res) => {
+  try {
+    const commentsZendesk = await selectCommentsZendesk();
+    res.status(200).json(commentsZendesk);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -186,6 +204,15 @@ exports.getServices = async (req, res) => {
     res.status(200).json(services);
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getMoyenneService = async (req, res) => {
+  try {
+    const moyenneService = await selectAvgServices();
+    res.status(200).json({ success: true, moyenneService });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
   }
 };
 

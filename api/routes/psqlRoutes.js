@@ -21,8 +21,11 @@ router.get('/getmoyennenotes', controller.getMoyenneNotes);
 router.get('/getmots', controller.getMots);
 router.get('/getcomments', controller.getComments);
 router.get('/getportail', controller.getPortail);
+router.get('/getcommentsportail', controller.getCommentsPortail);
 router.get('/getzendesk', controller.getZendesk);
+router.get('/getcommentszendesk', controller.getCommentsZendesk);
 router.get('/getservices', controller.getServices);
+router.get('/getmoyenneservice', controller.getMoyenneService);
 router.post('/create-form', controller.setForm);
 
 router.post('/create-activity', controller.setActivity);
