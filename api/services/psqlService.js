@@ -290,7 +290,8 @@ const selectAvgServices = async () => {
 const insertForm = async (formData) => {
   try {
     const services = formData.services || [];
-    const getService = (name) => services.find(s => s.name === name) || { ratings: { reactivity: NaN, expertise: NaN } };
+    const getService = (name) => services.find(s => s.name === name) || { checked: false, ratings: { reactivity: null, expertise: null } };
+    const getRating = (service, key) => service && service.checked ? service.ratings[key] : null;
 
     const rever = getService('Reversements');
     const amoa = getService('AMOA & RPA');
@@ -299,6 +300,21 @@ const insertForm = async (formData) => {
     const caubanc = getService('Cautions bancaires');
     const comptag = getService('Comptabilité Générale / Gestion des immobilisations');
     const fiscal = getService('Fiscalité locale');
+
+    rever.ratings.reactivity = getRating(rever, 'reactivity');
+    rever.ratings.expertise = getRating(rever, 'expertise');
+    amoa.ratings.reactivity = getRating(amoa, 'reactivity');
+    amoa.ratings.expertise = getRating(amoa, 'expertise');
+    actbanc.ratings.reactivity = getRating(actbanc, 'reactivity');
+    actbanc.ratings.expertise = getRating(actbanc, 'expertise');
+    depspe.ratings.reactivity = getRating(depspe, 'reactivity');
+    depspe.ratings.expertise = getRating(depspe, 'expertise');
+    caubanc.ratings.reactivity = getRating(caubanc, 'reactivity');
+    caubanc.ratings.expertise = getRating(caubanc, 'expertise');
+    comptag.ratings.reactivity = getRating(comptag, 'reactivity');
+    comptag.ratings.expertise = getRating(comptag, 'expertise');
+    fiscal.ratings.reactivity = getRating(fiscal, 'reactivity');
+    fiscal.ratings.expertise = getRating(fiscal, 'expertise');
 
     const res = await pool.query(
       `INSERT INTO form (
