@@ -290,7 +290,7 @@ const selectAvgServices = async () => {
 const insertForm = async (formData) => {
   try {
     const services = formData.services || [];
-    const getService = (name) => services.find(s => s.name === name) || { ratings: { reactivity: 0, expertise: 0 } };
+    const getService = (name) => services.find(s => s.name === name) || { ratings: { reactivity: null, expertise: null } };
 
     const rever = getService('Reversements');
     const amoa = getService('AMOA & RPA');
