@@ -332,7 +332,7 @@ const insertForm = async (formData) => {
         service_reac_caubanc_form, service_exper_caubanc_form,
         service_reac_comptag_form, service_exper_comptag_form,
         service_reac_fiscal_form, service_exper_fiscal_form,
-        mail_form, region_form, service_form, commentaire_form
+        mail_form, region_form, service_form, commentaire_form, note_zendesk_form
       ) VALUES (
         $1, $2, $3, $4, $5, $6, $7, $8,
         $9, $10,
@@ -342,7 +342,7 @@ const insertForm = async (formData) => {
         $17, $18,
         $19, $20,
         $21, $22,
-        $23, $24, $25, $26
+        $23, $24, $25, $26, $27
       ) RETURNING *`,
       [
         formData.satisfactionLevel,
@@ -363,7 +363,8 @@ const insertForm = async (formData) => {
         formData.email,
         formData.region,
         formData.service,
-        formData.comments
+        formData.comments,
+        formData.zendeskSatisfactionLevel
       ]
     );
     logger.info('✅ Formulaire inséré avec succès', JSON.stringify(res.rows[0]));
