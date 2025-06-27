@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const { selectUsers, selectCentreDesCouts, selectEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices, selectForm } = require('../services/psqlService.js');
+const { selectUsers, selectCentreDesCouts, selectEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices, selectForm } = require('../services/psqlService.js');
 
 exports.getUsers = async (req, res) => {
   try {
@@ -147,6 +147,15 @@ exports.getCountForm = async (req, res) => {
 exports.getMoyenneNotes = async (req, res) => {
   try {
     const moyenneNotes = await selectAvgNotes();
+    res.status(200).json({ success: true, moyenneNotes });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+exports.getMoyenneNotesZendesk = async (req, res) => {
+  try {
+    const moyenneNotes = await selectAvgNotesZendesk();
     res.status(200).json({ success: true, moyenneNotes });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });

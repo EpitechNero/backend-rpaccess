@@ -19,6 +19,7 @@ router.get('/gettopusers', controller.getTopUsers);
 router.get('/getform', controller.getForm);
 router.get('/getcountform', controller.getCountForm);
 router.get('/getmoyennenotes', controller.getMoyenneNotes);
+router.get('/getmoyennenoteszendesk', controller.getMoyenneNotesZendesk);
 router.get('/getmots', controller.getMots);
 router.get('/getcomments', controller.getComments);
 router.get('/getportail', controller.getPortail);
