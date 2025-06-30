@@ -253,7 +253,7 @@ const selectPortail = async () => {
 
 const selectCommentsPortail = async () => {
   try {
-    const result = await pool.query(`SELECT raison_portail_form FROM form WHERE raison_portail_form IS NOT NULL`);
+    const result = await pool.query(`SELECT portail_form, raison_portail_form FROM form WHERE raison_portail_form IS NOT NULL`);
     return result.rows;
   } catch (err) {
     throw err
@@ -271,7 +271,7 @@ const selectZendesk = async () => {
 
 const selectCommentsZendesk = async () => {
   try {
-    const result = await pool.query(`SELECT raison_zendesk_form FROM form WHERE raison_zendesk_form IS NOT NULL`);
+    const result = await pool.query(`SELECT zendesk_form, raison_zendesk_form FROM form WHERE raison_zendesk_form IS NOT NULL`);
     return result.rows;
   } catch (err) {
     throw err
