@@ -3,10 +3,6 @@ const cors = require('cors');
 const path = require('path');
 
 const bodyParser = require('body-parser');
-const YAML = require('yamljs');
-
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = YAML.load(path.join(__dirname, 'swagger.yaml'));
 
 const zendeskRoutes = require('./routes/zendeskRoutes');
 const driveRoutes = require('./routes/driveRoutes');
@@ -20,7 +16,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Documentation Swagger
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.get('/swagger.yaml', (req, res) => {
+  res.setHeader('Content-Type', 'text/yaml');
+  res.sendFile(path.join(__dirname, 'swagger.yaml'));
+});
 
 app.use(requestLogger);
 app.use('/zendesk', zendeskRoutes);
