@@ -10,30 +10,54 @@ servers:
 paths:
   /aa/launch:
     post:
+      tags:
+        - Automation Anywhere
       summary: Lance un bot Automation Anywhere
-      description: Lance un bot Automation Anywhere avec les paramètres fournis.
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              properties:
-                bot:
-                  type: object
-                  description: Objet contenant les informations du bot à lancer
-                botInput:
-                  type: object
-                  description: Paramètres d'entrée pour le bot
       responses:
-        '200':
-          description: Bot lancé avec succès
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-        '500':
-          description: Erreur lors du lancement du bot
+        "200":
+          description: Succès
+
+  /google/auth:
+    get:
+      tags:
+        - Google
+      summary: Authentifie avec Google
+      responses:
+        "200":
+          description: Authentifié
+
+  /zendesk/ticket:
+    post:
+      tags:
+        - Zendesk
+      summary: Crée un ticket Zendesk
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "201":
+          description: Ticket créé
+
+  /psql/query:
+    post:
+      tags:
+        - PSQL
+      summary: Exécute une requête PSQL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Résultat de la requête
