@@ -1,0 +1,39 @@
+openapi: 3.0.0
+info:
+  title: API de RPAccess
+  version: 1.0.0
+  description: Documentation de l'API de RPAccess.
+servers:
+  - url: https://backend-rpaccess-production.up.railway.app
+    description: Serveur de production
+
+paths:
+  /aa/launch:
+    post:
+      summary: Lance un bot Automation Anywhere
+      description: Lance un bot Automation Anywhere avec les paramètres fournis.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bot:
+                  type: object
+                  description: Objet contenant les informations du bot à lancer
+                botInput:
+                  type: object
+                  description: Paramètres d'entrée pour le bot
+      responses:
+        '200':
+          description: Bot lancé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          description: Erreur lors du lancement du bot
