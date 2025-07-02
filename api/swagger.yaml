@@ -8,6 +8,607 @@ servers:
     description: Serveur de production
 
 paths:
+  /db/getusers:
+    get:
+      tags:
+        - PSQL
+      summary: Récupère la liste complète des informations de tous les utilisateurs
+      responses:
+        "200":
+          description: Liste des utilisateurs récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id_user:
+                      type: integer
+                    nom_user:
+                      type: string
+                    prenom_user:
+                      type: string
+                    email_user:
+                      type: string
+                    est_responsable_user:
+                      type: boolean
+                    service_user:
+                      type: string
+                example:
+                  - id_user: 1
+                    nom_user: Abou-Rjeily
+                    prenom_user: Christophe
+                    email_user: christophe.abou-rjeily@veolia.com
+                    est_responsable_user: true
+                    service_user: "Comptabilité Générale"
+        "500":
+          description: Erreur interne du serveur
+
+  /db/getcentres:
+    get:
+      tags:
+        - PSQL
+      summary: Récupère la liste des centres de coûts
+      responses:
+        "200":
+          description: Liste des centres de coûts récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                  id_centredecout:
+                    type: string
+                  example:
+                    - id_centredecout: "67620000CG"
+                    - id_centredecout: "67620000ZG"
+        "500":
+          description: Erreur interne du serveur
+
+  /db/geteotp:
+    get:
+      tags:
+        - PSQL
+      summary: Récupère la liste des EOTP
+      responses:
+        "200":
+          description: Liste des EOTP récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id_eotp:
+                      type: string
+                    example:
+                      - id_eotp: "67W1/00001-1"
+                      - id_eotp: "67W1/999AB-1"
+        "500":
+          description: Erreur interne du serveur
+
+  /db/getlist:
+    get:
+      tags:
+        - PSQL
+      summary: Récupère la liste des bots avec leurs informations et différents paramètres (input)
+      responses:
+        "200":
+          description: Liste des bots récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id_bot:
+                      type: integer
+                    title_list:
+                      type: string
+                    description_list:
+                      type: string
+                    service_list:
+                      type: string
+                    link_list:
+                      type: string
+                    bot_id_list:
+                      type: integer
+                    vinput1_list:
+                      type: string
+                    vinput1type_list:
+                      type: string
+                    vinput1descrip_list:
+                      type: string
+                    vinput1oblig_list:
+                      type: string
+                    vinput2_list:
+                      type: string
+                    vinput2type_list:
+                      type: string
+                    vinput2descrip_list:
+                      type: string
+                    vinput2oblig_list:
+                      type: string
+                    vinput3_list:
+                      type: string
+                    vinput3type_list:
+                      type: string
+                    vinput3descrip_list:
+                      type: string
+                    vinput3oblig_list:
+                      type: string
+        "500":
+          description: Erreur interne du serveur
+
+  /db/getactivity:
+    get:
+      tags:
+        - PSQL
+      summary: Récupère la liste des activités
+      responses:
+        "200":
+          description: Liste des activités récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id_activity:
+                      type: integer
+                    region_maquettes:
+                      type: string
+                    territpoi_activity:
+                      type: string
+                    typologie_maquettes:
+                      type: string
+                    origine_maquettes:
+                      type: string
+                    destination_maquettes:
+                      type: string
+                    nomenclature_maquettes:
+                      type: string
+                    service_maquettes:
+                      type: string
+                example:
+                  - id_activity: 1
+                    region_maquettes: '60 - Nationale'
+                    territpoi_activity: 'SIEGE'
+                    typologie_maquettes: 'PIVOT OD'
+                    origine_maquettes: '1EJox_v4unlSDAzp2KQXuLnfTp38IND0GkP0eUKBYTCg'
+                    destination_maquettes: '1FQoIalBSTrT-B1DFgSoHGjO5IVqsDSAW'
+                    nomenclature_maquettes: '60SIEGE - PIVOT OD'
+                    service_maquettes: 'Finance'
+        "500":
+          description: Erreur interne du serveur
+
+  /db/getmaquettes:
+    get:
+      tags:
+        - PSQL
+      summary: Récupère la liste des maquettes
+      responses:
+        "200":
+          description: Liste des maquettes récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "500":
+          description: Erreur interne du serveur
+
+  /db/getreferentielmaquettes:
+    get:
+      tags:
+        - PSQL
+      summary: Récupère le référentiel des maquettes
+      responses:
+        "200":
+          description: Référentiel des maquettes récupéré avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "500":
+          description: Erreur interne du serveur
+
+  /db/getbot:
+    get:
+      tags:
+        - PSQL
+      summary: Statistiques d'utilisation des bots (paramètres start, end)
+      parameters:
+        - in: query
+          name: start
+          schema:
+            type: string
+          required: false
+          description: Date de début (YYYY-MM-DD)
+        - in: query
+          name: end
+          schema:
+            type: string
+          required: false
+          description: Date de fin (YYYY-MM-DD)
+      responses:
+        "200":
+          description: Statistiques récupérées avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "500":
+          description: Erreur interne du serveur
+
+  /db/getusagebyprocess:
+    get:
+      tags:
+        - PSQL
+      summary: Statistiques d'utilisation par process (paramètres start, end)
+      parameters:
+        - in: query
+          name: start
+          schema:
+            type: string
+          required: false
+          description: Date de début (YYYY-MM-DD)
+        - in: query
+          name: end
+          schema:
+            type: string
+          required: false
+          description: Date de fin (YYYY-MM-DD)
+      responses:
+        "200":
+          description: Statistiques récupérées avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "500":
+          description: Erreur interne du serveur
+
+  /db/getusagebymonth:
+    get:
+      tags:
+        - PSQL
+      summary: Statistiques d'utilisation par mois
+      responses:
+        "200":
+          description: Statistiques récupérées avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "500":
+          description: Erreur interne du serveur
+
+  /db/getmaquettesbyregion:
+    get:
+      tags:
+        - PSQL
+      summary: Statistiques de maquettes par région (paramètres start, end)
+      parameters:
+        - in: query
+          name: start
+          schema:
+            type: string
+          required: false
+          description: Date de début (YYYY-MM-DD)
+        - in: query
+          name: end
+          schema:
+            type: string
+          required: false
+          description: Date de fin (YYYY-MM-DD)
+      responses:
+        "200":
+          description: Statistiques récupérées avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "500":
+          description: Erreur interne du serveur
+
+  /db/gettopusers:
+    get:
+      tags:
+        - PSQL
+      summary: Top utilisateurs (paramètres start, end)
+      parameters:
+        - in: query
+          name: start
+          schema:
+            type: string
+          required: false
+          description: Date de début (YYYY-MM-DD)
+        - in: query
+          name: end
+          schema:
+            type: string
+          required: false
+          description: Date de fin (YYYY-MM-DD)
+      responses:
+        "200":
+          description: Top utilisateurs récupéré avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "500":
+          description: Erreur interne du serveur
+
+  /db/getform:
+    get:
+      tags:
+        - PSQL
+      summary: Récupère tous les formulaires
+      responses:
+        "200":
+          description: Liste des formulaires récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "500":
+          description: Erreur interne du serveur
+
+  /db/getcountform:
+    get:
+      tags:
+        - PSQL
+      summary: Récupère le nombre total de formulaires
+      responses:
+        "200":
+          description: Nombre de formulaires récupéré avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  countForm:
+                    type: object
+        "500":
+          description: Erreur interne du serveur
+
+  /db/getmoyennenotes:
+    get:
+      tags:
+        - PSQL
+      summary: Récupère la moyenne des notes des formulaires
+      responses:
+        "200":
+          description: Moyenne des notes récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  moyenneNotes:
+                    type: object
+        "500":
+          description: Erreur interne du serveur
+
+  /db/getmoyennenoteszendesk:
+    get:
+      tags:
+        - PSQL
+      summary: Récupère la moyenne des notes Zendesk des formulaires
+      responses:
+        "200":
+          description: Moyenne des notes Zendesk récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  moyenneNotes:
+                    type: object
+        "500":
+          description: Erreur interne du serveur
+
+  /db/getmots:
+    get:
+      tags:
+        - PSQL
+      summary: Récupère les mots les plus fréquents dans les formulaires
+      responses:
+        "200":
+          description: Liste des mots récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "500":
+          description: Erreur interne du serveur
+
+  /db/getcomments:
+    get:
+      tags:
+        - PSQL
+      summary: Récupère les commentaires des formulaires
+      responses:
+        "200":
+          description: Liste des commentaires récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "500":
+          description: Erreur interne du serveur
+
+  /db/getportail:
+    get:
+      tags:
+        - PSQL
+      summary: Récupère les statistiques d'utilisation du portail
+      responses:
+        "200":
+          description: Statistiques du portail récupérées avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "500":
+          description: Erreur interne du serveur
+
+  /db/getcommentsportail:
+    get:
+      tags:
+        - PSQL
+      summary: Récupère les commentaires liés au portail
+      responses:
+        "200":
+          description: Commentaires du portail récupérés avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "500":
+          description: Erreur interne du serveur
+
+  /db/getzendesk:
+    get:
+      tags:
+        - PSQL
+      summary: Récupère les statistiques d'utilisation de Zendesk
+      responses:
+        "200":
+          description: Statistiques Zendesk récupérées avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "500":
+          description: Erreur interne du serveur
+
+  /db/getcommentszendesk:
+    get:
+      tags:
+        - PSQL
+      summary: Récupère les commentaires liés à Zendesk
+      responses:
+        "200":
+          description: Commentaires Zendesk récupérés avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "500":
+          description: Erreur interne du serveur
+
+  /db/getservices:
+    get:
+      tags:
+        - PSQL
+      summary: Récupère les statistiques d'utilisation par service
+      responses:
+        "200":
+          description: Statistiques par service récupérées avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        "500":
+          description: Erreur interne du serveur
+
+  /db/getmoyenneservice:
+    get:
+      tags:
+        - PSQL
+      summary: Récupère la moyenne des notes par service
+      responses:
+        "200":
+          description: Moyenne des notes par service récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  moyenneService:
+                    type: object
+        "500":
+          description: Erreur interne du serveur
+
+  /db/create-form:
+    post:
+      tags:
+        - PSQL
+      summary: Crée un nouveau formulaire
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "201":
+          description: Formulaire créé avec succès
+        "500":
+          description: Erreur interne du serveur
+
+  /db/create-activity:
+    post:
+      tags:
+        - PSQL
+      summary: Crée une nouvelle activité
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "201":
+          description: Activité créée avec succès
+        "500":
+          description: Erreur interne du serveur
+
   /aa/launch:
     post:
       tags:
@@ -19,45 +620,185 @@ paths:
           application/json:
             schema:
               type: object
+              properties:
+                bot:
+                  type: object
+                  description: Objet contenant les informations du bot à lancer
+                botInput:
+                  type: object
+                  description: Données d'entrée pour le bot
       responses:
         "200":
-          description: Succès
+          description: Bot lancé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: Erreur lors du lancement du bot
 
-  /google/auth:
+  /aa/check:
+    post:
+      tags:
+        - Automation Anywhere
+      summary: Vérifie le statut des bots Automation Anywhere
+      responses:
+        "200":
+          description: Statut des bots récupéré avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Erreur lors de la récupération du statut des bots
+
+  /drive/create-maquette:
+    post:
+      tags:
+        - Drive
+      summary: Copie un fichier dans Google Drive et retourne un identifiant de tâche
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fileId:
+                  type: string
+                  description: ID du fichier à copier
+                targetFolderId:
+                  type: string
+                  description: ID du dossier cible
+                filename:
+                  type: string
+                  description: Nom du fichier copié
+      responses:
+        "202":
+          description: Tâche de copie lancée, retourne l'identifiant de la tâche
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  taskId:
+                    type: string
+        "500":
+          description: Erreur lors de la copie du fichier
+
+  /drive/task-status/{taskId}:
     get:
       tags:
-        - Google
-      summary: Authentifie avec Google
+        - Drive
+      summary: Récupère le statut d'une tâche de copie de fichier
+      parameters:
+        - in: path
+          name: taskId
+          required: true
+          schema:
+            type: string
+          description: Identifiant de la tâche
       responses:
         "200":
-          description: Authentifié
+          description: Statut de la tâche récupéré avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  copiedFileId:
+                    type: string
+        "404":
+          description: Tâche introuvable
+        "500":
+          description: Erreur lors de la récupération du statut
 
-  /zendesk/ticket:
+  /drive/upload-contrat:
+    post:
+      tags:
+        - Drive
+      summary: Upload un fichier contrat (CSV) dans Google Drive
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Fichier à uploader (CSV)
+                filename:
+                  type: string
+                  description: Nom du fichier à enregistrer dans Drive
+      responses:
+        "200":
+          description: Fichier uploadé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  fileId:
+                    type: string
+        "400":
+          description: Aucun fichier téléchargé
+        "500":
+          description: Erreur lors de l'upload du fichier
+
+  /zendesk/create-ticket:
     post:
       tags:
         - Zendesk
-      summary: Crée un ticket Zendesk
+      summary: Crée un ticket Zendesk avec ou sans pièces jointes
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
-      responses:
-        "201":
-          description: Ticket créé
-
-  /psql/query:
-    post:
-      tags:
-        - PSQL
-      summary: Exécute une requête PSQL
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
+              properties:
+                subject:
+                  type: string
+                  description: Sujet du ticket
+                body:
+                  type: string
+                  description: Description du ticket
+                name:
+                  type: string
+                  description: Nom du demandeur
+                email:
+                  type: string
+                  description: Email du demandeur
+                priority:
+                  type: string
+                  description: Priorité du ticket (low, normal, high, urgent)
+                type:
+                  type: string
+                  description: Type du ticket (question, incident, problem, task)
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: Pièces jointes (optionnel)
       responses:
         "200":
-          description: Résultat de la requête
+          description: Ticket créé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: Erreur lors de la création du ticket
