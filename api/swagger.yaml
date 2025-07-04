@@ -25,16 +25,22 @@ paths:
                   properties:
                     id_user:
                       type: integer
+                      description: Identifiant de l'utilisateur dans la base de données
                     nom_user:
                       type: string
+                      description: Nom de l'utilisateur
                     prenom_user:
                       type: string
+                      description: Prénom de l'utilisateur
                     email_user:
                       type: string
+                      description: Adresse e-mail de l'utilisateur
                     est_responsable_user:
                       type: boolean
+                      description: Indique si l'utilisateur est responsable (Vrai/Faux)
                     service_user:
                       type: string
+                      description: Service de l'utilisateur
                 example:
                   - id_user: 1
                     nom_user: Abou-Rjeily
@@ -62,6 +68,7 @@ paths:
                   properties:
                   id_centredecout:
                     type: string
+                    description: Identifiant du centre de coût
                   example:
                     - id_centredecout: "67620000CG"
                     - id_centredecout: "67620000ZG"
@@ -85,6 +92,7 @@ paths:
                   properties:
                     id_eotp:
                       type: string
+                      description: Identifiant de l'EOTP
                     example:
                       - id_eotp: "67W1/00001-1"
                       - id_eotp: "67W1/999AB-1"
@@ -108,40 +116,58 @@ paths:
                   properties:
                     id_bot:
                       type: integer
+                      description: Identifiant du bot dans la base de données
                     title_list:
                       type: string
+                      description: Titre du bot
                     description_list:
                       type: string
+                      description: Description du bot
                     service_list:
                       type: string
+                      description: Service associé au bot
                     link_list:
                       type: string
+                      description: Lien vers le forumlaire associé au bot
                     bot_id_list:
                       type: integer
+                      description: Identifiant du bot dans Automation Anywhere
                     vinput1_list:
                       type: string
+                      description: Premier input du bot (O/N)
                     vinput1type_list:
                       type: string
+                      description: Type du premier input du bot
                     vinput1descrip_list:
                       type: string
+                      description: Description du premier input du bot
                     vinput1oblig_list:
                       type: string
+                      description: Indique si le premier input est obligatoire (O/N)
                     vinput2_list:
                       type: string
+                      description: Deuxième input du bot (O/N)
                     vinput2type_list:
                       type: string
+                      description: Type du deuxième input du bot
                     vinput2descrip_list:
                       type: string
+                      description: Description du deuxième input du bot
                     vinput2oblig_list:
                       type: string
+                      description: Indique si le deuxième input est obligatoire (O/N)
                     vinput3_list:
                       type: string
+                      description: Troisième input du bot (O/N)
                     vinput3type_list:
                       type: string
+                      description: Type du troisième input du bot
                     vinput3descrip_list:
                       type: string
+                      description: Description du troisième input du bot
                     vinput3oblig_list:
                       type: string
+                      description: Indique si le troisième input est obligatoire (O/N)
         "500":
           description: Erreur interne du serveur
 
@@ -162,29 +188,43 @@ paths:
                   properties:
                     id_activity:
                       type: integer
-                    region_maquettes:
+                      description: Identifiant de l'activité
+                    nom_activity:
                       type: string
-                    territpoi_activity:
+                      description: Nom de la personne liée à l'activité
+                    prenom_activity:
                       type: string
-                    typologie_maquettes:
+                      description: Prénom de la personne liée à l'activité
+                    email_activity:
                       type: string
-                    origine_maquettes:
+                      description: Email de la personne liée à l'activité
+                    requete_activity:
                       type: string
-                    destination_maquettes:
+                      nullable: true
+                      description: Requête ou description de l'activité
+                    date_activity:
                       type: string
-                    nomenclature_maquettes:
+                      format: date-time
+                      description: Date de l'activité (ISO 8601)
+                    type_activity:
                       type: string
-                    service_maquettes:
+                      description: Type de l'activité
+                    process_activity:
                       type: string
+                      description: Processus concerné par l'activité
+                    region_activity:
+                      type: string
+                      description: Région concernée par l'activité
                 example:
                   - id_activity: 1
-                    region_maquettes: '60 - Nationale'
-                    territpoi_activity: 'SIEGE'
-                    typologie_maquettes: 'PIVOT OD'
-                    origine_maquettes: '1EJox_v4unlSDAzp2KQXuLnfTp38IND0GkP0eUKBYTCg'
-                    destination_maquettes: '1FQoIalBSTrT-B1DFgSoHGjO5IVqsDSAW'
-                    nomenclature_maquettes: '60SIEGE - PIVOT OD'
-                    service_maquettes: 'Finance'
+                    nom_activity: "Renaud GILLIERS"
+                    prenom_activity: "Renaud GILLIERS"
+                    email_activity: "renaud.gilliers@veolia.com"
+                    requete_activity: null
+                    date_activity: "2025-05-21T00:00:00.000Z"
+                    type_activity: "maquette"
+                    process_activity: "Maquette"
+                    region_activity: "48 - Specialité"
         "500":
           description: Erreur interne du serveur
 
@@ -202,6 +242,41 @@ paths:
                 type: array
                 items:
                   type: object
+                  properties:
+                    id_maquettes:
+                      type: integer
+                      description: Identifiant de la maquette dans la base de données
+                    region_maquettes:
+                      type: string
+                      description: Région associée à la maquette
+                    territoire_maquettes:
+                      type: string
+                      description: Territoire de la maquette
+                    typologie_maquettes:
+                      type: string
+                      description: Type de la maquette
+                    origine_maquettes:
+                      type: string
+                      description: Lien Google Drive de la maquette d'origine
+                    destination_maquettes:
+                      type: string
+                      description: Lien Google Drive de la maquette de destination
+                    nomenclature_maquettes:
+                      type: string
+                      description: Nomenclature de la maquette
+                    service_maquettes:
+                      type: string
+                      description: Service associé à la maquette
+                example:
+                  - id_maquettes: 1
+                    region_maquettes: "60 - Nationale"
+                    territoire_maquettes: "SIEGE"
+                    typologie_maquettes: "PIVOT OD"
+                    origine_maquettes: "1EJox_v4unlSDAzp2KQXuLnfTp38IND0GkP0eUKBYTCg"
+                    destination_maquettes: "1FQoIalBSTrT-B1DFgSoHGjO5IVqsDSAW"
+                    nomenclature_maquettes: "60SIEGE - PIVOT OD"
+                    service_maquettes: "Finance"
+
         "500":
           description: Erreur interne du serveur
 
@@ -219,6 +294,28 @@ paths:
                 type: array
                 items:
                   type: object
+                  properties:
+                    id_referentiel_maquettes:
+                      type: integer
+                      description: Identifiant du référentiel de maquette
+                    service_referentiel_maquettes:
+                      type: string
+                      description: Service associé au référentiel de maquette
+                    region_referentiel_maquettes:
+                      type: string
+                      description: Région associée au référentiel de maquette
+                    territoire_referentiel_maquettes:
+                      type: string
+                      description: Territoire du référentiel de maquette
+                    typologie_referentiel_maquettes:
+                      type: string
+                      description: Typologie du référentiel de maquette
+                example:
+                  - id_referentiel_maquettes: 1
+                    service_referentiel_maquettes: "Auxiliaire"
+                    region_referentiel_maquettes: "48 - Specialité"
+                    territoire_referentiel_maquettes: "SPE AAAAMMJJ"
+                    typologie_referentiel_maquettes: "PIVOT CLT"
         "500":
           description: Erreur interne du serveur
 
@@ -296,6 +393,20 @@ paths:
                 type: array
                 items:
                   type: object
+                  properties:
+                    month:
+                      type: string
+                      description: Mois au format YYYY-MM
+                    count:
+                      type: integer
+                      description: Nombre d'utilisations pour le mois
+                example:
+                  - month: "2025-05"
+                    count: 67
+                  - month: "2025-06"
+                    count: 246
+                  - month: "2025-07"
+                    count: 60
         "500":
           description: Erreur interne du serveur
 
@@ -373,6 +484,137 @@ paths:
                 type: array
                 items:
                   type: object
+                  properties:
+                    id_form:
+                      type: integer
+                      description: Identifiant du formulaire
+                    note_form:
+                      type: integer
+                      description: Note du formulaire
+                    mot1_form:
+                      type: string
+                      description: Premier mot du formulaire
+                    mot2_form:
+                      type: string
+                      description: Deuxième mot du formulaire
+                    mot3_form:
+                      type: string
+                      description: Troisième mot du formulaire
+                    portail_form:
+                      type: string
+                      description: Portail utilisé
+                    raison_portail_form:
+                      type: string
+                      nullable: true
+                      description: Raison du choix du portail
+                    zendesk_form:
+                      type: string
+                      description: Zendesk utilisé
+                    raison_zendesk_form:
+                      type: string
+                      nullable: true
+                      description: Raison du choix de Zendesk
+                    service_reac_rever_form:
+                      type: integer
+                      nullable: true
+                      description: Réactivité service Reversé
+                    service_exper_rever_form:
+                      type: integer
+                      nullable: true
+                      description: Expérience service Reversé
+                    service_reac_amoa_form:
+                      type: integer
+                      nullable: true
+                      description: Réactivité service AMOA
+                    service_exper_amoa_form:
+                      type: integer
+                      nullable: true
+                      description: Expérience service AMOA
+                    service_reac_actbanc_form:
+                      type: integer
+                      nullable: true
+                      description: Réactivité service Activité Bancaire
+                    service_exper_actbanc_form:
+                      type: integer
+                      nullable: true
+                      description: Expérience service Activité Bancaire
+                    service_reac_depspe_form:
+                      type: integer
+                      nullable: true
+                      description: Réactivité service Dépenses Spécifiques
+                    service_exper_depspe_form:
+                      type: integer
+                      nullable: true
+                      description: Expérience service Dépenses Spécifiques
+                    service_reac_caubanc_form:
+                      type: integer
+                      nullable: true
+                      description: Réactivité service Caution Bancaire
+                    service_exper_caubanc_form:
+                      type: integer
+                      nullable: true
+                      description: Expérience service Caution Bancaire
+                    service_reac_comptag_form:
+                      type: integer
+                      nullable: true
+                      description: Réactivité service Comptabilité Générale
+                    service_exper_comptag_form:
+                      type: integer
+                      nullable: true
+                      description: Expérience service Comptabilité Générale
+                    service_reac_fiscal_form:
+                      type: integer
+                      nullable: true
+                      description: Réactivité service Fiscalité
+                    service_exper_fiscal_form:
+                      type: integer
+                      nullable: true
+                      description: Expérience service Fiscalité
+                    mail_form:
+                      type: string
+                      description: Email de l'utilisateur
+                    region_form:
+                      type: string
+                      description: Région de l'utilisateur
+                    service_form:
+                      type: string
+                      description: Service de l'utilisateur
+                    commentaire_form:
+                      type: string
+                      description: Commentaire du formulaire
+                    note_zendesk_form:
+                      type: integer
+                      nullable: true
+                      description: Note Zendesk du formulaire
+                example:
+                  - id_form: 27
+                    note_form: 5
+                    mot1_form: "Professionnel"
+                    mot2_form: "Réactif"
+                    mot3_form: "A l'écoute"
+                    portail_form: "Oui"
+                    raison_portail_form: null
+                    zendesk_form: "Non"
+                    raison_zendesk_form: "Nous préférons avoir des contacts directs !"
+                    service_reac_rever_form: null
+                    service_exper_rever_form: null
+                    service_reac_amoa_form: 5
+                    service_exper_amoa_form: 5
+                    service_reac_actbanc_form: null
+                    service_exper_actbanc_form: null
+                    service_reac_depspe_form: null
+                    service_exper_depspe_form: null
+                    service_reac_caubanc_form: null
+                    service_exper_caubanc_form: null
+                    service_reac_comptag_form: null
+                    service_exper_comptag_form: null
+                    service_reac_fiscal_form: 5
+                    service_exper_fiscal_form: 5
+                    mail_form: "Gilles.miro@veolia.com"
+                    region_form: "Nationale"
+                    service_form: "Finance"
+                    commentaire_form: "Continuez !"
+                    note_zendesk_form: null
         "500":
           description: Erreur interne du serveur
 
@@ -393,6 +635,14 @@ paths:
                     type: boolean
                   countForm:
                     type: object
+                    properties:
+                      count:
+                        type: string
+                        description: Nombre total de formulaires remplis
+                example:
+                  success: true
+                  countForm:
+                    count: "30"
         "500":
           description: Erreur interne du serveur
 
@@ -586,6 +836,88 @@ paths:
           application/json:
             schema:
               type: object
+              properties:
+                note_form:
+                  type: integer
+                  description: Note du formulaire
+                mot1_form:
+                  type: string
+                  description: Premier mot du formulaire
+                mot2_form:
+                  type: string
+                  description: Deuxième mot du formulaire
+                mot3_form:
+                  type: string
+                  description: Troisième mot du formulaire
+                portail_form:
+                  type: string
+                  description: Portail utilisé
+                raison_portail_form:
+                  type: string
+                  description: Raison du choix du portail
+                zendesk_form:
+                  type: string
+                  description: Zendesk utilisé
+                raison_zendesk_form:
+                  type: string
+                  description: Raison du choix de Zendesk
+                service_reac_rever_form:
+                  type: integer
+                  description: Réactivité service Reversé
+                service_exper_rever_form:
+                  type: integer
+                  description: Expérience service Reversé
+                service_reac_amoa_form:
+                  type: integer
+                  description: Réactivité service AMOA
+                service_exper_amoa_form:
+                  type: integer
+                  description: Expérience service AMOA
+                service_reac_actbanc_form:
+                  type: integer
+                  description: Réactivité service Activité Bancaire
+                service_exper_actbanc_form:
+                  type: integer
+                  description: Expérience service Activité Bancaire
+                service_reac_depspe_form:
+                  type: integer
+                  description: Réactivité service Dépenses Spécifiques
+                service_exper_depspe_form:
+                  type: integer
+                  description: Expérience service Dépenses Spécifiques
+                service_reac_caubanc_form:
+                  type: integer
+                  description: Réactivité service Caution Bancaire
+                service_exper_caubanc_form:
+                  type: integer
+                  description: Expérience service Caution Bancaire
+                service_reac_comptag_form:
+                  type: integer
+                  description: Réactivité service Comptabilité Générale
+                service_exper_comptag_form:
+                  type: integer
+                  description: Expérience service Comptabilité Générale
+                service_reac_fiscal_form:
+                  type: integer
+                  description: Réactivité service Fiscalité
+                service_exper_fiscal_form:
+                  type: integer
+                  description: Expérience service Fiscalité
+                mail_form:
+                  type: string
+                  description: Email de l'utilisateur
+                region_form:
+                  type: string
+                  description: Région de l'utilisateur
+                service_form:
+                  type: string
+                  description: Service de l'utilisateur
+                commentaire_form:
+                  type: string
+                  description: Commentaire du formulaire
+                note_zendesk_form:
+                  type: integer
+                  description: Note Zendesk du formulaire
       responses:
         "201":
           description: Formulaire créé avec succès
@@ -603,6 +935,32 @@ paths:
           application/json:
             schema:
               type: object
+              properties:
+                nom_activity:
+                  type: string
+                  description: Nom de la personne liée à l'activité
+                prenom_activity:
+                  type: string
+                  description: Prénom de la personne liée à l'activité
+                email_activity:
+                  type: string
+                  description: Email de la personne liée à l'activité
+                requete_activity:
+                  type: string
+                  description: Requête ou description de l'activité
+                date_activity:
+                  type: string
+                  format: date
+                  description: Date de l'activité (YYYY-MM-DD)
+                type_activity:
+                  type: string
+                  description: Type de l'activité
+                process_activity:
+                  type: string
+                  description: Processus concerné par l'activité
+                region_activity:
+                  type: string
+                  description: Région concernée par l'activité
       responses:
         "201":
           description: Activité créée avec succès
@@ -762,7 +1120,7 @@ paths:
       requestBody:
         required: true
         content:
-          multipart/form-data:
+          application/json:
             schema:
               type: object
               properties:
