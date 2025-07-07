@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const { selectUsers, selectCentreDesCouts, selectEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices, selectForm } = require('../services/psqlService.js');
+const { selectUsers, selectCentreDesCouts, selectEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectBaseDocu, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices, selectForm } = require('../services/psqlService.js');
 
 exports.getUsers = async (req, res) => {
   try {
@@ -59,6 +59,24 @@ exports.getReferentielMaquettes = async (req, res) => {
   try {
     const referentiel_maquettes = await selectReferentielMaquettes();
     res.status(200).json(referentiel_maquettes);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getDossiers = async (req, res) => {
+  try {
+    const dossiers = await selectDossiers();
+    res.status(200).json(dossiers);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getBaseDocu = async (req, res) => {
+  try {
+    const baseDocu = await selectBaseDocu();
+    res.status(200).json(baseDocu);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -9,6 +9,8 @@ router.get('/getlist', controller.getList);
 router.get('/getactivity', controller.getActivity);
 router.get('/getmaquettes', controller.getMaquettes);
 router.get('/getreferentielmaquettes', controller.getReferentielMaquettes);
+router.get('/getdossiers', controller.getDossiers);
+router.get('/getbasedocu', controller.getBaseDocu);
 
 router.get('/getbot', controller.getBot);
 router.get('/getusagebyprocess', controller.getUsageByProcess);

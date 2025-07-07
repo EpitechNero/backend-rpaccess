@@ -78,6 +78,28 @@ const selectReferentielMaquettes = async () => {
   }
 };
 
+const selectDossiers = async () => {
+  try {
+    const res = await pool.query('SELECT societe_dossiers, annee_dossiers, region_dossiers, titre_dossiers, link_dossiers FROM dossiers');
+    console.log('✅ Dossiers permanents récupérés avec succès');
+    return res.rows;
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des dossiers permanents :', error);
+    throw error;
+  }
+};
+
+const selectBaseDocu = async () => {
+  try {
+    const res = await pool.query('SELECT pole_basedocu, service_basedocu, projet_basedocu, sousprojet_basedocu, type_basedocu, titre_basedocu, link_basedocu, date_basedocu FROM basedocu');
+    console.log('✅ Base documentaire récupérée avec succès');
+    return res.rows;
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération de la base documentaire :', error);
+    throw error;
+  }
+};
+
 const insertActivity = async (activity) => {
   try {
     const res = await pool.query('INSERT INTO activity (type_activity, nom_activity, prenom_activity, email_activity, process_activity, region_activity, date_activity) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
@@ -384,4 +406,4 @@ const insertForm = async (formData) => {
   }
 };
 
-module.exports = { selectUsers, selectCentreDesCouts, selectEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm };
+module.exports = { selectUsers, selectCentreDesCouts, selectEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm };
