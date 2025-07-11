@@ -11,7 +11,7 @@ const psqlRoutes = require('./routes/psqlRoutes');
 const requestLogger = require('./middlewares/requestLogger');
 
 const app = express();
-app.use(cors({ origin: ['https://fr-ist-isteau-rpaccef.web.app'], methods: ['GET', 'POST', 'OPTIONS'] }));
+app.use(cors({ origin: ['https://fr-ist-isteau-rpaccef.web.app','http://localhost:4200'], methods: ['GET', 'POST', 'OPTIONS'] }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
