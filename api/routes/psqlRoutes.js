@@ -3,7 +3,7 @@ const router = express.Router();
 const controller = require('../controllers/psqlController');
 const jwtMiddleware = require('../middlewares/jwtMiddleware');
 
-router.get('/getusers', jwtMiddleware, controller.getUsers);
+router.get('/getusers', controller.getUsers);
 router.get('/getcentres', controller.getCentreDesCouts);
 router.get('/geteotp', controller.getEOTP);
 router.get('/getlist', controller.getList);
