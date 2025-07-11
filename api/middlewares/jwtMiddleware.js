@@ -10,9 +10,6 @@ async function authMiddleware(req, res, next) {
     
     req.user = decodedToken;
     next();
-
-    console.error(error);
-    return res.status(401).json({ message: 'Token invalide' });
 }
 
 module.exports = authMiddleware;
