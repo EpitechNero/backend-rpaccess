@@ -37,11 +37,10 @@ async function authMiddleware(req, res, next) {
 
         console.log('Utilisateur authentifié:', req.user);
 
+        next();
     } catch (error) {
         return res.status(401).json({ message: 'Token invalide', error: error.message });
     }
-
-    next();
 }
 
 module.exports = authMiddleware;
