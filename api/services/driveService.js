@@ -31,7 +31,7 @@ async function copyDriveFile(fileId, targetFolderId, filename) {
 }
 
 async function uploadDriveFile(fileBuffer, fileName) {
-  FOLDER_ID = '1mA0BPvk3ds7yCnm-9aghf-dmabTnv-pD';
+  FOLDER_ID = '1O6Q97Zj04Iya_G-SupyiM96p1uSDicsP';
   try {
     const drive = google.drive({ version: 'v3', auth: oAuth2Client });
     const bufferStream = new Readable();
