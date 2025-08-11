@@ -445,4 +445,80 @@ const insertForm = async (formData) => {
   }
 };
 
-module.exports = { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm };
+async function syncSheetToDB(fileId, range, tableName) {
+  const sheetData = await readGoogleSheet(fileId, range);
+
+  if (sheetData.length === 0) {
+    throw new Error('Aucune donnée à insérer');
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    await client.query(`TRUNCATE TABLE ${tableName} RESTART IDENTITY`);
+
+    const columns = Object.keys(sheetData[0]);
+    const placeholders = columns.map((_, i) => `$${i + 1}`).join(',');
+
+    for (const row of sheetData) {
+      const values = columns.map(col => row[col]);
+      await client.query(
+        `INSERT INTO ${tableName} (${columns.join(',')}) VALUES (${placeholders})`,
+        values
+      );
+    }
+
+    await client.query('COMMIT');
+    console.log(`✅ Table "${tableName}" mise à jour avec ${sheetData.length} lignes.`);
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
+async function readGoogleSheet(fileId, range) {
+  try {
+    const sheets = google.sheets({ version: 'v4', auth: oAuth2Client });
+
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: fileId,
+      range,
+    });
+
+    const rows = response.data.values;
+    if (!rows || rows.length === 0) {
+      logger.warn('⚠️ Aucune donnée trouvée dans la feuille Google Sheet', {
+        fileId,
+        range,
+      });
+      return [];
+    }
+
+    const headers = rows[0];
+    const data = rows.slice(1).map(row => {
+      const obj = {};
+      headers.forEach((header, i) => {
+        obj[header] = row[i] || null;
+      });
+      return obj;
+    });
+
+    logger.info('✅ Données extraites depuis Google Sheets', {
+      nbRows: data.length,
+      fileId,
+    });
+
+    return data;
+  } catch (error) {
+    logger.error('❌ Erreur lors de la lecture du Google Sheet', {
+      error: error.response?.data || error.message,
+      fileId,
+    });
+    throw error;
+  }
+}
+
+module.exports = { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm, syncSheetToDB };

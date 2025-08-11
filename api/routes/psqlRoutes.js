@@ -38,5 +38,6 @@ router.get('/getmoyenneservice', jwtMiddleware, controller.getMoyenneService);
 router.post('/create-form', jwtMiddleware, controller.setForm);
 
 router.post('/create-activity', jwtMiddleware, controller.setActivity);
+router.post('/sync-tables', jwtMiddleware, controller.syncTableFromSheet);
 
 module.exports = router;

@@ -298,3 +298,20 @@ exports.setForm = async (req, res) => {
     });
   }
 };
+
+exports.syncTableFromSheet = async (req, res) => {
+  const fileId = req.query.id || req.body.id;
+  const range = req.query.range || req.body.range;
+  const tableName = req.query.table || req.body.table;
+
+  if (!fileId || !tableName) {
+    return res.status(400).json({ success: false, error: 'ID de fichier ou nom de table manquant.' });
+  }
+
+  try {
+    await syncSheetToDB(fileId, range, tableName);
+    res.json({ success: true, message: `Table ${tableName} synchronisée.` });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
