@@ -66,4 +66,46 @@ async function uploadDriveFile(fileBuffer, fileName) {
   }
 }
 
-module.exports = { tasks, generateUniqueId, copyDriveFile, uploadDriveFile };
+async function readGoogleSheet(fileId, range = 'Feuille1!A1:Z1000') {
+  try {
+    const sheets = google.sheets({ version: 'v4', auth: oAuth2Client });
+
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: fileId,
+      range,
+    });
+
+    const rows = response.data.values;
+    if (!rows || rows.length === 0) {
+      logger.warn('⚠️ Aucune donnée trouvée dans la feuille Google Sheet', {
+        fileId,
+        range,
+      });
+      return [];
+    }
+
+    const headers = rows[0];
+    const data = rows.slice(1).map(row => {
+      const obj = {};
+      headers.forEach((header, i) => {
+        obj[header] = row[i] || null;
+      });
+      return obj;
+    });
+
+    logger.info('✅ Données extraites depuis Google Sheets', {
+      nbRows: data.length,
+      fileId,
+    });
+
+    return data;
+  } catch (error) {
+    logger.error('❌ Erreur lors de la lecture du Google Sheet', {
+      error: error.response?.data || error.message,
+      fileId,
+    });
+    throw error;
+  }
+}
+
+module.exports = { tasks, generateUniqueId, copyDriveFile, uploadDriveFile, readGoogleSheet };

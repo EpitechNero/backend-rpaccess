@@ -9,5 +9,6 @@ const upload = multer({ storage });
 router.post('/create-maquette', controller.createMaquette);
 router.get('/task-status/:taskId', controller.getTaskStatus);
 router.post('/upload-contrat', upload.single('file'), controller.uploadContrat);
+router.get('/read-gsheet', controller.readGoogleSheetFile)
 
 module.exports = router;

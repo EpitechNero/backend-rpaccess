@@ -1,4 +1,4 @@
-const { tasks, generateUniqueId, copyDriveFile, uploadDriveFile } = require('../services/driveService');
+const { tasks, generateUniqueId, copyDriveFile, uploadDriveFile, readGoogleSheet } = require('../services/driveService');
 
 exports.createMaquette = async (req, res) => {
   const { fileId, targetFolderId, filename } = req.body;
@@ -39,3 +39,18 @@ exports.uploadContrat = async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 };
+
+exports.readGoogleSheetFile = async (req, res) => {
+  const fileId = req.query.id || req.body.id;
+  if (!fileId) {
+    return res.status(400).json({ success: false, error: 'Aucun id correspondant.' });
+  }
+
+  try {
+    const fileData = await readGoogleSheet(fileId);
+    res.status(200).json({ success: true, data: fileData });
+  } catch (err) {
+    console.error('Erreur lors de l\'upload du contrat :', err.message);
+    res.status(500).json({ success: false, error: err.message });
+  }
+}
