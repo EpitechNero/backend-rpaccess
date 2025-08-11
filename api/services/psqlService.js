@@ -12,6 +12,45 @@ const selectUsers = async () => {
   }
 };
 
+const selectUserByMail = async (usermail) => {
+  try {
+    const res = await pool.query('SELECT * FROM users WHERE email_user = $1', [usermail]);
+    console.log('✅ Utilisateur récupéré avec succès');
+    return res.rows[0];
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération de l\'utilisateur :', error);
+    throw error;
+  }
+};
+
+const insertUser = async (userData) => {
+  try {
+    const res = await pool.query(
+      'INSERT INTO users (nom_user, prenom_user, email_user, est_responsable_user, service_user) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [userData.nom, userData.prenom, userData.email, userData.est_responsable, userData.service]
+    );
+    console.log('✅ Utilisateur inséré avec succès', JSON.stringify(res.rows[0]));
+    return res.rows[0];
+  } catch (error) {
+    console.error('❌ Erreur lors de l\'insertion de l\'utilisateur :', error);
+    throw error;
+  }
+};
+
+const updateUser = async (userData) => {
+  try {
+    const res = await pool.query(
+      'UPDATE users SET nom_user = $1, prenom_user = $2, email_user = $3, est_responsable_user = $4, service_user = $5 WHERE id_user = $6 RETURNING *',
+      [userData.nom, userData.prenom, userData.email, userData.est_responsable, userData.service, userData.id]
+    );
+    console.log('✅ Utilisateur mis à jour avec succès', JSON.stringify(res.rows[0]));
+    return res.rows[0];
+  } catch (error) {
+    console.error('❌ Erreur lors de la mise à jour de l\'utilisateur :', error);
+    throw error;
+  }
+};
+
 const selectCentreDesCouts = async () => {
   try {
     const res = await pool.query('SELECT * FROM centredecout');
@@ -406,4 +445,4 @@ const insertForm = async (formData) => {
   }
 };
 
-module.exports = { selectUsers, selectCentreDesCouts, selectEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm };
+module.exports = { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm };

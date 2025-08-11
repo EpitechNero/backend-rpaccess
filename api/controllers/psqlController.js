@@ -1,10 +1,44 @@
 const logger = require('../utils/logger');
-const { selectUsers, selectCentreDesCouts, selectEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectBaseDocu, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices, selectForm } = require('../services/psqlService.js');
+const { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectBaseDocu, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices, selectForm } = require('../services/psqlService.js');
 
 exports.getUsers = async (req, res) => {
   try {
     const users = await selectUsers();
     res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getUserByMail = async (req, res) => {
+  const userMail = req.params.usermail;
+  try {
+    const user = await selectUserByMail(userMail);
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res.status(404).json({ error: 'Utilisateur non trouvé' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.createUser = async (req, res) => {
+  const userData = req.body;
+  try {
+    const newUser = await insertUser(userData);
+    res.status(201).json({ message: 'Utilisateur créé avec succès', data: newUser });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.updateUser = async (req, res) => {
+  const userData = req.body;
+  try {
+    const updatedUser = await updateUser(userData);
+    res.status(200).json({ message: 'Utilisateur mis à jour avec succès', data: updatedUser });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
