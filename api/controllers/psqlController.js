@@ -300,9 +300,7 @@ exports.setForm = async (req, res) => {
 };
 
 exports.syncTableFromSheet = async (req, res) => {
-  const fileId = req.query.id || req.body.id;
-  const range = req.query.range || req.body.range;
-  const tableName = req.query.table || req.body.table;
+  const { fileId, range, tableName } = req.body;
 
   if (!fileId || !tableName) {
     return res.status(400).json({ success: false, error: `ID de fichier ou nom de table manquant. ${fileId} et ${range} et ${tableName}`});
