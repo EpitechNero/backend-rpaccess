@@ -66,7 +66,7 @@ async function uploadDriveFile(fileBuffer, fileName) {
   }
 }
 
-async function readGoogleSheet(fileId, range = 'Feuille1!A1:Z1000') {
+async function readGoogleSheet(fileId, range) {
   try {
     const sheets = google.sheets({ version: 'v4', auth: oAuth2Client });
 

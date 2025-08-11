@@ -42,12 +42,13 @@ exports.uploadContrat = async (req, res) => {
 
 exports.readGoogleSheetFile = async (req, res) => {
   const fileId = req.query.id || req.body.id;
+  const range = req.query.range || req.body.range;
   if (!fileId) {
     return res.status(400).json({ success: false, error: 'Aucun id correspondant.' });
   }
 
   try {
-    const fileData = await readGoogleSheet(fileId);
+    const fileData = await readGoogleSheet(fileId, range);
     res.status(200).json({ success: true, data: fileData });
   } catch (err) {
     console.error('Erreur lors de l\'upload du contrat :', err.message);
