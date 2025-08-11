@@ -445,8 +445,8 @@ const insertForm = async (formData) => {
   }
 };
 
-async function syncSheetToDB(fileId, range, tableName) {
-  const sheetData = await readGoogleSheet(fileId, range);
+async function syncSheetToDB(id, range, tableName) {
+  const sheetData = await readGoogleSheet(id, range);
 
   if (sheetData.length === 0) {
     throw new Error('Aucune donnée à insérer');
@@ -479,19 +479,19 @@ async function syncSheetToDB(fileId, range, tableName) {
   }
 }
 
-async function readGoogleSheet(fileId, range) {
+async function readGoogleSheet(id, range) {
   try {
     const sheets = google.sheets({ version: 'v4', auth: oAuth2Client });
 
     const response = await sheets.spreadsheets.values.get({
-      spreadsheetId: fileId,
+      spreadsheetId: id,
       range,
     });
 
     const rows = response.data.values;
     if (!rows || rows.length === 0) {
       logger.warn('⚠️ Aucune donnée trouvée dans la feuille Google Sheet', {
-        fileId,
+        id,
         range,
       });
       return [];
@@ -508,14 +508,14 @@ async function readGoogleSheet(fileId, range) {
 
     logger.info('✅ Données extraites depuis Google Sheets', {
       nbRows: data.length,
-      fileId,
+      id,
     });
 
     return data;
   } catch (error) {
     logger.error('❌ Erreur lors de la lecture du Google Sheet', {
       error: error.response?.data || error.message,
-      fileId,
+      id,
     });
     throw error;
   }

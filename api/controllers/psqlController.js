@@ -307,7 +307,7 @@ exports.syncTableFromSheet = async (req, res) => {
   }
 
   try {
-    await syncSheetToDB(fileId, range, tableName);
+    await syncSheetToDB(id, range, tableName);
     res.json({ success: true, message: `Table ${tableName} synchronisée.` });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
