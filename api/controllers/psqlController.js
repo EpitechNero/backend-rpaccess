@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectBaseDocu, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices, selectForm, syncSheetToDB } = require('../services/psqlService.js');
+const { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectBaseDocu, insertBaseDocu, updateBaseDocu, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices, selectForm, syncSheetToDB } = require('../services/psqlService.js');
 
 exports.getUsers = async (req, res) => {
   try {
@@ -111,6 +111,40 @@ exports.getBaseDocu = async (req, res) => {
   try {
     const baseDocu = await selectBaseDocu();
     res.status(200).json(baseDocu);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getBaseDocuBySheetId = async (req, res) => {
+  const sheetId = req.params.sheetId;
+  try {
+    const baseDocu = await selectBaseDocuBySheetId(sheetId);
+    if (baseDocu) {
+      res.status(200).json(baseDocu);
+    } else {
+      res.status(404).json({ error: 'Document non trouvé' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.insertBaseDocu = async (req, res) => {
+  const baseDocuData = req.body;
+  try {
+    const newBaseDocu = await insertBaseDocu(baseDocuData);
+    res.status(201).json({ message: 'Document inséré avec succès', data: newBaseDocu });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.updateBaseDocu = async (req, res) => {
+  const baseDocuData = req.body;
+  try {
+    const updatedBaseDocu = await updateBaseDocu(baseDocuData);
+    res.status(200).json({ message: 'Document mis à jour avec succès', data: updatedBaseDocu });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -140,6 +140,45 @@ const selectBaseDocu = async () => {
   }
 };
 
+const selectBaseDocuBySheetId = async (SheetId) => {
+  try {
+    const sheetData = await pool.query('SELECT * FROM basedocu WHERE link_basedocu ILIKE($1)', [`%${SheetId}%`]);
+    console.log('✅ Base documentaire récupérée avec succès');
+    return sheetData.rows[0];
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération de la base documentaire :', error);
+    throw error;
+  }
+};
+
+const insertBaseDocu = async (docuData) => {
+  try {
+    const res = await pool.query(
+      'INSERT INTO basedocu (service_basedocu, type_basedocu, titre_basedocu, link_basedocu, pole_basedocu, projet_basedocu, sousprojet_basedocu, date_basedocu, objet_basedocu) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
+      [docuData.service, docuData.type, docuData.titre, docuData.link, docuData.pole, docuData.projet, docuData.sousprojet, new Date(docuData.date), docuData.objet]
+    );
+    console.log('✅ Base documentaire insérée avec succès');
+    return res.rows[0];
+  } catch (error) {
+    console.error('❌ Erreur lors de l\'insertion de la base documentaire :', error);
+    throw error;
+  }
+};
+
+const updateBaseDocu = async (docuData) => {
+  try {
+    const res = await pool.query(
+      'UPDATE basedocu SET service_basedocu = $1, type_basedocu = $2, titre_basedocu = $3, link_basedocu = $4, pole_basedocu = $5, projet_basedocu = $6, sousprojet_basedocu = $7, date_basedocu = $8, objet_basedocu = $9 WHERE id_basedocu = $10 RETURNING *',
+      [docuData.service, docuData.type, docuData.titre, docuData.link, docuData.pole, docuData.projet, docuData.sousprojet, new Date(docuData.date), docuData.objet, docuData.id]
+    );
+    console.log('✅ Base documentaire mise à jour avec succès');
+    return res.rows[0];
+  } catch (error) {
+    console.error('❌ Erreur lors de la mise à jour de la base documentaire :', error);
+    throw error;
+  }
+};
+
 const insertActivity = async (activity) => {
   try {
     const res = await pool.query('INSERT INTO activity (type_activity, nom_activity, prenom_activity, email_activity, process_activity, region_activity, date_activity) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
@@ -522,4 +561,4 @@ async function readGoogleSheet(id, range) {
   }
 }
 
-module.exports = { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm, syncSheetToDB };
+module.exports = { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm, syncSheetToDB };

@@ -15,7 +15,11 @@ router.get('/getactivity', jwtMiddleware, controller.getActivity);
 router.get('/getmaquettes', jwtMiddleware,  controller.getMaquettes);
 router.get('/getreferentielmaquettes', jwtMiddleware,  controller.getReferentielMaquettes);
 router.get('/getdossiers', jwtMiddleware,  controller.getDossiers);
-router.get('/getbasedocu', jwtMiddleware,  controller.getBaseDocu);
+
+router.get('/getbasedocu', controller.getBaseDocu);
+router.get('/getbasedocu/:sheetId', controller.getBaseDocuBySheetId);
+router.post('/insertbasedocu', controller.insertBaseDocu);
+router.patch('/updatebasedocu', controller.updateBaseDocu);
 
 router.get('/getbot', jwtMiddleware, controller.getBot);
 router.get('/getusagebyprocess', jwtMiddleware, controller.getUsageByProcess);
