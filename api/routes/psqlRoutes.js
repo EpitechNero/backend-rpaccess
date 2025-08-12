@@ -53,6 +53,5 @@ router.post('/create-form', jwtMiddleware, controller.setForm);
 
 router.post('/create-activity', jwtMiddleware, controller.setActivity);
 router.post('/sync-tables', jwtMiddleware, controller.syncTableFromSheet);
-router.post('/create-history', controller.createHistory);
 
 module.exports = router;
