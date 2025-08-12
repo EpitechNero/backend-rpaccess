@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices, selectForm, syncSheetToDB } = require('../services/psqlService.js');
+const { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, createEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices, selectForm, syncSheetToDB } = require('../services/psqlService.js');
 
 exports.getUsers = async (req, res) => {
   try {
@@ -53,10 +53,58 @@ exports.getCentreDesCouts = async (req, res) => {
   }
 };
 
+exports.getCentreDeCoutsById = async (req, res) => {
+  const centreId = req.params.id;
+  try {
+    const centre = await selectCentreDeCoutsById(centreId);
+    if (centre) {
+      res.status(200).json(centre);
+    } else {
+      res.status(404).json({ error: 'Centre de coûts non trouvé' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.createCentreDeCouts = async (req, res) => {
+  const centreData = req.body;
+  try {
+    const newCentre = await insertCentreDeCouts(centreData);
+    res.status(201).json({ message: 'Centre de coûts créé avec succès', data: newCentre });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 exports.getEOTP = async (req, res) => {
   try {
     const eotp = await selectEOTP();
     res.status(200).json(eotp);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getEOTPById = async (req, res) => {
+  const eotpId = req.params.id;
+  try {
+    const eotp = await selectEOTPById(eotpId);
+    if (eotp) {
+      res.status(200).json(eotp);
+    } else {
+      res.status(404).json({ error: 'EOTP non trouvé' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.createEOTP = async (req, res) => {
+  const eotpData = req.body;
+  try {
+    const newEOTP = await insertEOTP(eotpData);
+    res.status(201).json({ message: 'EOTP créé avec succès', data: newEOTP });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -102,6 +150,40 @@ exports.getDossiers = async (req, res) => {
   try {
     const dossiers = await selectDossiers();
     res.status(200).json(dossiers);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getDossierById = async (req, res) => {
+  const dossierId = req.params.id;
+  try {
+    const dossier = await selectDossierById(dossierId);
+    if (dossier) {
+      res.status(200).json(dossier);
+    } else {
+      res.status(404).json({ error: 'Dossier non trouvé' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.createDossier = async (req, res) => {
+  const dossierData = req.body;
+  try {
+    const newDossier = await insertDossier(dossierData);
+    res.status(201).json({ message: 'Dossier créé avec succès', data: newDossier });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.updateDossier = async (req, res) => {
+  const dossierData = req.body;
+  try {
+    const updatedDossier = await updateDossier(dossierData);
+    res.status(200).json({ message: 'Dossier mis à jour avec succès', data: updatedDossier });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
