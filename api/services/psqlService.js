@@ -650,4 +650,18 @@ async function readGoogleSheet(id, range) {
   }
 }
 
-module.exports = { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm, syncSheetToDB };
+async function insertHistory(historyData) {
+  try {
+    const res = await pool.query(
+      'INSERT INTO history (id_history, dataname_history, succes_history, date_lancement_history, date_fin_history) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [historyData.id, historyData.dataname, historyData.succes, new Date(historyData.date_lancement), new Date(historyData.date_fin)]
+    );
+    logger.info('✅ Historique inséré avec succès', JSON.stringify(res.rows[0]));
+    return res.rows[0];
+  } catch (error) {
+    logger.error('❌ Erreur lors de l\'insertion de l\'historique :', error.message);
+    throw error;
+  }
+}
+
+module.exports = { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm, syncSheetToDB, insertHistory };
