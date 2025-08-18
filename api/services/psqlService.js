@@ -653,7 +653,7 @@ async function readGoogleSheet(id, range) {
 async function insertHistory(historyData) {
   try {
     const res = await pool.query(
-      'INSERT INTO history (dataname_history, succes_history, type_history, date_lancement_history, date_fin_history) VALUES ($1, $2, $3, $4) RETURNING *',
+      'INSERT INTO history (dataname_history, succes_history, type_history, date_lancement_history, date_fin_history) VALUES ($1, $2, $3, $4, $5) RETURNING *',
       [historyData.dataname, historyData.succes, historyData.type, new Date(historyData.date_lancement), new Date(historyData.date_fin)]
     );
     logger.info('✅ Historique inséré avec succès', JSON.stringify(res.rows[0]));
