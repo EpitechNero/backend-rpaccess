@@ -59,8 +59,17 @@ async function authMiddleware(req, res, next) {
         next();
     } catch (error) {
         if (error.name === 'TokenExpiredError') {
-            return res.status(401).json({ message: 'Token expiré', error: error.message });
+            return res.status(401).json({ 
+                message: 'Token expiré', 
+                error: error.message,
+                tokenDates: {
+                    iat: decodedPayload.iat,
+                    exp: decodedPayload.exp,
+                    auth_time: decodedPayload.auth_time
+                }
+            });
         }
+        
         if (error.name === 'JsonWebTokenError') {
             return res.status(401).json({ message: 'Token invalide', error: error.message });
         }
