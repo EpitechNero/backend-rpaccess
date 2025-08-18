@@ -1,6 +1,26 @@
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
 
+let cachedKeys = null;
+let cacheExpiry = 0;
+
+// Récupération et cache des clés publiques Google
+async function getPublicKeys() {
+    const now = Date.now();
+    if (cachedKeys && now < cacheExpiry) {
+        return cachedKeys;
+    }
+
+    const { data } = await axios.get(
+        'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com'
+    );
+
+    cachedKeys = data;
+    // Cache jusqu'à 24h plus tard
+    cacheExpiry = now + 24 * 60 * 60 * 1000;
+    return cachedKeys;
+}
+
 async function authMiddleware(req, res, next) {
     const authHeader = req.headers.authorization;
 
@@ -20,7 +40,7 @@ async function authMiddleware(req, res, next) {
             return res.status(401).json({ message: 'Token invalide : kid manquant' });
         }
 
-        const { data: keys } = await axios.get('https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com');
+        const keys = await getPublicKeys();
         const publicKey = keys[kid];
 
         if (!publicKey) {
@@ -34,12 +54,17 @@ async function authMiddleware(req, res, next) {
         });
 
         req.user = decoded;
-
         console.log('Utilisateur authentifié:', req.user);
 
         next();
     } catch (error) {
-        return res.status(401).json({ message: 'Token invalide', error: error.message });
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ message: 'Token expiré', error: error.message });
+        }
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({ message: 'Token invalide', error: error.message });
+        }
+        return res.status(401).json({ message: 'Erreur d’authentification', error: error.message });
     }
 }
 
