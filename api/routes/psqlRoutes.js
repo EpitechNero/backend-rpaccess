@@ -31,11 +31,11 @@ router.get('/getbasedocu/:sheetId', controller.getBaseDocuBySheetId);
 router.post('/insertbasedocu', controller.insertBaseDocu);
 router.patch('/updatebasedocu', controller.updateBaseDocu);
 
-router.get('/getbot', jwtMiddleware, controller.getBot);
-router.get('/getusagebyprocess', jwtMiddleware, controller.getUsageByProcess);
-router.get('/getusagebymonth', jwtMiddleware, controller.getUsageByMonth);
-router.get('/getmaquettesbyregion', jwtMiddleware, controller.getMaquettesByRegion);
-router.get('/gettopusers', jwtMiddleware, controller.getTopUsers);
+router.get('/getbot', controller.getBot);
+router.get('/getusagebyprocess', controller.getUsageByProcess);
+router.get('/getusagebymonth', controller.getUsageByMonth);
+router.get('/getmaquettesbyregion', controller.getMaquettesByRegion);
+router.get('/gettopusers', controller.getTopUsers);
 
 router.get('/getform', jwtMiddleware,  controller.getForm);
 router.get('/getcountform', jwtMiddleware,  controller.getCountForm);
