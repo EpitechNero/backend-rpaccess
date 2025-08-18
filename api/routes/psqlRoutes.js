@@ -8,14 +8,28 @@ router.get('/getuser/:usermail', controller.getUserByMail);
 router.post('/createuser', controller.createUser);
 router.patch('/updateuser', controller.updateUser);
 
-router.get('/getcentres', jwtMiddleware,  controller.getCentreDesCouts);
-router.get('/geteotp', jwtMiddleware,  controller.getEOTP);
+router.get('/getcentres',  controller.getCentreDesCouts);
+router.get('/getcentre/:id', controller.getCentreDeCoutsById);
+router.post('/createcentre', controller.createCentreDeCouts);
+
+router.get('/geteotp', controller.getEOTP);
+router.get('/geteotp/:id', controller.getEOTPById);
+router.post('/createeotp', controller.createEOTP);
+
+router.get('/getdossiers',  controller.getDossiers);
+router.get('/getdossier/:id', controller.getDossierById);
+router.post('/createdossier', controller.createDossier);
+router.patch('/updatedossier', controller.updateDossier);
+
 router.get('/getlist', jwtMiddleware,  controller.getList);
 router.get('/getactivity', jwtMiddleware, controller.getActivity);
 router.get('/getmaquettes', jwtMiddleware,  controller.getMaquettes);
 router.get('/getreferentielmaquettes', jwtMiddleware,  controller.getReferentielMaquettes);
-router.get('/getdossiers', jwtMiddleware,  controller.getDossiers);
-router.get('/getbasedocu', jwtMiddleware,  controller.getBaseDocu);
+
+router.get('/getbasedocu', controller.getBaseDocu);
+router.get('/getbasedocu/:sheetId', controller.getBaseDocuBySheetId);
+router.post('/insertbasedocu', controller.insertBaseDocu);
+router.patch('/updatebasedocu', controller.updateBaseDocu);
 
 router.get('/getbot', jwtMiddleware, controller.getBot);
 router.get('/getusagebyprocess', jwtMiddleware, controller.getUsageByProcess);
@@ -39,5 +53,6 @@ router.post('/create-form', jwtMiddleware, controller.setForm);
 
 router.post('/create-activity', jwtMiddleware, controller.setActivity);
 router.post('/sync-tables', jwtMiddleware, controller.syncTableFromSheet);
+router.post('/create-history', controller.setHistory);
 
 module.exports = router;

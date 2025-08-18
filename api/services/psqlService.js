@@ -63,6 +63,31 @@ const selectCentreDesCouts = async () => {
   }
 };
 
+const selectCentreDeCoutsById = async (id) => {
+  try {
+    const res = await pool.query('SELECT * FROM centredecout WHERE id_centredecout = $1', [id]);
+    console.log('✅ Centre de coûts récupéré avec succès');
+    return res.rows[0];
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération du centre de coûts :', error);
+    throw error;
+  }
+};
+
+const insertCentreDeCouts = async (centreData) => {
+  try {
+    const res = await pool.query(
+      'INSERT INTO centredecout (id_centredecout) VALUES ($1) RETURNING *',
+      [centreData.id_centredecout]
+    );
+    console.log('✅ Centre de coûts inséré avec succès', JSON.stringify(res.rows[0]));
+    return res.rows[0];
+  } catch (error) {
+    console.error('❌ Erreur lors de l\'insertion du centre de coûts :', error);
+    throw error;
+  }
+};
+
 const selectEOTP = async () => {
   try {
     const res = await pool.query('SELECT * FROM eotp');
@@ -70,6 +95,31 @@ const selectEOTP = async () => {
     return res.rows;
   } catch (error) {
     console.error('❌ Erreur lors de la récupération des eotp :', error);
+    throw error;
+  }
+};
+
+const selectEOTPById = async (id) => {
+  try {
+    const res = await pool.query('SELECT * FROM eotp WHERE id_eotp = $1', [id]);
+    console.log('✅ EOTP récupéré avec succès');
+    return res.rows[0];
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération de l\'EOTP :', error);
+    throw error;
+  }
+};
+
+const insertEOTP = async (eotpData) => {
+  try {
+    const res = await pool.query(
+      'INSERT INTO eotp (id_eotp) VALUES ($1) RETURNING *',
+      [eotpData.id_eotp]
+    );
+    console.log('✅ EOTP inséré avec succès', JSON.stringify(res.rows[0]));
+    return res.rows[0];
+  } catch (error) {
+    console.error('❌ Erreur lors de l\'insertion de l\'EOTP :', error);
     throw error;
   }
 };
@@ -129,6 +179,45 @@ const selectDossiers = async () => {
   }
 };
 
+const selectDossierById = async (SheetId) => {
+  try {
+    const res = await pool.query('SELECT * FROM dossiers WHERE link_dossiers ILIKE($1)', [`%${SheetId}%`]);
+    console.log('✅ Dossier récupéré avec succès');
+    return res.rows[0];
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération du dossier :', error);
+    throw error;
+  }
+};
+
+const insertDossier = async (dossierData) => {
+  try {
+    const res = await pool.query(
+      'INSERT INTO dossiers (societe_dossiers, annee_dossiers, region_dossiers, titre_dossiers, link_dossiers) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [dossierData.societe, dossierData.annee, dossierData.region, dossierData.titre, dossierData.link]
+    );
+    console.log('✅ Dossier inséré avec succès');
+    return res.rows[0];
+  } catch (error) {
+    console.error('❌ Erreur lors de l\'insertion du dossier :', error);
+    throw error;
+  }
+};
+
+const updateDossier = async (dossierData) => {
+  try {
+    const res = await pool.query(
+      'UPDATE dossiers SET societe_dossiers = $1, annee_dossiers = $2, region_dossiers = $3, titre_dossiers = $4, link_dossiers = $5 WHERE id_dossier = $6 RETURNING *',
+      [dossierData.societe, dossierData.annee, dossierData.region, dossierData.titre, dossierData.link, dossierData.id]
+    );
+    console.log('✅ Dossier mis à jour avec succès');
+    return res.rows[0];
+  } catch (error) {
+    console.error('❌ Erreur lors de la mise à jour du dossier :', error);
+    throw error;
+  }
+};
+
 const selectBaseDocu = async () => {
   try {
     const res = await pool.query('SELECT pole_basedocu, service_basedocu, projet_basedocu, sousprojet_basedocu, type_basedocu, titre_basedocu, link_basedocu, date_basedocu FROM basedocu');
@@ -136,6 +225,45 @@ const selectBaseDocu = async () => {
     return res.rows;
   } catch (error) {
     console.error('❌ Erreur lors de la récupération de la base documentaire :', error);
+    throw error;
+  }
+};
+
+const selectBaseDocuBySheetId = async (SheetId) => {
+  try {
+    const sheetData = await pool.query('SELECT * FROM basedocu WHERE link_basedocu ILIKE($1)', [`%${SheetId}%`]);
+    console.log('✅ Base documentaire récupérée avec succès');
+    return sheetData.rows[0];
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération de la base documentaire :', error);
+    throw error;
+  }
+};
+
+const insertBaseDocu = async (docuData) => {
+  try {
+    const res = await pool.query(
+      'INSERT INTO basedocu (service_basedocu, type_basedocu, titre_basedocu, link_basedocu, pole_basedocu, projet_basedocu, sousprojet_basedocu, date_basedocu, objet_basedocu) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
+      [docuData.service, docuData.type, docuData.titre, docuData.link, docuData.pole, docuData.projet, docuData.sousprojet, new Date(docuData.date), docuData.objet]
+    );
+    console.log('✅ Base documentaire insérée avec succès');
+    return res.rows[0];
+  } catch (error) {
+    console.error('❌ Erreur lors de l\'insertion de la base documentaire :', error);
+    throw error;
+  }
+};
+
+const updateBaseDocu = async (docuData) => {
+  try {
+    const res = await pool.query(
+      'UPDATE basedocu SET service_basedocu = $1, type_basedocu = $2, titre_basedocu = $3, link_basedocu = $4, pole_basedocu = $5, projet_basedocu = $6, sousprojet_basedocu = $7, date_basedocu = $8, objet_basedocu = $9 WHERE id_basedocu = $10 RETURNING *',
+      [docuData.service, docuData.type, docuData.titre, docuData.link, docuData.pole, docuData.projet, docuData.sousprojet, new Date(docuData.date), docuData.objet, docuData.id]
+    );
+    console.log('✅ Base documentaire mise à jour avec succès');
+    return res.rows[0];
+  } catch (error) {
+    console.error('❌ Erreur lors de la mise à jour de la base documentaire :', error);
     throw error;
   }
 };
@@ -522,4 +650,18 @@ async function readGoogleSheet(id, range) {
   }
 }
 
-module.exports = { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm, syncSheetToDB };
+async function insertHistory(historyData) {
+  try {
+    const res = await pool.query(
+      'INSERT INTO history (dataname_history, succes_history, date_lancement_history, date_fin_history) VALUES ($1, $2, $3, $4) RETURNING *',
+      [historyData.dataname, historyData.succes, new Date(historyData.date_lancement), new Date(historyData.date_fin)]
+    );
+    logger.info('✅ Historique inséré avec succès', JSON.stringify(res.rows[0]));
+    return res.rows[0];
+  } catch (error) {
+    logger.error('❌ Erreur lors de l\'insertion de l\'historique :', error.message);
+    throw error;
+  }
+}
+
+module.exports = { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm, syncSheetToDB, insertHistory };

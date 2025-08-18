@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectBaseDocu, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices, selectForm, syncSheetToDB } = require('../services/psqlService.js');
+const { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices, selectForm, syncSheetToDB, insertHistory } = require('../services/psqlService.js');
 
 exports.getUsers = async (req, res) => {
   try {
@@ -53,10 +53,58 @@ exports.getCentreDesCouts = async (req, res) => {
   }
 };
 
+exports.getCentreDeCoutsById = async (req, res) => {
+  const centreId = req.params.id;
+  try {
+    const centre = await selectCentreDeCoutsById(centreId);
+    if (centre) {
+      res.status(200).json(centre);
+    } else {
+      res.status(404).json({ error: 'Centre de coûts non trouvé' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.createCentreDeCouts = async (req, res) => {
+  const centreData = req.body;
+  try {
+    const newCentre = await insertCentreDeCouts(centreData);
+    res.status(201).json({ message: 'Centre de coûts créé avec succès', data: newCentre });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 exports.getEOTP = async (req, res) => {
   try {
     const eotp = await selectEOTP();
     res.status(200).json(eotp);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getEOTPById = async (req, res) => {
+  const eotpId = req.params.id;
+  try {
+    const eotp = await selectEOTPById(eotpId);
+    if (eotp) {
+      res.status(200).json(eotp);
+    } else {
+      res.status(404).json({ error: 'EOTP non trouvé' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.createEOTP = async (req, res) => {
+  const eotpData = req.body;
+  try {
+    const newEOTP = await insertEOTP(eotpData);
+    res.status(201).json({ message: 'EOTP créé avec succès', data: newEOTP });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -107,10 +155,78 @@ exports.getDossiers = async (req, res) => {
   }
 };
 
+exports.getDossierById = async (req, res) => {
+  const dossierId = req.params.id;
+  try {
+    const dossier = await selectDossierById(dossierId);
+    if (dossier) {
+      res.status(200).json(dossier);
+    } else {
+      res.status(404).json({ error: 'Dossier non trouvé' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.createDossier = async (req, res) => {
+  const dossierData = req.body;
+  try {
+    const newDossier = await insertDossier(dossierData);
+    res.status(201).json({ message: 'Dossier créé avec succès', data: newDossier });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.updateDossier = async (req, res) => {
+  const dossierData = req.body;
+  try {
+    const updatedDossier = await updateDossier(dossierData);
+    res.status(200).json({ message: 'Dossier mis à jour avec succès', data: updatedDossier });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 exports.getBaseDocu = async (req, res) => {
   try {
     const baseDocu = await selectBaseDocu();
     res.status(200).json(baseDocu);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getBaseDocuBySheetId = async (req, res) => {
+  const sheetId = req.params.sheetId;
+  try {
+    const baseDocu = await selectBaseDocuBySheetId(sheetId);
+    if (baseDocu) {
+      res.status(200).json(baseDocu);
+    } else {
+      res.status(404).json({ error: 'Document non trouvé' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.insertBaseDocu = async (req, res) => {
+  const baseDocuData = req.body;
+  try {
+    const newBaseDocu = await insertBaseDocu(baseDocuData);
+    res.status(201).json({ message: 'Document inséré avec succès', data: newBaseDocu });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.updateBaseDocu = async (req, res) => {
+  const baseDocuData = req.body;
+  try {
+    const updatedBaseDocu = await updateBaseDocu(baseDocuData);
+    res.status(200).json({ message: 'Document mis à jour avec succès', data: updatedBaseDocu });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -311,5 +427,18 @@ exports.syncTableFromSheet = async (req, res) => {
     res.json({ success: true, message: `Table ${tableName} synchronisée.` });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+exports.setHistory = async (req, res) => {
+  logger.info('📥 Requête reçue pour setHistory :', JSON.stringify(req.body));
+  try {
+    const result = await insertHistory(req.body);
+    res.status(201).json({ message: 'Historique inséré avec succès', data: result });
+  } catch (error) {
+    res.status(500).json({
+      error: 'Erreur serveur lors de l\'insertion de l\'historique',
+      details: error.message,
+    });
   }
 };
