@@ -11,14 +11,17 @@ async function getPublicKeys() {
         return cachedKeys;
     }
 
-    const { data } = await axios.get(
-        'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com'
-    );
-
-    cachedKeys = data;
-    // Cache jusqu'à 24h plus tard
-    cacheExpiry = now + 24 * 60 * 60 * 1000;
-    return cachedKeys;
+    try {
+        const { data } = await axios.get(
+            'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com'
+        );
+        cachedKeys = data;
+        cacheExpiry = now + 24 * 60 * 60 * 1000; // Cache jusqu'à 24h
+        return cachedKeys;
+    } catch (err) {
+        console.error('Erreur récupération clés publiques:', err.message || err);
+        throw new Error('Impossible de récupérer les clés publiques');
+    }
 }
 
 async function authMiddleware(req, res, next) {
@@ -31,15 +34,15 @@ async function authMiddleware(req, res, next) {
     const idToken = authHeader.split('Bearer ')[1];
 
     try {
-        const decodedHeader = JSON.parse(
-            Buffer.from(idToken.split('.')[0], 'base64').toString()
-        );
+        // Décodage du header pour récupérer le kid
+        const decodedHeader = JSON.parse(Buffer.from(idToken.split('.')[0], 'base64').toString());
         const kid = decodedHeader.kid;
 
         if (!kid) {
             return res.status(401).json({ message: 'Token invalide : kid manquant' });
         }
 
+        // Récupération des clés publiques
         const keys = await getPublicKeys();
         const publicKey = keys[kid];
 
@@ -47,6 +50,7 @@ async function authMiddleware(req, res, next) {
             return res.status(401).json({ message: 'Clé publique non trouvée pour ce kid' });
         }
 
+        // Vérification du token
         const decoded = jwt.verify(idToken, publicKey, {
             algorithms: ['RS256'],
             issuer: 'https://securetoken.google.com/fr-ist-isteau-rpaccef',
@@ -58,9 +62,12 @@ async function authMiddleware(req, res, next) {
 
         next();
     } catch (error) {
+        // Récupération du payload pour les informations si possible
+        const decodedPayload = jwt.decode(idToken) || {};
+
         if (error.name === 'TokenExpiredError') {
-            return res.status(401).json({ 
-                message: 'Token expiré', 
+            return res.status(401).json({
+                message: 'Token expiré',
                 error: error.message,
                 tokenDates: {
                     iat: decodedPayload.iat,
@@ -69,11 +76,19 @@ async function authMiddleware(req, res, next) {
                 }
             });
         }
-        
+
         if (error.name === 'JsonWebTokenError') {
-            return res.status(401).json({ message: 'Token invalide', error: error.message });
+            return res.status(401).json({
+                message: 'Token invalide',
+                error: error.message
+            });
         }
-        return res.status(401).json({ message: 'Erreur d’authentification', error: error.message });
+
+        console.error('Erreur d’authentification middleware:', error.message || error);
+        return res.status(500).json({
+            message: 'Erreur interne lors de l’authentification',
+            error: error.message
+        });
     }
 }
 
