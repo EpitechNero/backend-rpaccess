@@ -21,8 +21,8 @@ exports.launchBot = async (req, res) => {
 
 exports.checkBot = async (req, res) => {
   try {
-    //const data = await checkBotStatus();
-    res.status(200).json({});
+    const data = await checkBotStatus();
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
