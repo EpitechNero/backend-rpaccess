@@ -207,7 +207,7 @@ const insertDossier = async (dossierData) => {
 const updateDossier = async (dossierData) => {
   try {
     const res = await pool.query(
-      'UPDATE dossiers SET societe_dossiers = $1, annee_dossiers = $2, region_dossiers = $3, titre_dossiers = $4, link_dossiers = $5 WHERE id_dossier = $6 RETURNING *',
+      'UPDATE dossiers SET societe_dossiers = $1, annee_dossiers = $2, region_dossiers = $3, titre_dossiers = $4, link_dossiers = $5 WHERE id_dossiers = $6 RETURNING *',
       [dossierData.societe, dossierData.annee, dossierData.region, dossierData.titre, dossierData.link, dossierData.id]
     );
     console.log('✅ Dossier mis à jour avec succès');
