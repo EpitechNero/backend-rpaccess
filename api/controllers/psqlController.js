@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices, selectForm, syncSheetToDB, insertHistory } = require('../services/psqlService.js');
+const { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices, selectForm, syncSheetToDB, insertHistory, selectHistoryByTable } = require('../services/psqlService.js');
 
 exports.getUsers = async (req, res) => {
   try {
@@ -440,5 +440,20 @@ exports.setHistory = async (req, res) => {
       error: 'Erreur serveur lors de l\'insertion de l\'historique',
       details: error.message,
     });
+  }
+};
+
+exports.getHistory = async (req, res) => {
+  const table = req.params.table;
+
+  if (!table) {
+    return res.status(400).json({ success: false, error: 'Nom de table manquant.' });
+  }
+
+  try {
+    const history = await selectHistoryByTable(table);
+    res.status(200).json({ success: true, history });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
   }
 };

@@ -664,4 +664,15 @@ async function insertHistory(historyData) {
   }
 }
 
-module.exports = { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm, syncSheetToDB, insertHistory };
+async function selectHistoryByTable(table) {
+  try {
+    const res = await pool.query('SELECT * FROM history WHERE type_history = $1 ORDER BY date_lancement_history DESC LIMIT 3', [table]);
+    logger.info('✅ Historique récupéré avec succès');
+    return res.rows;
+  } catch (error) {
+    logger.error('❌ Erreur lors de la récupération de l\'historique :', error.message);
+    throw error;
+  }
+}
+
+module.exports = { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm, syncSheetToDB, insertHistory, selectHistoryByTable };
