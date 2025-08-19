@@ -666,7 +666,7 @@ async function insertHistory(historyData) {
 
 async function selectHistoryByTable(table) {
   try {
-    const res = await pool.query('SELECT * FROM history WHERE type_history = $1 ORDER BY date_lancement_history DESC LIMIT 3', [table]);
+    const res = await pool.query('SELECT * FROM history WHERE dataname_history = $1 ORDER BY date_lancement_history DESC LIMIT 3', [table]);
     logger.info('✅ Historique récupéré avec succès');
     return res.rows;
   } catch (error) {
