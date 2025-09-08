@@ -3,10 +3,10 @@ const router = express.Router();
 const controller = require('../controllers/psqlController');
 const jwtMiddleware = require('../middlewares/jwtMiddleware');
 
-router.get('/getusers',  controller.getUsers);
-router.get('/getuser/:usermail', controller.getUserByMail);
-router.post('/createuser', controller.createUser);
-router.patch('/updateuser', controller.updateUser);
+router.get('/getusers', jwtMiddleware, controller.getUsers);
+router.get('/getuser/:usermail', jwtMiddleware, controller.getUserByMail);
+router.post('/createuser', jwtMiddleware, controller.createUser);
+router.patch('/updateuser', jwtMiddleware, controller.updateUser);
 
 router.get('/getcentres',  controller.getCentreDesCouts);
 router.get('/getcentre/:id', controller.getCentreDeCoutsById);
@@ -17,6 +17,7 @@ router.get('/geteotp/:id', controller.getEOTPById);
 router.post('/createeotp', controller.createEOTP);
 
 router.get('/getdossiers',  controller.getDossiers);
+router.delete('/deletedossiers', controller.deleteDossiers);
 router.get('/getdossier/:id', controller.getDossierById);
 router.post('/createdossier', controller.createDossier);
 router.patch('/updatedossier', controller.updateDossier);
@@ -27,6 +28,7 @@ router.get('/getmaquettes', jwtMiddleware,  controller.getMaquettes);
 router.get('/getreferentielmaquettes', jwtMiddleware,  controller.getReferentielMaquettes);
 
 router.get('/getbasedocu', controller.getBaseDocu);
+router.delete('/deletebasedocu', controller.deleteBaseDocu);
 router.get('/getbasedocu/:sheetId', controller.getBaseDocuBySheetId);
 router.post('/insertbasedocu', controller.insertBaseDocu);
 router.patch('/updatebasedocu', controller.updateBaseDocu);

@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices, selectForm, syncSheetToDB, insertHistory } = require('../services/psqlService.js');
+const { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, deleteDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, deleteBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices, selectForm, syncSheetToDB, insertHistory } = require('../services/psqlService.js');
 
 exports.getUsers = async (req, res) => {
   try {
@@ -155,6 +155,15 @@ exports.getDossiers = async (req, res) => {
   }
 };
 
+exports.deleteDossiers = async (req, res) => {
+  try {
+    const dossiers = await deleteDossiers();
+    res.status(200).json(dossiers);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 exports.getDossierById = async (req, res) => {
   const dossierId = req.params.id;
   try {
@@ -192,6 +201,15 @@ exports.updateDossier = async (req, res) => {
 exports.getBaseDocu = async (req, res) => {
   try {
     const baseDocu = await selectBaseDocu();
+    res.status(200).json(baseDocu);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.deleteBaseDocu = async (req, res) => {
+  try {
+    const baseDocu = await deleteBaseDocu();
     res.status(200).json(baseDocu);
   } catch (error) {
     res.status(500).json({ error: error.message });

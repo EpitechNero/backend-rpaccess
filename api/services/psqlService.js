@@ -179,6 +179,17 @@ const selectDossiers = async () => {
   }
 };
 
+const deleteDossiers = async () => {
+  try {
+    const res = await pool.query('DELETE FROM dossiers WHERE 1=1');
+    console.log('✅ Dossiers permanents supprimés avec succès');
+    return res.rows;
+  } catch (error) {
+    console.error('❌ Erreur lors de la suppression des dossiers permanents :', error);
+    throw error;
+  }
+};
+
 const selectDossierById = async (SheetId) => {
   try {
     const res = await pool.query('SELECT * FROM dossiers WHERE link_dossiers ILIKE($1)', [`%${SheetId}%`]);
@@ -225,6 +236,17 @@ const selectBaseDocu = async () => {
     return res.rows;
   } catch (error) {
     console.error('❌ Erreur lors de la récupération de la base documentaire :', error);
+    throw error;
+  }
+};
+
+const deleteBaseDocu = async () => {
+  try {
+    const res = await pool.query('DELETE FROM basedocu WHERE 1=1');
+    console.log('✅ Base documentaire supprimée avec succès');
+    return res.rows;
+  } catch (error) {
+    console.error('❌ Erreur lors de la suppression de la base documentaire :', error);
     throw error;
   }
 };
@@ -664,4 +686,4 @@ async function insertHistory(historyData) {
   }
 }
 
-module.exports = { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm, syncSheetToDB, insertHistory };
+module.exports = { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, deleteDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, deleteBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm, syncSheetToDB, insertHistory };
