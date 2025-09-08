@@ -675,13 +675,24 @@ async function readGoogleSheet(id, range) {
 async function insertHistory(historyData) {
   try {
     const res = await pool.query(
-      'INSERT INTO history (dataname_history, succes_history, date_lancement_history, date_fin_history) VALUES ($1, $2, $3, $4) RETURNING *',
-      [historyData.dataname, historyData.succes, new Date(historyData.date_lancement), new Date(historyData.date_fin)]
+      'INSERT INTO history (dataname_history, succes_history, type_history, date_lancement_history, date_fin_history) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [historyData.dataname, historyData.succes, historyData.type, historyData.date_lancement, historyData.date_fin]
     );
     logger.info('✅ Historique inséré avec succès', JSON.stringify(res.rows[0]));
     return res.rows[0];
   } catch (error) {
     logger.error('❌ Erreur lors de l\'insertion de l\'historique :', error.message);
+    throw error;
+  }
+}
+
+async function selectHistoryByTable(table) {
+  try {
+    const res = await pool.query('SELECT * FROM history WHERE dataname_history = $1 ORDER BY date_lancement_history DESC LIMIT 3', [table]);
+    logger.info('✅ Historique récupéré avec succès');
+    return res.rows;
+  } catch (error) {
+    logger.error('❌ Erreur lors de la récupération de l\'historique :', error.message);
     throw error;
   }
 }

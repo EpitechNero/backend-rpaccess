@@ -1010,6 +1010,193 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  page:
+                    type: object
+                    properties:
+                      offset:
+                        type: integer
+                        description: Décalage de la pagination
+                      total:
+                        type: integer
+                        description: Nombre total d'éléments
+                      totalFilter:
+                        type: integer
+                        description: Nombre total d'éléments filtrés
+                  list:
+                    type: array
+                    description: Liste des exécutions de bots
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        automationName:
+                          type: string
+                        fileName:
+                          type: string
+                        filePath:
+                          type: string
+                        type:
+                          type: string
+                        startDateTime:
+                          type: string
+                          format: date-time
+                        endDateTime:
+                          type: string
+                          format: date-time
+                        command:
+                          type: string
+                        status:
+                          type: string
+                        progress:
+                          type: integer
+                        automationId:
+                          type: string
+                        userId:
+                          type: string
+                        deviceId:
+                          type: string
+                        currentLine:
+                          type: integer
+                        totalLines:
+                          type: integer
+                        fileId:
+                          type: string
+                        modifiedBy:
+                          type: string
+                        createdBy:
+                          type: string
+                        modifiedOn:
+                          type: string
+                          format: date-time
+                        createdOn:
+                          type: string
+                          format: date-time
+                        deploymentId:
+                          type: string
+                        queueName:
+                          type: string
+                        queueId:
+                          type: string
+                        usingRdp:
+                          type: boolean
+                        message:
+                          type: string
+                        canManage:
+                          type: boolean
+                        deviceName:
+                          type: string
+                        userName:
+                          type: string
+                        tenantUuid:
+                          type: string
+                        automationPriority:
+                          type: string
+                        callbackInfo:
+                          type: string
+                        runElevated:
+                          type: boolean
+                        botLabel:
+                          type: string
+                        currentBotName:
+                          type: string
+                        rolesWithAccess:
+                          type: array
+                          items:
+                            type: string
+                        workspaceType:
+                          type: string
+                        systemBot:
+                          type: boolean
+                        initiationType:
+                          type: string
+                        activityType:
+                          type: string
+              example:
+                page:
+                  offset: 0
+                  total: 3990
+                  totalFilter: 615
+                list:
+                  - id: "35bbcbb9-d972-42e9-a673-189bf6ee80cf_fc5db35ba0ffa80f"
+                    automationName: "Google Suite - Connexion Compte Google.24.01.02.10.23.04.ccefc1"
+                    fileName: "Google Suite - Connexion Compte Google"
+                    filePath: ""
+                    type: "SCHEDULED"
+                    startDateTime: "2025-07-16T11:00:19.343257200Z"
+                    endDateTime: "2025-07-16T11:01:43.747321100Z"
+                    command: "closeWindow"
+                    status: "COMPLETED"
+                    progress: 100
+                    automationId: "3995"
+                    userId: "182"
+                    deviceId: "77"
+                    currentLine: 25
+                    totalLines: 25
+                    fileId: "26886"
+                    modifiedBy: "206"
+                    createdBy: "206"
+                    modifiedOn: "2025-07-16T11:01:43.870422Z"
+                    createdOn: "2025-07-16T11:00:00.931132Z"
+                    deploymentId: "70d83499-327d-48ab-a846-3657400c17fd"
+                    queueName: ""
+                    queueId: ""
+                    usingRdp: false
+                    message: ""
+                    canManage: true
+                    deviceName: "DPRSVA2020"
+                    userName: "ccefr3"
+                    tenantUuid: "0a66761c-761a-177a-8176-8a2ddac60110"
+                    automationPriority: "PRIORITY_MEDIUM"
+                    callbackInfo: ""
+                    runElevated: false
+                    botLabel: ""
+                    currentBotName: "Google Suite - Connexion Compte Google"
+                    rolesWithAccess: []
+                    workspaceType: "UNKNOWN"
+                    systemBot: false
+                    initiationType: "SCHEDULED"
+                    activityType: "BOT"
+                  - id: "30f71b99-276e-4408-96e3-937105a91eca_595b4f700eca10d7"
+                    automationName: "Google Suite - Connexion Compte Google.24.01.02.10.23.04.ccefc1"
+                    fileName: "Google Suite - Connexion Compte Google"
+                    filePath: ""
+                    type: "SCHEDULED"
+                    startDateTime: "2025-07-16T05:00:17.398578700Z"
+                    endDateTime: "2025-07-16T05:01:38.504649600Z"
+                    command: "closeWindow"
+                    status: "COMPLETED"
+                    progress: 100
+                    automationId: "3995"
+                    userId: "182"
+                    deviceId: "77"
+                    currentLine: 25
+                    totalLines: 25
+                    fileId: "26886"
+                    modifiedBy: "206"
+                    createdBy: "206"
+                    modifiedOn: "2025-07-16T05:01:38.611480Z"
+                    createdOn: "2025-07-16T05:00:00.983947Z"
+                    deploymentId: "75554f19-25ac-4575-9e12-ec8bfa0c96e1"
+                    queueName: ""
+                    queueId: ""
+                    usingRdp: false
+                    message: ""
+                    canManage: true
+                    deviceName: "DPRSVA2020"
+                    userName: "ccefr3"
+                    tenantUuid: "0a66761c-761a-177a-8176-8a2ddac60110"
+                    automationPriority: "PRIORITY_MEDIUM"
+                    callbackInfo: ""
+                    runElevated: false
+                    botLabel: ""
+                    currentBotName: "Google Suite - Connexion Compte Google"
+                    rolesWithAccess: []
+                    workspaceType: "UNKNOWN"
+                    systemBot: false
+                    initiationType: "SCHEDULED"
+                    activityType: "BOT"
         "500":
           description: Erreur lors de la récupération du statut des bots
 

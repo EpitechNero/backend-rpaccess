@@ -460,3 +460,18 @@ exports.setHistory = async (req, res) => {
     });
   }
 };
+
+exports.getHistory = async (req, res) => {
+  const table = req.params.table;
+
+  if (!table) {
+    return res.status(400).json({ success: false, error: 'Nom de table manquant.' });
+  }
+
+  try {
+    const history = await selectHistoryByTable(table);
+    res.status(200).json({ success: true, history });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
