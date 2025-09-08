@@ -204,8 +204,8 @@ const selectDossierById = async (SheetId) => {
 const insertDossier = async (dossierData) => {
   try {
     const res = await pool.query(
-      'INSERT INTO dossiers (societe_dossiers, annee_dossiers, region_dossiers, titre_dossiers, link_dossiers) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [dossierData.societe, dossierData.annee, dossierData.region, dossierData.titre, dossierData.link]
+      'INSERT INTO dossiers (societe_dossiers, annee_dossiers, region_dossiers, titre_dossiers, date_dossiers, link_dossiers) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [dossierData.societe, dossierData.annee, dossierData.region, dossierData.titre, dossierData.date, dossierData.link]
     );
     console.log('✅ Dossier inséré avec succès');
     return res.rows[0];
