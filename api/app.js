@@ -15,7 +15,7 @@ app.use(cors({ origin: ['https://fr-ist-isteau-rpaccef.web.app','http://localhos
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Documentation Swagger
+// Documentation Swagger - test push
 app.get('/swagger.yaml', (req, res) => {
   res.setHeader('Content-Type', 'text/yaml');
   res.sendFile(path.join(__dirname, 'swagger.yaml'));
