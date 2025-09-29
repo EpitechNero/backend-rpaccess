@@ -263,6 +263,7 @@ const selectBaseDocuBySheetId = async (SheetId) => {
 };
 
 const insertBaseDocu = async (docuData) => {
+  console.log(docuData);
   try {
     const res = await pool.query(
       'INSERT INTO basedocu (service_basedocu, type_basedocu, titre_basedocu, link_basedocu, pole_basedocu, projet_basedocu, sousprojet_basedocu, date_basedocu, objet_basedocu) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
