@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, deleteDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, deleteBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices, selectForm, syncSheetToDB, insertHistory, selectHistoryByTable } = require('../services/psqlService.js');
+const { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectList, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, deleteDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, deleteBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices, selectForm, syncSheetToDB, insertHistory, selectHistoryByTable, getStatus, updateStatus } = require('../services/psqlService.js');
 
 exports.getUsers = async (req, res) => {
   try {
@@ -473,5 +473,24 @@ exports.getHistory = async (req, res) => {
     res.status(200).json({ success: true, history });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+exports.getStatus = async (req, res) => {
+  try {
+    const status = await getStatus();
+    res.status(200).json(status);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.updateStatus = async (req, res) => {
+  try {
+    const statusData = req.body;
+    const updatedStatus = await updateStatus(statusData);
+    res.status(200).json({ message: 'Statut mis à jour avec succès', data: updatedStatus });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };

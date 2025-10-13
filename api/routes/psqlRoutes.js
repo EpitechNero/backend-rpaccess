@@ -58,4 +58,7 @@ router.post('/sync-tables', jwtMiddleware, controller.syncTableFromSheet);
 router.post('/create-history', controller.setHistory);
 router.get('/get-history/:table', controller.getHistory);
 
+router.get('/getstatus', jwtMiddleware, controller.getStatus);
+router.update('/updatestatus', jwtMiddleware, controller.updateStatus);
+
 module.exports = router;
