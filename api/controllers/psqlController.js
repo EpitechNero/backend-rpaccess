@@ -488,6 +488,7 @@ exports.getStatus = async (req, res) => {
 exports.updateStatus = async (req, res) => {
   try {
     const statusData = req.body;
+    console.log(statusData);
     const updatedStatus = await updateStatus(statusData);
     res.status(200).json({ message: 'Statut mis à jour avec succès', data: updatedStatus });
   } catch (error) {
