@@ -59,6 +59,6 @@ router.post('/create-history', controller.setHistory);
 router.get('/get-history/:table', controller.getHistory);
 
 router.get('/getstatus', jwtMiddleware, controller.getStatus);
-router.patch('/updatestatus', jwtMiddleware, controller.updateStatus);
+router.post('/updatestatus', jwtMiddleware, controller.updateStatus);
 
 module.exports = router;
