@@ -698,4 +698,26 @@ async function selectHistoryByTable(table) {
   }
 }
 
-module.exports = { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, deleteDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, deleteBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm, syncSheetToDB, insertHistory, selectHistoryByTable };
+async function getStatus() {
+  try {
+    const res = await pool.query('SELECT estactive_activation FROM activationrpa WHERE id_activation = 1');
+    logger.info('✅ Statut récupéré avec succès');
+    return res.rows[0];
+  } catch (error) {
+    logger.error('❌ Erreur lors de la récupération du statut :', error.message);
+    throw error;
+  }
+}
+
+async function updateStatus(status) {
+  try {
+    const res = await pool.query('UPDATE activationrpa SET estactive_activation = $1 WHERE id_activation = 1 RETURNING *', [status]);
+    logger.info('✅ Statut mis à jour avec succès');
+    return res.rows[0];
+  } catch (error) {
+    logger.error('❌ Erreur lors de la mise à jour du statut :', error.message);
+    throw error;
+  }
+}
+
+module.exports = { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectActivity, selectMaquettes, selectReferentielMaquettes, selectDossiers, deleteDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, deleteBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm, syncSheetToDB, insertHistory, selectHistoryByTable, getStatus, updateStatus };
