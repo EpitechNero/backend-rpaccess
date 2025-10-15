@@ -10,6 +10,7 @@ const uploadAttachment = async (file) => {
     filename: file.originalname,
     contentType: file.mimetype
   });
+  logger.info(file.mimetype)
   //form.append('file', file.buffer, file.originalname);
 
   try {
