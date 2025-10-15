@@ -1,4 +1,4 @@
-const { createZendeskTicketWithAttachment } = require('../services/zendeskService');
+const { createZendeskTicketWithAttachments } = require('../services/zendeskService');
 
 exports.createTicket = async (req, res) => {
   const { subject, body, name, email, priority, type } = req.body;
@@ -14,7 +14,7 @@ exports.createTicket = async (req, res) => {
 
   try {
     //const uploadTokens = await Promise.all(files.map(uploadAttachment));
-    await createZendeskTicketWithAttachment(subject, body, name, email, priority, type, files);
+    await createZendeskTicketWithAttachments(subject, body, name, email, priority, type, files);
     res.status(200).send({ message: 'Ticket créé avec succès !' });
   } catch (error) {
     console.error('Erreur lors de la création du ticket:', error);
