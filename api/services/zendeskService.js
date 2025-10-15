@@ -14,9 +14,11 @@ const uploadAttachment = async (file) => {
 
   // FormData pour l'upload
   const form = new FormData();
+
+  const base64Data = file.buffer.toString('base64');
   
   // On append le buffer directement, sans knownLength
-  form.append('file', Buffer.from(file.buffer), {
+  form.append('file', Buffer.from(base64Data, 'base64'), {
     filename: safeFilename,
     contentType: file.mimetype,
   });
@@ -26,6 +28,9 @@ const uploadAttachment = async (file) => {
     ...form.getHeaders(),
     Authorization: `Basic ${auth}`,
   };
+
+  const fs = require('fs');
+  fs.writeFileSync(`./tmp/${safeFilename}`, file.buffer);
 
   logger.info('Envoi vers Zendesk', { filename: safeFilename, mimetype: file.mimetype, size: file.size });
 
