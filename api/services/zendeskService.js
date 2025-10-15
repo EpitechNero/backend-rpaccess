@@ -113,14 +113,17 @@ const createZendeskTicketWithAttachment = async (subject, body, name, email, pri
     },
   };
 
+  logger.info(uploadTokens);
+
   try {
     const response = await axios.post(
       `https://${config.domain}/api/v2/tickets.json`,
-      ticketData,
+      JSON.stringify(ticketData),
       {
         headers: {
           Authorization: `Basic ${auth}`,
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json; charset=utf-8',
+
         },
       }
     );
