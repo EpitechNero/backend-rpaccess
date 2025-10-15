@@ -29,8 +29,22 @@ const uploadAttachment = async (file) => {
     Authorization: `Basic ${auth}`,
   };
 
-  const fs = require('fs');
-  fs.writeFileSync(`./tmp/${safeFilename}`, file.buffer);
+const path = require('path');
+
+// Chemin vers le dossier temporaire
+const tmpDir = path.join(__dirname, '../tmp');
+
+// Crée le dossier s'il n'existe pas
+if (!fs.existsSync(tmpDir)) {
+  fs.mkdirSync(tmpDir, { recursive: true });
+}
+
+// Écriture des fichiers
+req.files.forEach(file => {
+  const filePath = path.join(tmpDir, file.originalname);
+  fs.writeFileSync(filePath, file.buffer);
+  console.log(`Fichier écrit localement : ${filePath}`);
+});
 
   logger.info('Envoi vers Zendesk', { filename: safeFilename, mimetype: file.mimetype, size: file.size });
 
