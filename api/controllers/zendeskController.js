@@ -8,7 +8,7 @@ exports.createTicket = async (req, res) => {
     console.log('---- fichier reçu ----');
     console.log('originalname:', file.originalname);
     console.log('mimetype:', file.mimetype);
-    console.log('size attendu (client):', file.size); // multer expose size
+    console.log('size attendu (client):', file.size);
     console.log('buffer length:', file.buffer ? file.buffer.length : 'no buffer');
   });
 

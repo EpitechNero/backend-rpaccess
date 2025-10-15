@@ -2,42 +2,34 @@ const axios = require('axios');
 const FormData = require('form-data');
 const config = require('../config/zendesk');
 const logger = require('../utils/logger');
-
 const uploadAttachment = async (file) => {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
-  const form = new FormData();
 
+  // Création d'un nom de fichier "safe"
   const safeFilename = file.originalname
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-zA-Z0-9._-]/g, "_")
     .toLowerCase();
 
-  form.append('file', file.buffer, {
+  // FormData pour l'upload
+  const form = new FormData();
+  
+  // On append le buffer directement, sans knownLength
+  form.append('file', Buffer.from(file.buffer), {
     filename: safeFilename,
     contentType: file.mimetype,
-    knownLength: file.buffer.length
   });
 
-  const getLength = () =>
-    new Promise((resolve, reject) => {
-      form.getLength((err, length) => {
-        if (err) return reject(err);
-        resolve(length);
-      });
-    });
+  // Calcul automatique de la longueur du body
+  const headers = {
+    ...form.getHeaders(),
+    Authorization: `Basic ${auth}`,
+  };
+
+  logger.info('Envoi vers Zendesk', { filename: safeFilename, mimetype: file.mimetype, size: file.size });
 
   try {
-    const length = await getLength();
-
-    const headers = {
-      ...form.getHeaders(),
-      Authorization: `Basic ${auth}`,
-      'Content-Length': length
-    };
-
-    logger.info('Envoi vers Zendesk', { filename: safeFilename, mimetype: file.mimetype, length });
-
     const response = await axios.post(
       `https://${config.domain}/api/v2/uploads.json?filename=${encodeURIComponent(safeFilename)}`,
       form,
@@ -45,12 +37,13 @@ const uploadAttachment = async (file) => {
         headers,
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
-        timeout: 120000
+        timeout: 120000,
       }
     );
 
     logger.info('Upload réussi', { filename: safeFilename, token: response.data.upload.token });
     return response.data.upload.token;
+
   } catch (error) {
     logger.error('Erreur lors du téléversement', {
       filename: safeFilename,
