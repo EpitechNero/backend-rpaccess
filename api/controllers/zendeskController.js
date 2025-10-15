@@ -1,4 +1,6 @@
 const { uploadAttachment, createZendeskTicketWithAttachment } = require('../services/zendeskService');
+const fs = require('fs');
+const path = require('path');
 
 exports.createTicket = async (req, res) => {
   const { subject, body, name, email, priority, type } = req.body;
@@ -10,6 +12,21 @@ exports.createTicket = async (req, res) => {
     console.log('mimetype:', file.mimetype);
     console.log('size attendu (client):', file.size);
     console.log('buffer length:', file.buffer ? file.buffer.length : 'no buffer');
+  });
+
+  // Chemin vers le dossier temporaire
+  const tmpDir = path.join(__dirname, '../tmp');
+  
+  // Crée le dossier s'il n'existe pas
+  if (!fs.existsSync(tmpDir)) {
+    fs.mkdirSync(tmpDir, { recursive: true });
+  }
+  
+  // Écriture des fichiers
+  req.files.forEach(file => {
+    const filePath = path.join(tmpDir, file.originalname);
+    fs.writeFileSync(filePath, file.buffer);
+    console.log(`Fichier écrit localement : ${filePath}`);
   });
 
   try {

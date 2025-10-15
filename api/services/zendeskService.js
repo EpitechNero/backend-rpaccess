@@ -3,9 +3,6 @@ const FormData = require('form-data');
 const config = require('../config/zendesk');
 const logger = require('../utils/logger');
 
-const fs = require('fs');
-const path = require('path');
-
 const uploadAttachment = async (file) => {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
 
@@ -32,21 +29,6 @@ const uploadAttachment = async (file) => {
     ...form.getHeaders(),
     Authorization: `Basic ${auth}`,
   };
-
-// Chemin vers le dossier temporaire
-const tmpDir = path.join(__dirname, '../tmp');
-
-// Crée le dossier s'il n'existe pas
-if (!fs.existsSync(tmpDir)) {
-  fs.mkdirSync(tmpDir, { recursive: true });
-}
-
-// Écriture des fichiers
-req.files.forEach(file => {
-  const filePath = path.join(tmpDir, file.originalname);
-  fs.writeFileSync(filePath, file.buffer);
-  console.log(`Fichier écrit localement : ${filePath}`);
-});
 
   logger.info('Envoi vers Zendesk', { filename: safeFilename, mimetype: file.mimetype, size: file.size });
 
