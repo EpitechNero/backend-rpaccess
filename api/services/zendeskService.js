@@ -6,12 +6,69 @@ const logger = require('../utils/logger');
 const uploadAttachment = async (file) => {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
   const form = new FormData();
+
+  const safeFilename = file.originalname
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9._-]/g, "_")
+    .toLowerCase();
+
+  form.append('file', file.buffer, {
+    filename: safeFilename,
+    contentType: file.mimetype,
+    knownLength: file.buffer.length
+  });
+
+  const getLength = () =>
+    new Promise((resolve, reject) => {
+      form.getLength((err, length) => {
+        if (err) return reject(err);
+        resolve(length);
+      });
+    });
+
+  try {
+    const length = await getLength();
+
+    const headers = {
+      ...form.getHeaders(),
+      Authorization: `Basic ${auth}`,
+      'Content-Length': length
+    };
+
+    logger.info('Envoi vers Zendesk', { filename: safeFilename, mimetype: file.mimetype, length });
+
+    const response = await axios.post(
+      `https://${config.domain}/api/v2/uploads.json?filename=${encodeURIComponent(safeFilename)}`,
+      form,
+      {
+        headers,
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+        timeout: 120000
+      }
+    );
+
+    logger.info('Upload réussi', { filename: safeFilename, token: response.data.upload.token });
+    return response.data.upload.token;
+  } catch (error) {
+    logger.error('Erreur lors du téléversement', {
+      filename: safeFilename,
+      error: error.response?.data || error.message,
+    });
+    throw error;
+  }
+};
+
+/*const uploadAttachment = async (file) => {
+  const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
+  const form = new FormData();
   //form.append('file', file.buffer, file.originalname);
 
   const safeFilename = file.originalname
-    .normalize("NFD")              // enlève accents
-    .replace(/[\u0300-\u036f]/g, "") // retire les diacritiques
-    .replace(/[^a-zA-Z0-9._-]/g, "_") // remplace caractères spéciaux
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9._-]/g, "_")
     .toLowerCase();   
 
   form.append('file', file.buffer, {
@@ -42,7 +99,7 @@ const uploadAttachment = async (file) => {
     });
     throw error;
   }
-};
+};*/
 
 const createZendeskTicketWithAttachment = async (subject, body, name, email, priority, type, uploadTokens) => {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
