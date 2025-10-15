@@ -1,5 +1,5 @@
 const axios = require('axios');
-const fetch = require('node-fetch');
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const FormData = require('form-data');
 const config = require('../config/zendesk');
 const logger = require('../utils/logger');
