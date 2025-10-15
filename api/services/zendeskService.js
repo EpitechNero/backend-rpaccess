@@ -6,16 +6,24 @@ const logger = require('../utils/logger');
 const uploadAttachment = async (file) => {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
   const form = new FormData();
+  //form.append('file', file.buffer, file.originalname);
+
+  const safeFilename = file.originalname
+    .normalize("NFD")              // enlève accents
+    .replace(/[\u0300-\u036f]/g, "") // retire les diacritiques
+    .replace(/[^a-zA-Z0-9._-]/g, "_") // remplace caractères spéciaux
+    .toLowerCase();   
+
   form.append('file', file.buffer, {
-    filename: file.originalname,
-    contentType: file.mimetype
+    filename: safeFilename,
+    contentType: file.mimetype,
+    knownLength: file.buffer.length
   });
   logger.info(file.mimetype)
-  //form.append('file', file.buffer, file.originalname);
 
   try {
     const response = await axios.post(
-      `https://${config.domain}/api/v2/uploads.json?filename=${encodeURIComponent(file.originalname)}`,
+      `https://${config.domain}/api/v2/uploads.json?filename=${encodeURIComponent(safeFilename)}`,
       form,
       {
         headers: {
@@ -25,11 +33,11 @@ const uploadAttachment = async (file) => {
       }
     );
 
-    logger.info('Upload réussi', { filename: file.originalname, token: response.data.upload.token });
+    logger.info('Upload réussi', { filename: safeFilename, token: response.data.upload.token });
     return response.data.upload.token;
   } catch (error) {
     logger.error('Erreur lors du téléversement', {
-      filename: file.originalname,
+      filename: safeFilename,
       error: error.response?.data || error.message,
     });
     throw error;
