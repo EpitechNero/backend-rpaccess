@@ -2,6 +2,10 @@ const axios = require('axios');
 const FormData = require('form-data');
 const config = require('../config/zendesk');
 const logger = require('../utils/logger');
+
+const fs = require('fs');
+const path = require('path');
+
 const uploadAttachment = async (file) => {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
 
@@ -28,8 +32,6 @@ const uploadAttachment = async (file) => {
     ...form.getHeaders(),
     Authorization: `Basic ${auth}`,
   };
-
-const path = require('path');
 
 // Chemin vers le dossier temporaire
 const tmpDir = path.join(__dirname, '../tmp');
