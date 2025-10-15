@@ -1,4 +1,4 @@
-const axios = require('axios');
+/*const axios = require('axios');
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const FormData = require('form-data');
 const config = require('../config/zendesk');
@@ -25,8 +25,6 @@ const uploadAttachment = async (file) => {
   };
 
   try {
-    logger.info('Envoi vers Zendesk via fetch', { filename: safeFilename });
-
     const response = await fetch(
       `https://${config.domain}/api/v2/uploads.json?filename=${encodeURIComponent(safeFilename)}`,
       {
@@ -55,7 +53,7 @@ const uploadAttachment = async (file) => {
   }
 };
 
-/*const uploadAttachment = async (file) => {
+const uploadAttachment = async (file) => {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
   const form = new FormData();
   //form.append('file', file.buffer, file.originalname);
@@ -94,7 +92,7 @@ const uploadAttachment = async (file) => {
     });
     throw error;
   }
-};*/
+};
 
 const createZendeskTicketWithAttachment = async (subject, body, name, email, priority, type, uploadTokens) => {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
@@ -140,4 +138,68 @@ const createZendeskTicketWithAttachment = async (subject, body, name, email, pri
 module.exports = {
   uploadAttachment,
   createZendeskTicketWithAttachment,
+};*/
+
+const axios = require('axios');
+const FormData = require('form-data');
+const config = require('../config/zendesk');
+const logger = require('../utils/logger');
+
+const createZendeskTicketWithAttachments = async (subject, body, name, email, priority, type, files = []) => {
+  const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
+  
+  // Création du form-data
+  const form = new FormData();
+  
+  // Infos du ticket
+  form.append('ticket[subject]', subject);
+  form.append('ticket[comment][body]', body);
+  form.append('ticket[requester][name]', name);
+  form.append('ticket[requester][email]', email);
+  form.append('ticket[priority]', priority);
+  form.append('ticket[type]', type);
+
+  // Ajout des fichiers
+  files.forEach(file => {
+    const safeFilename = file.originalname
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9._-]/g, "_")
+      .toLowerCase();
+
+    form.append('ticket[comment][uploads][]', file.buffer, {
+      filename: safeFilename,
+      contentType: file.mimetype,
+    });
+  });
+
+  try {
+    const headers = {
+      Authorization: `Basic ${auth}`,
+      ...form.getHeaders(),
+    };
+
+    const response = await axios.post(
+      `https://${config.domain}/api/v2/tickets.json`,
+      form,
+      {
+        headers,
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+        timeout: 120000,
+      }
+    );
+
+    logger.info('Ticket créé avec succès', { ticketId: response.data.ticket.id });
+    return response.data.ticket.id;
+
+  } catch (error) {
+    logger.error('Erreur création ticket avec fichiers', {
+      error: error.response?.data || error.message,
+    });
+    throw error;
+  }
 };
+
+module.exports = { createZendeskTicketWithAttachments };
+
