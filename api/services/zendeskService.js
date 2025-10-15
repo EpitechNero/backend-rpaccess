@@ -6,7 +6,11 @@ const logger = require('../utils/logger');
 const uploadAttachment = async (file) => {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
   const form = new FormData();
-  form.append('file', file.buffer, file.originalname);
+  form.append('file', file.buffer, {
+    filename: file.originalname,
+    contentType: file.mimetype
+  });
+  //form.append('file', file.buffer, file.originalname);
 
   try {
     const response = await axios.post(
