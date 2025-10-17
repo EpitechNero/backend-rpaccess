@@ -126,7 +126,7 @@ const insertEOTP = async (eotpData) => {
 
 const selectList = async () => {
   try {
-    const res = await pool.query('SELECT * FROM list');
+    const res = await pool.query('SELECT * FROM list ORDER BY title_list');
     console.log('✅ Liste récupérée avec succès');
     return res.rows;
   } catch (error) {
