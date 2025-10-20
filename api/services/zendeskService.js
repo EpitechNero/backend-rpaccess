@@ -153,32 +153,43 @@ const uploadAttachment = async (file) => {
 
   // Normalisation du nom du fichier
   const safeFilename = file.originalname
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-zA-Z0-9._-]/g, "_")
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9._-]/g, '_')
     .toLowerCase();
 
+  // Construire le FormData correctement
   const form = new FormData();
-
   form.append('file', file.buffer, {
     filename: safeFilename,
     contentType: file.mimetype || 'application/octet-stream',
   });
 
-  try {
-    const headers = file.mimetype === 'application/image/png' ? {
-        'Content-Type': 'image/png',
-        Authorization: `Basic ${auth}`,
-      } :{
-        ...form.getHeaders(),
-        Authorization: `Basic ${auth}`,
-      };
+  // Récupérer en-têtes fournis par form-data (inclut boundary)
+  const formHeaders = form.getHeaders();
 
-    logger.info('Upload vers Zendesk', { filename: safeFilename, size: file.buffer.length });
+  // Optionnel : calculer Content-Length pour éviter le chunked encoding
+  const getContentLength = () =>
+    new Promise((resolve, reject) => {
+      form.getLength((err, length) => {
+        if (err) return reject(err);
+        resolve(length);
+      });
+    });
+
+  try {
+    const contentLength = await getContentLength();
+    const headers = {
+      ...formHeaders,
+      Authorization: `Basic ${auth}`,
+      'Content-Length': contentLength,
+    };
+
+    logger.info('Upload vers Zendesk', { filename: safeFilename, size: file.buffer.length, headers: headers });
 
     const response = await axios.post(
       `https://${config.domain}/api/v2/uploads.json?filename=${encodeURIComponent(safeFilename)}`,
-      file,
+      form,
       {
         headers,
         maxContentLength: Infinity,
@@ -187,11 +198,18 @@ const uploadAttachment = async (file) => {
       }
     );
 
+    // Vérification basique
+    if (!response.data || !response.data.upload || !response.data.upload.token) {
+      logger.error('Réponse d\'upload inattendue', { data: response.data });
+      throw new Error('Upload Zendesk: réponse inattendue');
+    }
+
     logger.info('Upload réussi', { filename: safeFilename, token: response.data.upload.token });
     return response.data.upload.token;
-
   } catch (error) {
-    logger.error('Erreur upload', { filename: safeFilename, error: error.response?.data || error.message });
+    // Extraire info utile si existante
+    const errData = error.response?.data || error.message;
+    logger.error('Erreur upload', { filename: safeFilename, error: errData });
     throw error;
   }
 };
