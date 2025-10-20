@@ -1,92 +1,93 @@
 const axios = require('axios');
 const FormData = require('form-data');
-const { Readable } = require('stream');
 const config = require('../config/zendesk');
 const logger = require('../utils/logger');
 
 /**
- * Convertit un Buffer en Stream lisible (équivalent à fs.createReadStream)
- */
-function bufferToStream(buffer) {
-  const stream = new Readable();
-  stream.push(buffer);
-  stream.push(null); // fin du flux
-  return stream;
-}
-
-/**
- * Upload d’un fichier vers Zendesk (version finale compatible Buffer)
+ * 🔼 Upload d’un fichier vers Zendesk pour obtenir un token d’upload
  */
 const uploadAttachment = async (file) => {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
 
-  // Normalisation du nom du fichier
   const safeFilename = file.originalname
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-zA-Z0-9._-]/g, '_')
     .toLowerCase();
 
-  // Création du stream à partir du buffer
-  const fileStream = bufferToStream(file.buffer);
-
-  // Préparation du FormData (Zendesk attend un multipart réel)
   const form = new FormData();
-  form.append('file', fileStream, {
+  form.append('file', file.buffer, {
     filename: safeFilename,
     contentType: file.mimetype || 'application/octet-stream',
   });
 
-  // Headers avec authentification et boundary correct
-  const headers = {
-    ...form.getHeaders(),
-    Authorization: `Basic ${auth}`,
-  };
-
   try {
-    logger.info('Upload vers Zendesk', { filename: safeFilename, size: file.buffer.length });
-
     const response = await axios.post(
       `https://${config.domain}/api/v2/uploads.json?filename=${encodeURIComponent(safeFilename)}`,
       form,
       {
-        headers,
+        headers: {
+          ...form.getHeaders(),
+          Authorization: `Basic ${auth}`,
+        },
         maxBodyLength: Infinity,
         maxContentLength: Infinity,
-        timeout: 120000,
+        timeout: 60000,
       }
     );
 
-    // Vérification du token
     if (!response.data?.upload?.token) {
-      logger.error('Réponse inattendue Zendesk', { data: response.data });
-      throw new Error('Upload Zendesk: réponse inattendue');
+      logger.error('Réponse inattendue de Zendesk', { data: response.data });
+      throw new Error('Réponse inattendue de Zendesk lors de l’upload');
     }
 
-    logger.info('Upload réussi', { filename: safeFilename, token: response.data.upload.token });
+    logger.info('✅ Upload réussi', {
+      filename: safeFilename,
+      token: response.data.upload.token,
+      size: file.buffer.length,
+      mimetype: file.mimetype,
+    });
+
     return response.data.upload.token;
 
   } catch (error) {
     const errData = error.response?.data || error.message;
-    logger.error('Erreur upload Zendesk', { filename: safeFilename, error: errData });
+    logger.error('❌ Erreur upload Zendesk', {
+      filename: safeFilename,
+      error: errData,
+    });
     throw error;
   }
 };
 
-const createZendeskTicketWithAttachment = async (subject, body, name, email, priority, type, uploadTokens) => {
+/**
+ * 🎫 Création d’un ticket Zendesk avec éventuelles pièces jointes
+ */
+const createZendeskTicketWithAttachment = async (
+  subject,
+  body,
+  name,
+  email,
+  priority,
+  type,
+  uploadTokens = []
+) => {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
 
+  // Construction du ticket Zendesk
   const ticketData = {
     ticket: {
-      subject,
-      comment: {
-        body,
-        html_body: body,
-        uploads: uploadTokens,
+      subject: subject || '(Sans objet)',
+      requester: {
+        name: name || 'Utilisateur inconnu',
+        email: email || 'inconnu@example.com',
       },
-      requester: { name, email },
-      priority,
-      type,
+      comment: {
+        body: body || '',
+        uploads: uploadTokens.length > 0 ? uploadTokens : undefined,
+      },
+      priority: priority || 'normal',
+      type: type || 'question',
     },
   };
 
@@ -97,19 +98,31 @@ const createZendeskTicketWithAttachment = async (subject, body, name, email, pri
       {
         headers: {
           Authorization: `Basic ${auth}`,
-          'Content-Type': 'application/json; charset=utf-8',
+          'Content-Type': 'application/json',
         },
-        maxContentLength: Infinity,
         maxBodyLength: Infinity,
-        timeout: 120000,
+        maxContentLength: Infinity,
+        timeout: 60000,
       }
     );
 
-    logger.info('Ticket créé avec succès', { ticketId: response.data.ticket.id });
-    return response.data.ticket.id;
+    const ticketId = response.data?.ticket?.id;
+    if (!ticketId) {
+      throw new Error('Réponse Zendesk invalide');
+    }
+
+    logger.info('🎟️ Ticket créé avec succès', {
+      ticketId,
+      nbFichiers: uploadTokens.length,
+      hasAttachments: uploadTokens.length > 0,
+    });
+
+    return ticketId;
 
   } catch (error) {
-    logger.error('Erreur création ticket', { error: error.response?.data || error.message });
+    logger.error('💥 Erreur création ticket Zendesk', {
+      error: error.response?.data || error.message,
+    });
     throw error;
   }
 };

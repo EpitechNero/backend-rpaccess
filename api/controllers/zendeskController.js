@@ -32,8 +32,6 @@ exports.createTicket = async (req, res) => {
   try {
     // Étape 1 : Vérification / debug des fichiers reçus (facultatif)
     for (const file of files) {
-      const tmpPath = path.join('/tmp', file.originalname);
-      fs.writeFileSync(tmpPath, file.buffer);
       logger.info('📂 Fichier reçu', {
         filename: file.originalname,
         mimetype: file.mimetype,
