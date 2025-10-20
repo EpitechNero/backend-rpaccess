@@ -3,30 +3,21 @@ const FormData = require('form-data');
 const config = require('../config/zendesk');
 const logger = require('../utils/logger');
 
-/**
- * Upload d'un fichier vers Zendesk et retour de l'upload token.
- * Compatible PDF, CSV, PNG, JPEG.
- * file : objet provenant de multer (file.buffer, file.originalname, file.mimetype)
- */
 const uploadAttachment = async (file) => {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
 
-  // Normalisation du nom du fichier
   const safeFilename = file.originalname
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-zA-Z0-9._-]/g, '_')
     .toLowerCase();
 
-  // Construire le FormData correctement
   const form = new FormData();
   form.append('file', file.buffer, {
     filename: safeFilename,
     contentType: file.mimetype || 'application/octet-stream',
-    // knownLength n'est pas nécessaire, form-data + Axios gèrent la taille
   });
 
-  // Récupérer headers du FormData (inclut boundary)
   const headers = {
     ...form.getHeaders(),
     Authorization: `Basic ${auth}`,
@@ -61,9 +52,6 @@ const uploadAttachment = async (file) => {
   }
 };
 
-/**
- * Création du ticket Zendesk avec les fichiers uploadés
- */
 const createZendeskTicketWithAttachment = async (subject, body, name, email, priority, type, uploadTokens) => {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
 
