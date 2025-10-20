@@ -12,13 +12,8 @@ const requestLogger = require('./middlewares/requestLogger');
 
 const app = express();
 app.use(cors({ origin: ['https://fr-ist-isteau-rpaccef.web.app','http://localhost:4200'], methods: ['GET', 'POST', 'OPTIONS'] }));
-
-app.use('/zendesk', zendeskRoutes);
-
-app.use((req, res, next) => {
-  if (req.path.startsWith('/zendesk')) return next();
-  bodyParser.json()(req, res, () => bodyParser.urlencoded({ extended: true })(req, res, next));
-});
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Documentation Swagger - test push
 app.get('/swagger.yaml', (req, res) => {
@@ -27,6 +22,7 @@ app.get('/swagger.yaml', (req, res) => {
 });
 
 app.use(requestLogger);
+app.use('/zendesk', zendeskRoutes);
 app.use('/drive', driveRoutes);
 app.use('/aa', automationRoutes);
 app.use('/db', psqlRoutes);

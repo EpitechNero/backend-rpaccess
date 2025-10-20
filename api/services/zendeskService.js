@@ -3,16 +3,10 @@ const { Readable } = require('stream');
 const config = require('../config/zendesk');
 const logger = require('../utils/logger');
 
-/**
- * Convertit un Buffer en Readable Stream
- */
 function bufferToStream(buffer) {
   return Readable.from(buffer);
 }
 
-/**
- * Upload d’un fichier vers Zendesk avec un flux pur
- */
 const uploadAttachment = async (file) => {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
 
@@ -67,10 +61,6 @@ const uploadAttachment = async (file) => {
   }
 };
 
-
-/**
- * 🎫 Création d’un ticket Zendesk avec éventuelles pièces jointes
- */
 const createZendeskTicketWithAttachment = async (
   subject,
   body,
@@ -82,7 +72,6 @@ const createZendeskTicketWithAttachment = async (
 ) => {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
 
-  // Construction du ticket Zendesk
   const ticketData = {
     ticket: {
       subject: subject || '(Sans objet)',

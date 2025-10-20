@@ -5,12 +5,6 @@ exports.createTicket = async (req, res) => {
   const { subject, body, name, email, priority, type } = req.body;
   const files = req.files || [];
 
-  logger.info('🎫 Création de ticket Zendesk', {
-    subject,
-    email,
-    nbFichiers: files.length,
-  });
-
   try {
     let uploadTokens = [];
     if (files.length > 0) {
@@ -39,11 +33,6 @@ exports.createTicket = async (req, res) => {
       type,
       uploadTokens
     );
-
-    logger.info('✅ Ticket créé avec succès', {
-      ticketId,
-      fichiers: files.map(f => f.originalname),
-    });
 
     res.status(200).json({
       message: 'Ticket créé avec succès !',
