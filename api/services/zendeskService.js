@@ -163,12 +163,13 @@ const uploadAttachment = async (file) => {
   // Ajout du buffer binaire directement
   form.append('file', file.buffer, {
     filename: safeFilename,
-    contentType: file.mimetype || 'application/octet-stream', // PNG, PDF, CSV
+    contentType: 'application/binary', // PNG, PDF, CSV
   });
 
   try {
     const headers = {
-      ...form.getHeaders(),
+      contentType: "application/binary",
+      //...form.getHeaders(),
       Authorization: `Basic ${auth}`,
     };
 
