@@ -37,6 +37,12 @@ exports.createTicket = async (req, res) => {
         mimetype: file.mimetype,
         size: file.buffer.length
       });
+      const hexPreview = Array.from(file.buffer.slice(0, 20))
+                             .map(b => b.toString(16).padStart(2, '0'))
+                             .join(' ');
+      console.log(`hex preview received ${file.originalname}:`, hexPreview);
+
+      console.log(`size received: ${file.buffer.length}`);
     }
 
     // Étape 2 : Upload des fichiers vers Zendesk
