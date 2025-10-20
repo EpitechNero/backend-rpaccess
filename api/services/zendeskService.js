@@ -158,12 +158,12 @@ const uploadAttachment = async (file) => {
     .replace(/[^a-zA-Z0-9._-]/g, "_")
     .toLowerCase();
 
-  /*const form = new FormData();
+  const form = new FormData();
 
   form.append('file', file.buffer, {
     filename: safeFilename,
     contentType: file.mimetype || 'application/octet-stream',
-  });*/
+  });
 
   try {
     const headers = file.mimetype === 'application/image/png' ? {
