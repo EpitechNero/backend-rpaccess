@@ -74,17 +74,15 @@ const createZendeskTicketWithAttachment = async (
 
   const ticketData = {
     ticket: {
-      subject: subject || '(Sans objet)',
-      requester: {
-        name: name || 'Utilisateur inconnu',
-        email: email || 'inconnu@example.com',
-      },
+      subject,
       comment: {
-        body: body || '',
-        uploads: uploadTokens.length > 0 ? uploadTokens : undefined,
+        body,
+        html_body: body,
+        uploads: uploadTokens,
       },
-      priority: priority || 'normal',
-      type: type || 'question',
+      requester: { name, email },
+      priority,
+      type,
     },
   };
 
