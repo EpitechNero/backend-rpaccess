@@ -6,6 +6,7 @@ const logger = require('../utils/logger');
 const uploadAttachment = async (file) => {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
 
+  // Faire en sorte de mettre un nom de fichier sans problèmes
   const safeFilename = file.originalname
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
