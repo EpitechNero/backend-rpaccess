@@ -1,24 +1,43 @@
 const axios = require('axios');
 const FormData = require('form-data');
+const { Readable } = require('stream');
 const config = require('../config/zendesk');
 const logger = require('../utils/logger');
 
+/**
+ * Convertit un Buffer en Stream lisible (équivalent à fs.createReadStream)
+ */
+function bufferToStream(buffer) {
+  const stream = new Readable();
+  stream.push(buffer);
+  stream.push(null); // fin du flux
+  return stream;
+}
+
+/**
+ * Upload d’un fichier vers Zendesk (version finale compatible Buffer)
+ */
 const uploadAttachment = async (file) => {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
 
-  // Faire en sorte de mettre un nom de fichier sans problèmes
+  // Normalisation du nom du fichier
   const safeFilename = file.originalname
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-zA-Z0-9._-]/g, '_')
     .toLowerCase();
 
+  // Création du stream à partir du buffer
+  const fileStream = bufferToStream(file.buffer);
+
+  // Préparation du FormData (Zendesk attend un multipart réel)
   const form = new FormData();
-  form.append('file', file.buffer, {
+  form.append('file', fileStream, {
     filename: safeFilename,
     contentType: file.mimetype || 'application/octet-stream',
   });
 
+  // Headers avec authentification et boundary correct
   const headers = {
     ...form.getHeaders(),
     Authorization: `Basic ${auth}`,
@@ -32,14 +51,15 @@ const uploadAttachment = async (file) => {
       form,
       {
         headers,
-        maxContentLength: Infinity,
         maxBodyLength: Infinity,
+        maxContentLength: Infinity,
         timeout: 120000,
       }
     );
 
+    // Vérification du token
     if (!response.data?.upload?.token) {
-      logger.error('Réponse d\'upload inattendue', { data: response.data });
+      logger.error('Réponse inattendue Zendesk', { data: response.data });
       throw new Error('Upload Zendesk: réponse inattendue');
     }
 
@@ -48,7 +68,7 @@ const uploadAttachment = async (file) => {
 
   } catch (error) {
     const errData = error.response?.data || error.message;
-    logger.error('Erreur upload', { filename: safeFilename, error: errData });
+    logger.error('Erreur upload Zendesk', { filename: safeFilename, error: errData });
     throw error;
   }
 };
