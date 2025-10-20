@@ -160,9 +160,10 @@ const uploadAttachment = async (file) => {
 
   // Construire le FormData correctement
   const form = new FormData();
-  form.append('file', file.buffer, {
+  form.append('file', Buffer.from(file.buffer), {
     filename: safeFilename,
     contentType: file.mimetype || 'application/octet-stream',
+    knownLength: file.buffer.length,
   });
 
   // Récupérer en-têtes fournis par form-data (inclut boundary)
