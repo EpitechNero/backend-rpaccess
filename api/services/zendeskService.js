@@ -158,26 +158,27 @@ const uploadAttachment = async (file) => {
     .replace(/[^a-zA-Z0-9._-]/g, "_")
     .toLowerCase();
 
-  const form = new FormData();
+  /*const form = new FormData();
 
-  // Ajout du buffer binaire directement
   form.append('file', file.buffer, {
     filename: safeFilename,
-    contentType: 'application/binary', // PNG, PDF, CSV
-  });
+    contentType: file.mimetype || 'application/octet-stream',
+  });*/
 
   try {
-    const headers = {
-      contentType: "application/binary",
-      //...form.getHeaders(),
-      Authorization: `Basic ${auth}`,
-    };
+    const headers = file.mimetype === 'application/image/png' ? {
+        'Content-Type': 'image/png',
+        Authorization: `Basic ${auth}`,
+      } :{
+        ...form.getHeaders(),
+        Authorization: `Basic ${auth}`,
+      };
 
     logger.info('Upload vers Zendesk', { filename: safeFilename, size: file.buffer.length });
 
     const response = await axios.post(
       `https://${config.domain}/api/v2/uploads.json?filename=${encodeURIComponent(safeFilename)}`,
-      form,
+      file,
       {
         headers,
         maxContentLength: Infinity,
