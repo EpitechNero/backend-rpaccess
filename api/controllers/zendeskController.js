@@ -1,21 +1,3 @@
-/*const { uploadAttachment, createZendeskTicketWithAttachment } = require('../services/zendeskService');
-
-exports.createTicket = async (req, res) => {
-  const { subject, body, name, email, priority, type } = req.body;
-  const files = req.files || [];
-
-  try {
-    const uploadTokens = await Promise.all(files.map(uploadAttachment));
-    await createZendeskTicketWithAttachment(subject, body, name, email, priority, type, uploadTokens);
-    res.status(200).send({ message: 'Ticket créé avec succès !' });
-  } catch (error) {
-    console.error('Erreur lors de la création du ticket:', error);
-    res.status(500).send({ message: 'Erreur lors de la création du ticket.', error });
-  }
-};*/
-
-const fs = require('fs');
-const path = require('path');
 const { uploadAttachment, createZendeskTicketWithAttachment } = require('../services/zendeskService');
 const logger = require('../utils/logger');
 
@@ -30,39 +12,39 @@ exports.createTicket = async (req, res) => {
   });
 
   try {
-    // Étape 1 : Vérification / debug des fichiers reçus (facultatif)
+    // Étape 1 : debug des fichiers reçus (taille + premiers octets)
     for (const file of files) {
+      const hexPreview = Array.from(file.buffer.slice(0, 20))
+                               .map(b => b.toString(16).padStart(2, '0'))
+                               .join(' ');
       logger.info('📂 Fichier reçu', {
         filename: file.originalname,
+        size: file.buffer.length,
         mimetype: file.mimetype,
-        size: file.buffer.length
+        hexPreview,
       });
-      const hexPreview = Array.from(file.buffer.slice(0, 20))
-                             .map(b => b.toString(16).padStart(2, '0'))
-                             .join(' ');
-      console.log(`hex preview received ${file.originalname}:`, hexPreview);
-
-      console.log(`size received: ${file.buffer.length}`);
     }
 
-    // Étape 2 : Upload des fichiers vers Zendesk
+    // Étape 2 : Upload des fichiers vers Zendesk en stream pur
     let uploadTokens = [];
     if (files.length > 0) {
-      uploadTokens = await Promise.all(files.map(async (file) => {
-        try {
-          const token = await uploadAttachment(file);
-          return token;
-        } catch (err) {
-          logger.error('❌ Erreur upload fichier', {
-            filename: file.originalname,
-            error: err.response?.data || err.message,
-          });
-          throw err;
-        }
-      }));
+      uploadTokens = await Promise.all(
+        files.map(async (file) => {
+          try {
+            const token = await uploadAttachment(file);
+            return token;
+          } catch (err) {
+            logger.error('❌ Erreur upload fichier', {
+              filename: file.originalname,
+              error: err.response?.data || err.message,
+            });
+            throw err;
+          }
+        })
+      );
     }
 
-    // Étape 3 : Création du ticket Zendesk
+    // Étape 3 : Création du ticket Zendesk avec les fichiers uploadés
     const ticketId = await createZendeskTicketWithAttachment(
       subject,
       body,

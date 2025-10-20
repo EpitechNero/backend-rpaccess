@@ -1,10 +1,17 @@
 const axios = require('axios');
-const FormData = require('form-data');
+const { Readable } = require('stream');
 const config = require('../config/zendesk');
 const logger = require('../utils/logger');
 
 /**
- * 🔼 Upload d’un fichier vers Zendesk pour obtenir un token d’upload
+ * Convertit un Buffer en Readable Stream
+ */
+function bufferToStream(buffer) {
+  return Readable.from(buffer);
+}
+
+/**
+ * Upload d’un fichier vers Zendesk avec un flux pur
  */
 const uploadAttachment = async (file) => {
   const auth = Buffer.from(`${config.email}/token:${config.apiToken}`).toString('base64');
@@ -15,37 +22,42 @@ const uploadAttachment = async (file) => {
     .replace(/[^a-zA-Z0-9._-]/g, '_')
     .toLowerCase();
 
-  const form = new FormData();
-  form.append('file', file.buffer, safeFilename);
+  const fileStream = bufferToStream(file.buffer);
 
   try {
+    logger.info('🚀 Upload binaire vers Zendesk', {
+      filename: safeFilename,
+      size: file.buffer.length,
+      mimetype: file.mimetype,
+    });
+
     const response = await axios.post(
-      `https://${config.domain}/api/v2/uploads.json?filename=${encodeURIComponent(safeFilename)}&content_type=${encodeURIComponent(file.mimetype)}`,
-      form,
+      `https://${config.domain}/api/v2/uploads.json?filename=${encodeURIComponent(safeFilename)}`,
+      fileStream,
       {
         headers: {
-          ...form.getHeaders(),
           Authorization: `Basic ${auth}`,
+          'Content-Type': 'application/octet-stream', // fichier binaire pur
         },
         maxBodyLength: Infinity,
         maxContentLength: Infinity,
-        timeout: 60000,
+        timeout: 120000,
       }
     );
 
     if (!response.data?.upload?.token) {
-      logger.error('Réponse inattendue de Zendesk', { data: response.data });
-      throw new Error('Réponse inattendue de Zendesk lors de l’upload');
+      logger.error('Réponse inattendue Zendesk', { data: response.data });
+      throw new Error('Upload Zendesk: réponse inattendue');
     }
 
     logger.info('✅ Upload réussi', {
       filename: safeFilename,
       token: response.data.upload.token,
       size: file.buffer.length,
-      mimetype: file.mimetype,
     });
 
     return response.data.upload.token;
+
   } catch (error) {
     logger.error('❌ Erreur upload Zendesk', {
       filename: safeFilename,
