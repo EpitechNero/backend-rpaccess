@@ -16,14 +16,11 @@ const uploadAttachment = async (file) => {
     .toLowerCase();
 
   const form = new FormData();
-  form.append('file', file.buffer, {
-    filename: safeFilename,
-    contentType: file.mimetype || 'application/octet-stream',
-  });
+  form.append('file', file.buffer, safeFilename);
 
   try {
     const response = await axios.post(
-      `https://${config.domain}/api/v2/uploads.json?filename=${encodeURIComponent(safeFilename)}`,
+      `https://${config.domain}/api/v2/uploads.json?filename=${encodeURIComponent(safeFilename)}&content_type=${encodeURIComponent(file.mimetype)}`,
       form,
       {
         headers: {
@@ -49,16 +46,15 @@ const uploadAttachment = async (file) => {
     });
 
     return response.data.upload.token;
-
   } catch (error) {
-    const errData = error.response?.data || error.message;
     logger.error('❌ Erreur upload Zendesk', {
       filename: safeFilename,
-      error: errData,
+      error: error.response?.data || error.message,
     });
     throw error;
   }
 };
+
 
 /**
  * 🎫 Création d’un ticket Zendesk avec éventuelles pièces jointes
