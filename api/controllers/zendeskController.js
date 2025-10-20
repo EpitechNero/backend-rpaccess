@@ -35,8 +35,7 @@ exports.createTicket = async (req, res) => {
       logger.info('📂 Fichier reçu', {
         filename: file.originalname,
         mimetype: file.mimetype,
-        size: file.buffer.length,
-        tmpPath,
+        size: file.buffer.length
       });
     }
 
