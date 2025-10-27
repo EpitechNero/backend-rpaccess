@@ -24,6 +24,7 @@ router.patch('/updatedossier', controller.updateDossier);
 
 router.get('/getlist', jwtMiddleware,  controller.getList);
 router.get('/getactivity', jwtMiddleware, controller.getActivity);
+router.get('/getactivitybyuser/:email', jwtMiddleware, controller.getActivityByUser);
 router.get('/getmaquettes', jwtMiddleware,  controller.getMaquettes);
 router.get('/getreferentielmaquettes', jwtMiddleware,  controller.getReferentielMaquettes);
 
