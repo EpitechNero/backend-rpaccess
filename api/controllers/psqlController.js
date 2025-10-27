@@ -129,9 +129,9 @@ exports.getActivity = async (req, res) => {
 };
 
 exports.getActivityByUser = async (req, res) => {
-  const userEmail = req.params.userEmail;
+  const email = req.params.email;
   try {
-    const activity = await selectActivityByUser(userEmail);
+    const activity = await selectActivityByUser(email);
     res.status(200).json(activity);
   } catch (error) {
     res.status(500).json({ error: error.message });
