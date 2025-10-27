@@ -61,6 +61,15 @@ function buildBotInput(bot, inputData) {
       break;
     }
   }
+
+  if(bot['vinputmail_list'] === 'O') {
+    botKey = 'vInputMail';
+    botInput[botKey] = {
+      type: 'STRING',
+      string: inputData['inputMail'] || ''
+    };
+  }
+
   return botInput;
 }
 
