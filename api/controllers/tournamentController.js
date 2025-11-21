@@ -35,7 +35,7 @@ exports.getTournament = async (req, res) => {
 // -----------------------------
 // POST /tournaments/:id/create-team
 // -----------------------------
-exports.postCreateTeamn = async (req, res) => {
+exports.postCreateTeam = async (req, res) => {
   try {
     const id = req.params.id;
     const { name, player1, player2 } = req.body;
