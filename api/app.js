@@ -8,6 +8,7 @@ const zendeskRoutes = require('./routes/zendeskRoutes');
 const driveRoutes = require('./routes/driveRoutes');
 const automationRoutes = require('./routes/automationRoutes');
 const psqlRoutes = require('./routes/psqlRoutes');
+const tournamentRoutes = require('./routes/tournamentRoutes');
 const requestLogger = require('./middlewares/requestLogger');
 
 const app = express();
@@ -26,6 +27,7 @@ app.use('/zendesk', zendeskRoutes);
 app.use('/drive', driveRoutes);
 app.use('/aa', automationRoutes);
 app.use('/db', psqlRoutes);
+app.use('/tournaments', tournamentRoutes);
 
 app.get('/', (req, res) => res.send('Its Home'));
 
