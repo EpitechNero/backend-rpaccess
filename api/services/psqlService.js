@@ -170,7 +170,7 @@ const selectMaquettes = async () => {
 
 const selectReferentielMaquettes = async () => {
   try {
-    const res = await pool.query('SELECT * FROM referentiel_maquettes');
+    const res = await pool.query('SELECT * FROM referentiel_maquettes ORDER BY region_referentiel_maquettes, territoire_referentiel_maquettes');
     console.log('✅ Référentiel des maquettes récupéré avec succès');
     return res.rows;
   } catch (error) {
