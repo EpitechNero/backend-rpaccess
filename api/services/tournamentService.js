@@ -60,7 +60,7 @@ async function createTeam(tournamentId, name, player1, player2) {
 // -----------------------------
 async function assignRandomTeams(tournamentId, playersArray) {
   if (playersArray.length % 2 !== 0) {
-    throw new Error('Le nombre de joueurs doit être pair.');
+    throw new Error('Le nombre de joueurs doit ï¿½tre pair.');
   }
 
   let players = [...playersArray];
