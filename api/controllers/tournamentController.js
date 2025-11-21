@@ -3,6 +3,7 @@
  ************************************************************/
 
 const tournamentService = require('../services/tournamentService');
+const { pool } = require('../config/psql.js');
 
 // -----------------------------
 // POST /tournaments
@@ -109,6 +110,15 @@ exports.getStandings = async (req, res) => {
     const id = req.params.id;
     const standings = await tournamentService.computeStandings(id);
     res.json(standings);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getAllTournaments = async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM tournaments ORDER BY id');
+    res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
