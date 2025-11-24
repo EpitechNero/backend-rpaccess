@@ -1,8 +1,5 @@
 const tournamentService = require('../services/tournamentService');
 
-// -----------------------------
-// POST /tournaments
-// -----------------------------
 exports.postTournament = async (req, res) => {
   try {
     const { name, rules } = req.body;
@@ -13,9 +10,6 @@ exports.postTournament = async (req, res) => {
   }
 };
 
-// -----------------------------
-// GET /tournaments/:id
-// -----------------------------
 exports.getTournament = async (req, res) => {
   try {
     const id = req.params.id;
@@ -27,9 +21,6 @@ exports.getTournament = async (req, res) => {
   }
 };
 
-// -----------------------------
-// POST /tournaments/:id/draw-teams
-// -----------------------------
 exports.postDrawTeams = async (req, res) => {
   try {
     const id = req.params.id;
@@ -40,9 +31,6 @@ exports.postDrawTeams = async (req, res) => {
   }
 };
 
-// -----------------------------
-// POST /tournaments/:id/schedule-matches
-// -----------------------------
 exports.postScheduleMatches = async (req, res) => {
   try {
     const id = req.params.id;
@@ -54,9 +42,6 @@ exports.postScheduleMatches = async (req, res) => {
   }
 };
 
-// -----------------------------
-// POST /matches/:id/score
-// -----------------------------
 exports.postScore = async (req, res) => {
   try {
     const id = req.params.id;
@@ -68,9 +53,6 @@ exports.postScore = async (req, res) => {
   }
 };
 
-// -----------------------------
-// GET /tournaments/:id/standings
-// -----------------------------
 exports.getStandings = async (req, res) => {
   try {
     const id = req.params.id;
@@ -80,3 +62,18 @@ exports.getStandings = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.getMyMatches = async (req, res) => {
+  try {
+    const tournamentId = Number(req.params.id);
+    const userEmail = req.user.email;
+    
+    const matches = await tournamentService.getMatchesForUser(tournamentId, userEmail);
+
+    res.json(matches);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+};
+

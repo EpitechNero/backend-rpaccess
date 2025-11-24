@@ -1,9 +1,5 @@
-// Require DB pool
 const { pool } = require('../config/psql.js');
 
-// -----------------------------
-// Create tournament
-// -----------------------------
 async function createTournament(name, rulesJson) {
   const sql = `
         INSERT INTO tournaments (name, rules)
@@ -16,9 +12,6 @@ async function createTournament(name, rulesJson) {
   return rows[0];
 }
 
-// -----------------------------
-// Get tournament with teams + matches
-// -----------------------------
 async function getTournamentWithTeamsAndMatches(tournamentId) {
   const tournamentQuery = `SELECT * FROM tournaments WHERE id = $1`;
   const { rows: t } = await pool.query(tournamentQuery, [tournamentId]);
@@ -41,9 +34,6 @@ async function getTournamentWithTeamsAndMatches(tournamentId) {
   };
 }
 
-// -----------------------------
-// Create a team manually
-// -----------------------------
 async function createTeam(tournamentId, name, player1, player2) {
   const sql = `
         INSERT INTO teams (tournament_id, name, player1, player2)
@@ -55,9 +45,6 @@ async function createTeam(tournamentId, name, player1, player2) {
   return rows[0];
 }
 
-// -----------------------------
-// Helper: check if 2 players have a common day
-// -----------------------------
 function hasCommonDay(p1, p2) {
   return p1.lundi && p2.lundi ||
          p1.mardi && p2.mardi ||
@@ -66,16 +53,11 @@ function hasCommonDay(p1, p2) {
          p1.vendredi && p2.vendredi;
 }
 
-// -----------------------------
-// Draw random teams from players table with availability
-// -----------------------------
 async function assignRandomTeamsWithAvailability(tournamentId) {
-  // Fetch all players
   const { rows: players } = await pool.query(`SELECT * FROM players`);
 
   if (players.length < 2) throw new Error('Pas assez de joueurs pour former des équipes.');
 
-  // Shuffle players
   let shuffled = players.sort(() => Math.random() - 0.5);
 
   const createdTeams = [];
@@ -112,23 +94,16 @@ async function assignRandomTeamsWithAvailability(tournamentId) {
   return createdTeams;
 }
 
-// -----------------------------
-// Helper: check common days between two teams
-// -----------------------------
 function commonDays(team1, team2) {
   const days = ['lundi','mardi','mercredi','jeudi','vendredi'];
   const common = days.filter(day =>
     (team1[`player1_${day}`] || team1[`player2_${day}`]) &&
     (team2[`player1_${day}`] || team2[`player2_${day}`])
   );
-  return common; // array of day names in common
+  return common;
 }
 
-// -----------------------------
-// Schedule matches (random + rounds) respecting availability
-// -----------------------------
 async function scheduleMatches(tournamentId, rounds = 5) {
-  // Fetch all teams
   const { rows: teams } = await pool.query(
     `SELECT t.*, 
             p1.lundi as player1_lundi, p1.mardi as player1_mardi, p1.mercredi as player1_mercredi, p1.jeudi as player1_jeudi, p1.vendredi as player1_vendredi,
@@ -149,11 +124,9 @@ async function scheduleMatches(tournamentId, rounds = 5) {
     for (let i = 0; i < shuffled.length; i += 2) {
       if (!shuffled[i + 1]) break;
 
-      // Vérifier qu'il y a au moins un jour commun pour le match
       const common = commonDays(shuffled[i], shuffled[i + 1]);
-      if (common.length === 0) continue; // ignore si pas de jour commun
+      if (common.length === 0) continue;
 
-      // prendre un jour aléatoire parmi ceux en commun
       const day = common[Math.floor(Math.random() * common.length)];
 
       const { rows } = await pool.query(
@@ -170,9 +143,6 @@ async function scheduleMatches(tournamentId, rounds = 5) {
   return matches;
 }
 
-// -----------------------------
-// Submit match score
-// -----------------------------
 async function submitMatchScore(matchId, score1, score2) {
   const sql = `
         UPDATE matches
@@ -237,6 +207,32 @@ async function computeStandings(tournamentId) {
   return list;
 }
 
+async function getMatchesForUser(tournamentId, email) {
+
+  const sql = `
+    SELECT m.*, 
+           th.name AS team_home_name,
+           ta.name AS team_away_name
+    FROM matches m
+    JOIN teams th ON th.id = m.team_home
+    JOIN teams ta ON ta.id = m.team_away
+    JOIN players p ON (p.id = th.player1_id OR p.id = th.player2_id 
+                    OR p.id = ta.player1_id OR p.id = ta.player2_id)
+    WHERE p.email = $1
+      AND m.tournament_id = $2
+    ORDER BY m.round, m.id;
+  `;
+
+  const { rows } = await pool.query(sql, [email, tournamentId]);
+  return rows;
+}
+
+module.exports = {
+  ...,
+  getMatchesForUser,
+};
+
+
 module.exports = {
   createTournament,
   getTournamentWithTeamsAndMatches,
@@ -245,4 +241,5 @@ module.exports = {
   scheduleMatches,
   submitMatchScore,
   computeStandings,
+  getMatchesForUser,
 };
