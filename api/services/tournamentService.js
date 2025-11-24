@@ -214,8 +214,8 @@ async function getMatchesForUser(tournamentId, email) {
            th.name AS team_home_name,
            ta.name AS team_away_name
     FROM matches m
-    JOIN teams th ON th.id = m.team_home
-    JOIN teams ta ON ta.id = m.team_away
+    JOIN teams th ON th.id = m.team1_id
+    JOIN teams ta ON ta.id = m.team2_id
     JOIN players p ON (p.id = th.player1_id OR p.id = th.player2_id 
                     OR p.id = ta.player1_id OR p.id = ta.player2_id)
     WHERE p.email = $1
