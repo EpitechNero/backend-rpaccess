@@ -1347,3 +1347,133 @@ paths:
                     type: string
         "500":
           description: Erreur lors de la création du ticket
+
+  /db/getSuiviUserForCalendar:
+    get:
+      tags:
+        - PSQL
+      summary: Récupère le suivi du calendrier de l'avant
+      responses:
+        "200":
+          description: Liste du suivi du calendrier de l'avant
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    mail:
+                      type: string
+                      description: Compte mail utilisateur
+                    suivi1:
+                      type: boolean
+                      description: Suivi jour 1
+                    suivi2:
+                      type: boolean
+                      description: Suivi jour 2
+                    suivi3:
+                      type: boolean
+                      description: Suivi jour 3
+                    suivi4:
+                      type: boolean
+                      description: Suivi jour 4
+                    suivi5:
+                      type: boolean
+                      description: Suivi jour 5
+                    suivi8:
+                      type: boolean
+                      description: Suivi jour 8
+                    suivi9:
+                      type: boolean
+                      description: Suivi jour 9
+                    suivi10:
+                      type: boolean
+                      description: Suivi jour 10
+                    suivi11:
+                      type: boolean
+                      description: Suivi jour 11
+                    suivi12:
+                      type: boolean
+                      description: Suivi jour 12
+                    suivi15:
+                      type: boolean
+                      description: Suivi jour 15
+                    suivi16:
+                      type: boolean
+                      description: Suivi jour 16
+                    suivi17:
+                      type: boolean
+                      description: Suivi jour 17
+                    suivi18:
+                      type: boolean
+                      description: Suivi jour 18
+                    suivi19:
+                      type: boolean
+                      description: Suivi jour 19
+                    suivi22:
+                      type: boolean
+                      description: Suivi jour 22
+                    suivi23:
+                      type: boolean
+                      description: Suivi jour 23
+                    suivi24:
+                      type: boolean
+                      description: Suivi jour 24
+                    phrase1:
+                      type: boolean
+                      description: Suivi phrase 1
+                    phrase2:
+                      type: boolean
+                      description: Suivi phrase 2
+                    phrase3:
+                      type: boolean
+                      description: Suivi phrase 3
+                    phrase4:
+                      type: boolean
+                      description: Suivi phrase 4
+                    phrase5:
+                      type: boolean
+                      description: Suivi phrase 5
+                    phrase8:
+                      type: boolean
+                      description: Suivi phrase 8
+                    phrase9:
+                      type: boolean
+                      description: Suivi phrase 9
+                    phrase10:
+                      type: boolean
+                      description: Suivi phrase 10
+                    phrase11:
+                      type: boolean
+                      description: Suivi phrase 11
+                    phrase12:
+                      type: boolean
+                      description: Suivi phrase 12
+                    phrase15:
+                      type: boolean
+                      description: Suivi phrase 15
+                    phrase16:
+                      type: boolean
+                      description: Suivi phrase 16
+                    phrase17:
+                      type: boolean
+                      description: Suivi phrase 17
+                    phrase18:
+                      type: boolean
+                      description: Suivi phrase 18
+                    phrase19:
+                      type: boolean
+                      description: Suivi phrase 19
+                    phrase22:
+                      type: boolean
+                      description: Suivi phrase 22
+                    phrase23:
+                      type: boolean
+                      description: Suivi phrase 23
+                    phrase24:
+                      type: boolean
+                      description: Suivi phrase 24
+
+        "500":
+          description: Erreur interne du serveur

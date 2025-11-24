@@ -147,6 +147,16 @@ exports.getMaquettes = async (req, res) => {
   }
 };
 
+exports.getSuiviForCalendarByUser = async (req, res) => {
+  const email = req.params.email;
+  try {
+    const suivi = await selectSuiviForCalendarByUser(email);
+    res.status(200).json(suivi);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 exports.getReferentielMaquettes = async (req, res) => {
   try {
     const referentiel_maquettes = await selectReferentielMaquettes();
@@ -501,6 +511,16 @@ exports.updateStatus = async (req, res) => {
     console.log(statusData);
     const updatedStatus = await updateStatus(statusData);
     res.status(200).json({ message: 'Statut mis à jour avec succès', data: updatedStatus });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getSuiviUserForCalendar = async (req, res) => {
+  try {
+    const { start, end } = req.query;
+    const activity = await selectSuiviUserForCalendar(start, end);
+    res.status(200).json(activity);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
