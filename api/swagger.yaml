@@ -1348,7 +1348,7 @@ paths:
         "500":
           description: Erreur lors de la création du ticket
 
-  /db/getSuiviUserForCalendar:
+  /db/getsuiviforcalendarbyuser:
     get:
       tags:
         - PSQL

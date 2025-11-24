@@ -26,7 +26,8 @@ router.get('/getlist', jwtMiddleware,  controller.getList);
 router.get('/getactivity', jwtMiddleware, controller.getActivity);
 router.get('/getactivitybyuser/:email', jwtMiddleware, controller.getActivityByUser);
 router.get('/getmaquettes', jwtMiddleware,  controller.getMaquettes);
-router.get('/getsuiviforcalendarbyuser/:email', jwtMiddleware,  controller.);
+router.get('/getsuiviforcalendarbyuser/:email', jwtMiddleware,  controller.getSuiviForCalendarByUser);
+router.get('/updatesuivicalendarvalue/:email', jwtMiddleware,  controller.updateSuiviCalendar);
 router.get('/getreferentielmaquettes', jwtMiddleware,  controller.getReferentielMaquettes);
 
 router.get('/getbasedocu', controller.getBaseDocu);
