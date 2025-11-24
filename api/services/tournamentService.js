@@ -216,8 +216,8 @@ async function getMatchesForUser(tournamentId, email) {
     FROM matches m
     JOIN teams th ON th.id = m.team1_id
     JOIN teams ta ON ta.id = m.team2_id
-    JOIN players p ON (p.id = th.player1_id OR p.id = th.player2_id 
-                    OR p.id = ta.player1_id OR p.id = ta.player2_id)
+    JOIN players p ON (p.id = th.player1 OR p.id = th.player2 
+                    OR p.id = ta.player1 OR p.id = ta.player2)
     WHERE p.email = $1
       AND m.tournament_id = $2
     ORDER BY m.round, m.id;
