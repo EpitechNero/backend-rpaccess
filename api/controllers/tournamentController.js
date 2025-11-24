@@ -66,7 +66,7 @@ exports.getStandings = async (req, res) => {
 exports.getMyMatches = async (req, res) => {
   try {
     const tournamentId = Number(req.params.id);
-    const userEmail = req.user.email;
+    const userEmail = req.query.email;
     
     const matches = await tournamentService.getMatchesForUser(tournamentId, userEmail);
 
