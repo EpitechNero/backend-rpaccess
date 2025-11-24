@@ -185,9 +185,6 @@ async function submitMatchScore(matchId, score1, score2) {
   return rows[0];
 }
 
-// -----------------------------
-// Compute standings
-// -----------------------------
 async function computeStandings(tournamentId) {
   const teams = (await pool.query(`SELECT * FROM teams WHERE tournament_id = $1`, [tournamentId])).rows;
   const matches = (await pool.query(`SELECT * FROM matches WHERE tournament_id = $1`, [tournamentId])).rows;
@@ -219,7 +216,6 @@ async function computeStandings(tournamentId) {
     t2.scored += m.score2;
     t2.conceded += m.score1;
 
-    // points
     if (m.score1 < m.score2) {
       t1.points += 2;
     } else {
@@ -227,7 +223,6 @@ async function computeStandings(tournamentId) {
     }
   }
 
-  // compute goalaverage
   for (const id in stats) {
     stats[id].goalaverage = stats[id].scored - stats[id].conceded;
   }
@@ -235,7 +230,7 @@ async function computeStandings(tournamentId) {
   const list = Object.values(stats);
 
   list.sort((a, b) => {
-    if (a.points !== b.points) return b.points - a.points; // more -> better
+    if (a.points !== b.points) return b.points - a.points;
     return b.goalaverage - a.goalaverage;
   });
 
