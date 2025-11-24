@@ -180,8 +180,17 @@ const selectSuiviForCalendarByUser = async (email) => {
 };
 
 const updateSuiviCalendarValue = async(email, jour, phrase) => {
+  if (!/^\d+$/.test(jour)) {
+    throw new Error('Jour invalide');
+  }
+
+  const colonneSuivi = `suivi${jour}`;
+  const colonnePhrase = `phrase${jour}`;
+
+  const query = `UPDATE calendar SET ${colonneSuivi} = TRUE, ${colonnePhrase} = $2 WHERE mail = $1`;
+
   try {
-    const res = await pool.query('UPDATE calendar SET suivi$2 = TRUE, phrase$2 = $3 WHERE mail = $1 ', [email, jour, phrase]);
+    const res = await pool.query(query, [email, phrase]);
     logger.info('✅ Statut mis à jour avec succès');
     return res.rows[0];
   } catch (error) {
