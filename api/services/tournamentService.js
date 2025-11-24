@@ -56,42 +56,88 @@ async function createTeam(tournamentId, name, player1, player2) {
 }
 
 // -----------------------------
-// Draw random teams from players[]
+// Helper: check if 2 players have a common day
 // -----------------------------
-async function assignRandomTeams(tournamentId, playersArray) {
-  if (playersArray.length % 2 !== 0) {
-    throw new Error('Le nombre de joueurs doit �tre pair.');
-  }
+function hasCommonDay(p1, p2) {
+  return p1.lundi && p2.lundi ||
+         p1.mardi && p2.mardi ||
+         p1.mercredi && p2.mercredi ||
+         p1.jeudi && p2.jeudi ||
+         p1.vendredi && p2.vendredi;
+}
 
-  let players = [...playersArray];
-  players.sort(() => Math.random() - 0.5);
+// -----------------------------
+// Draw random teams from players table with availability
+// -----------------------------
+async function assignRandomTeamsWithAvailability(tournamentId) {
+  // Fetch all players
+  const { rows: players } = await pool.query(`SELECT * FROM players`);
+
+  if (players.length < 2) throw new Error('Pas assez de joueurs pour former des équipes.');
+
+  // Shuffle players
+  let shuffled = players.sort(() => Math.random() - 0.5);
 
   const createdTeams = [];
+  const used = new Set();
 
-  for (let i = 0; i < players.length; i += 2) {
-    const name = `Team ${i / 2 + 1}`;
-    const p1 = players[i];
-    const p2 = players[i + 1];
+  for (let i = 0; i < shuffled.length; i++) {
+    if (used.has(shuffled[i].id)) continue;
 
-    const { rows } = await pool.query(
-      `INSERT INTO teams (tournament_id, name, player1, player2)
-             VALUES ($1, $2, $3, $4)
-             RETURNING *`,
-      [tournamentId, name, p1, p2]
-    );
+    let found = false;
+    for (let j = i + 1; j < shuffled.length; j++) {
+      if (used.has(shuffled[j].id)) continue;
 
-    createdTeams.push(rows[0]);
+      if (hasCommonDay(shuffled[i], shuffled[j])) {
+        const name = `Team ${createdTeams.length + 1}`;
+        const { rows } = await pool.query(
+          `INSERT INTO teams (tournament_id, name, player1, player2)
+           VALUES ($1, $2, $3, $4)
+           RETURNING *`,
+          [tournamentId, name, shuffled[i].id, shuffled[j].id]
+        );
+        createdTeams.push(rows[0]);
+        used.add(shuffled[i].id);
+        used.add(shuffled[j].id);
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      console.log(`Impossible de trouver un partenaire avec jour commun pour ${shuffled[i].name}`);
+    }
   }
 
   return createdTeams;
 }
 
 // -----------------------------
-// Schedule matches (random + rounds)
+// Helper: check common days between two teams
+// -----------------------------
+function commonDays(team1, team2) {
+  const days = ['lundi','mardi','mercredi','jeudi','vendredi'];
+  const common = days.filter(day =>
+    (team1[`player1_${day}`] || team1[`player2_${day}`]) &&
+    (team2[`player1_${day}`] || team2[`player2_${day}`])
+  );
+  return common; // array of day names in common
+}
+
+// -----------------------------
+// Schedule matches (random + rounds) respecting availability
 // -----------------------------
 async function scheduleMatches(tournamentId, rounds = 5) {
+  // Fetch all teams
   const { rows: teams } = await pool.query(
-    `SELECT * FROM teams WHERE tournament_id = $1 ORDER BY id`,
+    `SELECT t.*, 
+            p1.lundi as player1_lundi, p1.mardi as player1_mardi, p1.mercredi as player1_mercredi, p1.jeudi as player1_jeudi, p1.vendredi as player1_vendredi,
+            p2.lundi as player2_lundi, p2.mardi as player2_mardi, p2.mercredi as player2_mercredi, p2.jeudi as player2_jeudi, p2.vendredi as player2_vendredi
+     FROM teams t
+     JOIN players p1 ON t.player1 = p1.id
+     JOIN players p2 ON t.player2 = p2.id
+     WHERE t.tournament_id = $1
+     ORDER BY t.id`,
     [tournamentId]
   );
 
@@ -101,13 +147,20 @@ async function scheduleMatches(tournamentId, rounds = 5) {
     const shuffled = [...teams].sort(() => Math.random() - 0.5);
 
     for (let i = 0; i < shuffled.length; i += 2) {
-      if (!shuffled[i + 1]) break; // ignore odd team
+      if (!shuffled[i + 1]) break;
+
+      // Vérifier qu'il y a au moins un jour commun pour le match
+      const common = commonDays(shuffled[i], shuffled[i + 1]);
+      if (common.length === 0) continue; // ignore si pas de jour commun
+
+      // prendre un jour aléatoire parmi ceux en commun
+      const day = common[Math.floor(Math.random() * common.length)];
 
       const { rows } = await pool.query(
-        `INSERT INTO matches (tournament_id, team1_id, team2_id, round)
-                 VALUES ($1, $2, $3, $4)
-                 RETURNING *`,
-        [tournamentId, shuffled[i].id, shuffled[i + 1].id, r]
+        `INSERT INTO matches (tournament_id, team1_id, team2_id, round, day)
+         VALUES ($1, $2, $3, $4, $5)
+         RETURNING *`,
+        [tournamentId, shuffled[i].id, shuffled[i + 1].id, r, day]
       );
 
       matches.push(rows[0]);
@@ -132,9 +185,6 @@ async function submitMatchScore(matchId, score1, score2) {
   return rows[0];
 }
 
-// -----------------------------
-// Compute standings
-// -----------------------------
 async function computeStandings(tournamentId) {
   const teams = (await pool.query(`SELECT * FROM teams WHERE tournament_id = $1`, [tournamentId])).rows;
   const matches = (await pool.query(`SELECT * FROM matches WHERE tournament_id = $1`, [tournamentId])).rows;
@@ -166,7 +216,6 @@ async function computeStandings(tournamentId) {
     t2.scored += m.score2;
     t2.conceded += m.score1;
 
-    // points
     if (m.score1 < m.score2) {
       t1.points += 2;
     } else {
@@ -174,7 +223,6 @@ async function computeStandings(tournamentId) {
     }
   }
 
-  // compute goalaverage
   for (const id in stats) {
     stats[id].goalaverage = stats[id].scored - stats[id].conceded;
   }
@@ -182,7 +230,7 @@ async function computeStandings(tournamentId) {
   const list = Object.values(stats);
 
   list.sort((a, b) => {
-    if (a.points !== b.points) return b.points - a.points; // more -> better
+    if (a.points !== b.points) return b.points - a.points;
     return b.goalaverage - a.goalaverage;
   });
 
@@ -193,7 +241,7 @@ module.exports = {
   createTournament,
   getTournamentWithTeamsAndMatches,
   createTeam,
-  assignRandomTeams,
+  assignRandomTeamsWithAvailability,
   scheduleMatches,
   submitMatchScore,
   computeStandings,
