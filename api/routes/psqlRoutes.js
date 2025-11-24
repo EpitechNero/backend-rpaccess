@@ -27,7 +27,6 @@ router.get('/getactivity', jwtMiddleware, controller.getActivity);
 router.get('/getactivitybyuser/:email', jwtMiddleware, controller.getActivityByUser);
 router.get('/getmaquettes', jwtMiddleware,  controller.getMaquettes);
 router.get('/getsuiviforcalendarbyuser/:email', jwtMiddleware,  controller.getSuiviForCalendarByUser);
-router.get('/updatesuivicalendarvalue/:email', jwtMiddleware,  controller.updateSuiviCalendar);
 router.get('/getreferentielmaquettes', jwtMiddleware,  controller.getReferentielMaquettes);
 
 router.get('/getbasedocu', controller.getBaseDocu);
@@ -59,6 +58,7 @@ router.post('/create-form', jwtMiddleware, controller.setForm);
 router.post('/create-activity', jwtMiddleware, controller.setActivity);
 router.post('/sync-tables', jwtMiddleware, controller.syncTableFromSheet);
 router.post('/create-history', controller.setHistory);
+router.post('/updatesuivicalendarvalue', jwtMiddleware,  controller.updateSuiviCalendar);
 router.get('/get-history/:table', controller.getHistory);
 
 router.get('/getstatus', jwtMiddleware, controller.getStatus);
