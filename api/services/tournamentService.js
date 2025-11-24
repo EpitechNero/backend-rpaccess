@@ -228,12 +228,6 @@ async function getMatchesForUser(tournamentId, email) {
 }
 
 module.exports = {
-  ...,
-  getMatchesForUser,
-};
-
-
-module.exports = {
   createTournament,
   getTournamentWithTeamsAndMatches,
   createTeam,
