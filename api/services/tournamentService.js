@@ -227,6 +227,12 @@ async function getMatchesForUser(tournamentId, email) {
   return rows;
 }
 
+async function getAllTournaments() {
+  const sql = `SELECT * FROM tournaments ORDER BY created_at DESC`;
+  const { rows } = await pool.query(sql);
+  return rows;
+}
+
 module.exports = {
   createTournament,
   getTournamentWithTeamsAndMatches,
@@ -236,4 +242,5 @@ module.exports = {
   submitMatchScore,
   computeStandings,
   getMatchesForUser,
+  getAllTournaments,
 };
