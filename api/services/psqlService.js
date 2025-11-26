@@ -182,7 +182,10 @@ const selectSuiviForCalendarByUser = async (email) => {
 const selectSuiviBonusForCalendar = async (value) => {
   try {
     const colonneSuivi = `suivi${value}`;
-    const res = await pool.query('SELECT $1 FROM calendarBonus', [colonneSuivi]);
+
+    const query = `SELECT ${colonneSuivi} FROM calendarBonus`;
+    
+    const res = await pool.query(query, [colonneSuivi]);
     console.log('✅ Suivi Bonus Calendrier récupéré avec succès');
     return res.rows;
   } catch (error) {
