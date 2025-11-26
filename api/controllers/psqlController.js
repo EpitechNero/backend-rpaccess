@@ -158,7 +158,7 @@ exports.getSuiviForCalendarByUser = async (req, res) => {
 };
 
 exports.getSuiviBonusForCalendar = async (req, res) => {
-  const value = req.params.semaine;
+  const semaine = req.params.semaine;
   try {
     const suivi = await selectSuiviBonusForCalendar(semaine);
     res.status(200).json(suivi);
