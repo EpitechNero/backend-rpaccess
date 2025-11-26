@@ -170,6 +170,33 @@ exports.updateSuiviCalendar = async (req, res) => {
   }
 };
 
+exports.updateBonusCalendar = async (req, res) => {
+  logger.info('📥 Requête reçue pour insertActivity :', JSON.stringify(req.body));
+  try {
+    const result = await updateSuiviCalendarValue(req.body.mail);
+    res.status(201).json({ message: 'Donnée insérée avec succès', data: result });
+  } catch (error) {
+    res.status(500).json({
+      error: 'Erreur serveur lors de l\'insertion de la donnée',
+      details: error.message,
+    });
+  }
+};
+
+exports.updateBonusSuiviCalendar = async (req, res) => {
+  logger.info('📥 Requête reçue pour insertActivity :', JSON.stringify(req.body));
+  try {
+    const result = await updateSuiviBonusCalendar(req.body.value);
+    res.status(201).json({ message: 'Donnée insérée avec succès', data: result });
+  } catch (error) {
+    res.status(500).json({
+      error: 'Erreur serveur lors de l\'insertion de la donnée',
+      details: error.message,
+    });
+  }
+};
+
+
 exports.getReferentielMaquettes = async (req, res) => {
   try {
     const referentiel_maquettes = await selectReferentielMaquettes();
