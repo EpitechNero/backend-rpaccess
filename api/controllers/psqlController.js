@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById,updateSuiviBonusCalendar, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectList, selectActivity, selectActivityByUser, selectMaquettes, selectReferentielMaquettes, selectDossiers, deleteDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, deleteBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateSuiviCalendarValue, selectSuiviForCalendarByUser, updateBaseDocu, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices, selectForm, syncSheetToDB, insertHistory, selectHistoryByTable, getStatus, updateStatus } = require('../services/psqlService.js');
+const { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectList, selectActivity, selectActivityByUser, selectMaquettes, selectReferentielMaquettes, selectDossiers, deleteDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, deleteBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateSuiviCalendarValue, selectSuiviForCalendarByUser, updateBaseDocu, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices, selectForm, syncSheetToDB, insertHistory, selectHistoryByTable, getStatus, updateStatus } = require('../services/psqlService.js');
 
 exports.getUsers = async (req, res) => {
   try {
@@ -169,33 +169,6 @@ exports.updateSuiviCalendar = async (req, res) => {
     });
   }
 };
-
-exports.updateBonusCalendar = async (req, res) => {
-  logger.info('📥 Requête reçue pour insertActivity :', JSON.stringify(req.body));
-  try {
-    const result = await updateSuiviCalendarValue(req.body.mail);
-    res.status(201).json({ message: 'Donnée insérée avec succès', data: result });
-  } catch (error) {
-    res.status(500).json({
-      error: 'Erreur serveur lors de l\'insertion de la donnée',
-      details: error.message,
-    });
-  }
-};
-
-exports.updateBonusSuiviCalendar = async (req, res) => {
-  logger.info('📥 Requête reçue pour insertActivity :', JSON.stringify(req.body));
-  try {
-    const result = await updateSuiviBonusCalendar(req.body.value);
-    res.status(201).json({ message: 'Donnée insérée avec succès', data: result });
-  } catch (error) {
-    res.status(500).json({
-      error: 'Erreur serveur lors de l\'insertion de la donnée',
-      details: error.message,
-    });
-  }
-};
-
 
 exports.getReferentielMaquettes = async (req, res) => {
   try {

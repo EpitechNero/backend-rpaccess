@@ -59,8 +59,6 @@ router.post('/create-activity', jwtMiddleware, controller.setActivity);
 router.post('/sync-tables', jwtMiddleware, controller.syncTableFromSheet);
 router.post('/create-history', controller.setHistory);
 router.post('/updatesuivicalendarvalue', jwtMiddleware,  controller.updateSuiviCalendar);
-router.post('/updatesuivibonuscalendar', jwtMiddleware,  controller.updateSuiviBonusCalendar);
-router.post('/updatebonussuivi', jwtMiddleware,  controller.updateBonusSuiviCalendar);
 router.get('/get-history/:table', controller.getHistory);
 
 router.get('/getstatus', jwtMiddleware, controller.getStatus);
