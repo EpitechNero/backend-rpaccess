@@ -210,11 +210,10 @@ const updateSuiviCalendarValue = async (email, jour, phrase) => {
 };
 
 const updateSuiviBonusCalendarValue = async (value) => {
-
   try {
     const res = await pool.query('UPDATE calendarbonus SET $1 = TRUE WHERE TRUE',[value]);
     logger.info('✅ Statut mis à jour avec succès');
-    return res.rows;
+    return res.rows[0];
   } catch (error) {
     logger.error('❌ Erreur lors de la mise à jour du statut :', error.message);
     throw error;
