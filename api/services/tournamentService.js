@@ -209,24 +209,27 @@ async function computeStandings(tournamentId) {
 
 async function getMatchesForUser(tournamentId, email) {
     const sql = `
-SELECT
-  m.*,
-  th.name AS team_home_name,
-  ta.name AS team_away_name,
-  th.player1_name AS team_home_player1_name,
-  th.player2_name AS team_home_player2_name,
-  ta.player1_name AS team_away_player1_name,
-  ta.player2_name AS team_away_player2_name
-FROM matches m
-JOIN teams th ON th.id = m.team1_id
-JOIN teams ta ON ta.id = m.team2_id
-JOIN players p ON (
-     p.id = th.player1 OR p.id = th.player2
-  OR p.id = ta.player1 OR p.id = ta.player2
-)
-WHERE p.email = $1
-  AND m.tournament_id = $2
-ORDER BY m.round, m.id;
+    SELECT 
+        m.*,
+        th.name AS team_home_name,
+        ta.name AS team_away_name,
+        -- noms des joueurs home
+        (SELECT name FROM players WHERE id = th.player1) AS team_home_player1_name,
+        (SELECT name FROM players WHERE id = th.player2) AS team_home_player2_name,
+        -- noms des joueurs away
+        (SELECT name FROM players WHERE id = ta.player1) AS team_away_player1_name,
+        (SELECT name FROM players WHERE id = ta.player2) AS team_away_player2_name
+    FROM matches m
+    JOIN teams th ON th.id = m.team1_id
+    JOIN teams ta ON ta.id = m.team2_id
+    WHERE m.tournament_id = $2
+      AND EXISTS (
+          SELECT 1 
+          FROM players p 
+          WHERE p.email = $1
+            AND (p.id = th.player1 OR p.id = th.player2 OR p.id = ta.player1 OR p.id = ta.player2)
+      )
+    ORDER BY m.round, m.id;
   `;
 
     const { rows } = await pool.query(sql, [email, tournamentId]);
