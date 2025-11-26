@@ -242,7 +242,7 @@ async function getMatchById(tournamentId, matchId) {
         `SELECT * FROM matches WHERE tournament_id = $1 AND id = $2`,
         [tournamentId, matchId]
     );
-    return rows;
+    return rows[0];
 }
 
 async function getAllTournaments() {
