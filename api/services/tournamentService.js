@@ -229,7 +229,7 @@ async function getMatchesForUser(tournamentId, email) {
 
 async function getMatchById(tournamentId, matchId) {
 
-    const sql = (await pool.query(`SELECT * FROM matches WHERE tournament_id = $1 AND id = $2`;
+    const sql = await pool.query(`SELECT * FROM matches WHERE tournament_id = $1 AND id = $2`);
 
     const { rows } = await pool.query(sql, [tournamentId, matchId]);
     return rows[0];
