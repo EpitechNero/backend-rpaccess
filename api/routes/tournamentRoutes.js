@@ -27,6 +27,6 @@ router.get('/tournaments/:id/standings', controller.getStandings);
 router.get('/tournaments/:id/my-matches', controller.getMyMatches);
 
 // Récupérer les matchs d’un utilisateur
-router.get('/tournaments/:id/my-matches/:matchId', controller.getMyMatches);
+router.get('/tournaments/:id/my-matches/:matchId', controller.getMatchById);
 
 module.exports = router;
