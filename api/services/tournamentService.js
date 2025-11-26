@@ -45,7 +45,55 @@ async function createTeam(tournamentId, name, player1, player2) {
   return rows[0];
 }
 
-function hasCommonDay(p1, p2) {
+function getCommonDays(p1, p2) {
+    const days = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi'];
+    return days.filter(day => p1[day] && p2[day]);
+}
+
+async function assignRandomTeamsWithAvailability(tournamentId) {
+    const { rows: players } = await pool.query(`SELECT * FROM players`);
+
+    if (players.length < 2) throw new Error('Pas assez de joueurs pour former des équipes.');
+
+    let shuffled = players.sort(() => Math.random() - 0.5);
+    const createdTeams = [];
+    const used = new Set();
+
+    for (let i = 0; i < shuffled.length; i++) {
+        if (used.has(shuffled[i].id)) continue;
+
+        let found = false;
+        for (let j = i + 1; j < shuffled.length; j++) {
+            if (used.has(shuffled[j].id)) continue;
+
+            if (hasCommonDay(shuffled[i], shuffled[j])) {
+                const name = `Team ${createdTeams.length + 1}`;
+                const commonDays = getCommonDays(shuffled[i], shuffled[j]); // <-- calcul des jours communs
+
+                const { rows } = await pool.query(
+                    `INSERT INTO teams (tournament_id, name, player1, player2, player1_name, player2_name, days)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)
+           RETURNING *`,
+                    [tournamentId, name, shuffled[i].id, shuffled[j].id, shuffled[i].name, shuffled[j].name, commonDays]
+                );
+
+                createdTeams.push(rows[0]);
+                used.add(shuffled[i].id);
+                used.add(shuffled[j].id);
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            console.log(`Impossible de trouver un partenaire avec jour commun pour ${shuffled[i].name}`);
+        }
+    }
+
+    return createdTeams;
+}
+
+/*function hasCommonDay(p1, p2) {
   return p1.lundi && p2.lundi ||
          p1.mardi && p2.mardi ||
          p1.mercredi && p2.mercredi ||
@@ -92,7 +140,7 @@ async function assignRandomTeamsWithAvailability(tournamentId) {
   }
 
   return createdTeams;
-}
+}*/
 
 function commonDays(team1, team2) {
   const days = ['lundi','mardi','mercredi','jeudi','vendredi'];
