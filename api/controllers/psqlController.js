@@ -182,7 +182,7 @@ exports.updateSuiviCalendar = async (req, res) => {
 exports.updateSuiviBonusCalendar = async (req, res) => {
   logger.info('📥 Requête reçue pour insertActivity :', JSON.stringify(req.body));
   try {
-    const result = await updateSuiviBonusCalendarValue(req.body.value);
+    const result = await updateSuiviBonusCalendarValue(req.body.mail, req.body.semaine, req.body.gagnant);
     res.status(201).json({ message: 'Donnée insérée avec succès', data: result });
   } catch (error) {
     res.status(500).json({
