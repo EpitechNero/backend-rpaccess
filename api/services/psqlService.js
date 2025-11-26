@@ -183,7 +183,7 @@ const selectSuiviBonusForCalendar = async (semaine) => {
   try {
     const res = await pool.query('SELECT $1 FROM calendarbonus', [semaine]);
     console.log('✅ Suivi Bonus Calendrier récupéré avec succès');
-    return res.rows;
+    return res.rows[0];
   } catch (error) {
     console.error('❌ Erreur lors de la récupération des maquettes :', error);
     throw error;
