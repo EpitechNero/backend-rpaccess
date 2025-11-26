@@ -217,7 +217,7 @@ const updateSuiviBonusCalendarValue = async (mail, semaine, gagnant) => {
   WHERE TRUE;`
 
   try {
-    const res = await pool.query(query, [semaine, gagnant, mail]);
+    const res = await pool.query(query)
     logger.info('✅ Statut mis à jour avec succès');
     return res.rows[0];
   } catch (error) {
