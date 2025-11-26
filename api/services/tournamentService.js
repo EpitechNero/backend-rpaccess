@@ -131,7 +131,7 @@ async function scheduleMatches(tournamentId, rounds = 5) {
 
       const { rows } = await pool.query(
         `INSERT INTO matches (tournament_id, team1_id, team2_id, round, day, team1_name, team2_name)
-         VALUES ($1, $2, $3, $4, $5)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
          RETURNING *`,
           [tournamentId, shuffled[i].id, shuffled[i + 1].id, r, day, shuffled[i].name, shuffled[i + 1].name]
       );
