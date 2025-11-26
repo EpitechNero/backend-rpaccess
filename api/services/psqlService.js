@@ -218,7 +218,7 @@ const updateSuiviBonusCalendarValue = async (mail, semaine, gagnant) => {
     logger.info('✅ Statut mis à jour avec succès');
     return res.rows[0];
   } catch (error) {
-    logger.error('❌ Erreur lors de la mise à jour du statut :', error.message);
+    logger.error('❌ Erreur lors de la mise à jour du statut :', error.message, query);
     throw error;
   }
 };
