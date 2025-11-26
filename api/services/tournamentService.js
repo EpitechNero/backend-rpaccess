@@ -93,14 +93,14 @@ async function assignRandomTeamsWithAvailability(tournamentId) {
     return createdTeams;
 }
 
-/*function hasCommonDay(p1, p2) {
+function hasCommonDay(p1, p2) {
   return p1.lundi && p2.lundi ||
          p1.mardi && p2.mardi ||
          p1.mercredi && p2.mercredi ||
          p1.jeudi && p2.jeudi ||
          p1.vendredi && p2.vendredi;
 }
-
+/*
 async function assignRandomTeamsWithAvailability(tournamentId) {
   const { rows: players } = await pool.query(`SELECT * FROM players`);
 
