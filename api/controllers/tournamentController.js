@@ -77,6 +77,20 @@ exports.getMyMatches = async (req, res) => {
   }
 };
 
+exports.getMatchById = async (req, res) => {
+    try {
+        const tournamentId = Number(req.params.id);
+        const matchId = Number(req.params.matchId)
+
+        const match = await tournamentService.getMatchById(tournamentId, matchId);
+
+        res.json(match);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+};
+
 exports.getAllTournaments = async (req, res) => {
   try {
     const tournaments = await tournamentService.getAllTournaments();

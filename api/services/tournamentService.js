@@ -73,10 +73,10 @@ async function assignRandomTeamsWithAvailability(tournamentId) {
       if (hasCommonDay(shuffled[i], shuffled[j])) {
         const name = `Team ${createdTeams.length + 1}`;
         const { rows } = await pool.query(
-          `INSERT INTO teams (tournament_id, name, player1, player2)
-           VALUES ($1, $2, $3, $4)
+          `INSERT INTO teams (tournament_id, name, player1, player2, player1_name, player2_name)
+           VALUES ($1, $2, $3, $4, $5, $6)
            RETURNING *`,
-          [tournamentId, name, shuffled[i].id, shuffled[j].id]
+          [tournamentId, name, shuffled[i].id, shuffled[j].id, shuffled[i].name, shuffled[j].name]
         );
         createdTeams.push(rows[0]);
         used.add(shuffled[i].id);
@@ -130,10 +130,10 @@ async function scheduleMatches(tournamentId, rounds = 5) {
       const day = common[Math.floor(Math.random() * common.length)];
 
       const { rows } = await pool.query(
-        `INSERT INTO matches (tournament_id, team1_id, team2_id, round, day)
+        `INSERT INTO matches (tournament_id, team1_id, team2_id, round, day, team1_name, team2_name)
          VALUES ($1, $2, $3, $4, $5)
          RETURNING *`,
-        [tournamentId, shuffled[i].id, shuffled[i + 1].id, r, day]
+          [tournamentId, shuffled[i].id, shuffled[i + 1].id, r, day, shuffled[i].name, shuffled[i + 1].name]
       );
 
       matches.push(rows[0]);
@@ -227,6 +227,14 @@ async function getMatchesForUser(tournamentId, email) {
   return rows;
 }
 
+async function getMatchById(tournamentId, matchId) {
+
+    const sql = (await pool.query(`SELECT * FROM matches WHERE tournament_id = $1 AND id = $2`;
+
+    const { rows } = await pool.query(sql, [tournamentId, matchId]);
+    return rows[0];
+}
+
 async function getAllTournaments() {
   const sql = `SELECT * FROM tournaments ORDER BY created_at DESC`;
   const { rows } = await pool.query(sql);
@@ -243,4 +251,5 @@ module.exports = {
   computeStandings,
   getMatchesForUser,
   getAllTournaments,
+  getMatchById,
 };
