@@ -179,11 +179,10 @@ const selectSuiviForCalendarByUser = async (email) => {
   }
 };
 
-const selectSuiviBonusForCalendar = async (semaine) => {
+const selectSuiviBonusForCalendar = async () => {
   try {
-    const res = await pool.query('SELECT $1 FROM calendarbonus', [semaine]);
-    console.log('✅ Suivi Bonus Calendrier récupéré avec succès');
-    return res.rows[0];
+    const res = await pool.query('SELECT * FROM calendarbonus');
+    return res.rows;
   } catch (error) {
     console.error('❌ Erreur lors de la récupération des maquettes :', error);
     throw error;
