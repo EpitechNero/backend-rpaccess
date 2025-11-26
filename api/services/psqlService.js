@@ -211,10 +211,10 @@ const updateSuiviCalendarValue = async (email, jour, phrase) => {
 
 const updateSuiviBonusCalendarValue = async (mail, semaine, gagnant) => {
 
-  const query = `UPDATE calendarbonus SET ${semaine} = TRUE, ${mail} = ${gagnant} WHERE TRUE`;
+  const query = ``;
 
   try {
-    const res = await pool.query(query, [semaine, mail, gagnant]);
+    const res = await pool.query("UPDATE calendarbonus SET $1= TRUE, $2 = $3 WHERE TRUE", [semaine, gagnant, mail]);
     logger.info('✅ Statut mis à jour avec succès');
     return res.rows[0];
   } catch (error) {
