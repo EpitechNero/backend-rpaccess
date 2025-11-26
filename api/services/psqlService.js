@@ -189,7 +189,7 @@ const selectSuiviBonusForCalendar = async () => {
   }
 };
 
-const updateSuiviCalendarValue = async(email, jour, phrase) => {
+const updateSuiviCalendarValue = async (email, jour, phrase) => {
   if (!/^\d+$/.test(jour)) {
     throw new Error('Jour invalide');
   }
@@ -209,14 +209,10 @@ const updateSuiviCalendarValue = async(email, jour, phrase) => {
   }
 };
 
-const updateSuiviBonusCalendarValue = async(value) => {
-
-  const colonneSuivi = `semaine${value}`;
-
-  const query = `UPDATE calendarbonus SET ${colonneSuivi} = TRUE WHERE TRUE`;
+const updateSuiviBonusCalendarValue = async (value) => {
 
   try {
-    const res = await pool.query(query, [colonneSuivi]);
+    const res = await pool.query('UPDATE calendarbonus SET $1 = TRUE WHERE TRUE',[value]);
     logger.info('✅ Statut mis à jour avec succès');
     return res.rows;
   } catch (error) {
