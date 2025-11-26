@@ -199,6 +199,22 @@ const updateSuiviCalendarValue = async(email, jour, phrase) => {
   }
 };
 
+const updateSuiviBonusCalendarValue = async(value) => {
+
+  const colonneSuivi = `suivi${value}`;
+
+  const query = `UPDATE calendar SET ${colonneSuivi} = TRUE WHERE TRUE`;
+
+  try {
+    const res = await pool.query(query, [email, phrase]);
+    logger.info('✅ Statut mis à jour avec succès');
+    return res.rows[0];
+  } catch (error) {
+    logger.error('❌ Erreur lors de la mise à jour du statut :', error.message);
+    throw error;
+  }
+};
+
 const selectReferentielMaquettes = async () => {
   try {
     const res = await pool.query('SELECT * FROM referentiel_maquettes ORDER BY region_referentiel_maquettes, territoire_referentiel_maquettes');
@@ -762,4 +778,4 @@ async function updateStatus(status) {
   }
 }
 
-module.exports = { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectActivity, selectActivityByUser, selectSuiviForCalendarByUser, updateSuiviCalendarValue, selectMaquettes, selectReferentielMaquettes, selectDossiers, deleteDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, deleteBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm, syncSheetToDB, insertHistory, selectHistoryByTable, getStatus, updateStatus };
+module.exports = { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectActivity, selectActivityByUser, selectSuiviForCalendarByUser, updateSuiviCalendarValue, updateSuiviBonusCalendarValue, selectMaquettes, selectReferentielMaquettes, selectDossiers, deleteDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, deleteBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm, syncSheetToDB, insertHistory, selectHistoryByTable, getStatus, updateStatus };
