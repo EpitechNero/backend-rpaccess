@@ -179,6 +179,18 @@ const selectSuiviForCalendarByUser = async (email) => {
   }
 };
 
+const selectSuiviBonusForCalendar = async (value) => {
+  try {
+    const colonneSuivi = `suivi${value}`;
+    const res = await pool.query('SELECT $1 FROM calendarBonus', [colonneSuivi]);
+    console.log('✅ Suivi Bonus Calendrier récupéré avec succès');
+    return res.rows;
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des maquettes :', error);
+    throw error;
+  }
+};
+
 const updateSuiviCalendarValue = async(email, jour, phrase) => {
   if (!/^\d+$/.test(jour)) {
     throw new Error('Jour invalide');
@@ -199,27 +211,14 @@ const updateSuiviCalendarValue = async(email, jour, phrase) => {
   }
 };
 
-const updateBonusCalendarValue = async(email) => {
+const updateSuiviBonusCalendarValue = async(value) => {
 
-  const query = `UPDATE calendar SET bonus = FALSE WHERE mail = $1`;
+  const colonneSuivi = `suivi${value}`;
 
-  try {
-    const res = await pool.query(query, [email]);
-    logger.info('✅ Statut mis à jour avec succès');
-    return res.rows[0];
-  } catch (error) {
-    logger.error('❌ Erreur lors de la mise à jour du statut :', error.message);
-    throw error;
-  }
-};
-
-const updateSuiviBonusCalendar = async (value) => {
-  
-  const colonneSuivi = `semaine${value}`;
-  const query = `UPDATE calendarBonus SET ${colonneSuivi} = TRUE`;
+  const query = `UPDATE calendar SET ${colonneSuivi} = TRUE WHERE TRUE`;
 
   try {
-    const res = await pool.query(query, [email]);
+    const res = await pool.query(query, [email, phrase]);
     logger.info('✅ Statut mis à jour avec succès');
     return res.rows[0];
   } catch (error) {
@@ -791,4 +790,4 @@ async function updateStatus(status) {
   }
 }
 
-module.exports = { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectActivity, selectActivityByUser, selectSuiviForCalendarByUser, updateSuiviBonusCalendar, updateSuiviCalendarValue,updateBonusCalendarValue, selectMaquettes, selectReferentielMaquettes, selectDossiers, deleteDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, deleteBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm, syncSheetToDB, insertHistory, selectHistoryByTable, getStatus, updateStatus };
+module.exports = { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectActivity, selectActivityByUser, selectSuiviForCalendarByUser, selectSuiviBonusForCalendar, updateSuiviCalendarValue, updateSuiviBonusCalendarValue, selectMaquettes, selectReferentielMaquettes, selectDossiers, deleteDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, deleteBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm, syncSheetToDB, insertHistory, selectHistoryByTable, getStatus, updateStatus };
