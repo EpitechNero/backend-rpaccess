@@ -100,47 +100,6 @@ function hasCommonDay(p1, p2) {
          p1.jeudi && p2.jeudi ||
          p1.vendredi && p2.vendredi;
 }
-/*
-async function assignRandomTeamsWithAvailability(tournamentId) {
-  const { rows: players } = await pool.query(`SELECT * FROM players`);
-
-  if (players.length < 2) throw new Error('Pas assez de joueurs pour former des équipes.');
-
-  let shuffled = players.sort(() => Math.random() - 0.5);
-
-  const createdTeams = [];
-  const used = new Set();
-
-  for (let i = 0; i < shuffled.length; i++) {
-    if (used.has(shuffled[i].id)) continue;
-
-    let found = false;
-    for (let j = i + 1; j < shuffled.length; j++) {
-      if (used.has(shuffled[j].id)) continue;
-
-      if (hasCommonDay(shuffled[i], shuffled[j])) {
-        const name = `Team ${createdTeams.length + 1}`;
-        const { rows } = await pool.query(
-          `INSERT INTO teams (tournament_id, name, player1, player2, player1_name, player2_name)
-           VALUES ($1, $2, $3, $4, $5, $6)
-           RETURNING *`,
-          [tournamentId, name, shuffled[i].id, shuffled[j].id, shuffled[i].name, shuffled[j].name]
-        );
-        createdTeams.push(rows[0]);
-        used.add(shuffled[i].id);
-        used.add(shuffled[j].id);
-        found = true;
-        break;
-      }
-    }
-
-    if (!found) {
-      console.log(`Impossible de trouver un partenaire avec jour commun pour ${shuffled[i].name}`);
-    }
-  }
-
-  return createdTeams;
-}*/
 
 function commonDays(team1, team2) {
   const days = ['lundi','mardi','mercredi','jeudi','vendredi'];
@@ -299,6 +258,67 @@ async function getAllTournaments() {
   return rows;
 }
 
+async function finishMatch(matchId, score_home, score_away) {
+    const { rows: matches } = await pool.query(
+        `SELECT * FROM matches WHERE id = $1`,
+        [matchId]
+    );
+
+    if (matches.length === 0) {
+        const error = new Error("Match not found");
+        error.code = "NOT_FOUND";
+        throw error;
+    }
+
+    const match = matches[0];
+
+    if (match.played_at) {
+        const error = new Error("Match already finished");
+        error.code = "ALREADY_FINISHED";
+        throw error;
+    }
+
+    let winnerTeamId = null;
+
+    if (score_home === 0 || score_home < score_away) {
+        winnerTeamId = match.team1_id;
+    } else if (score_away === 0 || score_away < score_home) {
+        winnerTeamId = match.team2_id;
+    }
+
+    await pool.query(
+        `UPDATE matches 
+     SET score_home=$1, score_away=$2, played_at=NOW()
+     WHERE id=$3`,
+        [score_home, score_away, matchId]
+    );
+
+    await pool.query(
+        `UPDATE teams SET total_points = total_points + $1 WHERE id = $2`,
+        [score_home, match.team1_id]
+    );
+
+    await pool.query(
+        `UPDATE teams SET total_points = total_points + $1 WHERE id = $2`,
+        [score_away, match.team2_id]
+    );
+
+    if (winnerTeamId) {
+        await pool.query(
+            `UPDATE teams SET victory_points = victory_points + 2 WHERE id = $1`,
+            [winnerTeamId]
+        );
+    }
+
+    const { rows: updated } = await pool.query(
+        `SELECT * FROM matches WHERE id = $1`,
+        [matchId]
+    );
+
+    return updated[0];
+};
+
+
 module.exports = {
   createTournament,
   getTournamentWithTeamsAndMatches,
@@ -310,4 +330,5 @@ module.exports = {
   getMatchesForUser,
   getAllTournaments,
   getMatchById,
+  finishMatch,
 };

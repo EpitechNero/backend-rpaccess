@@ -100,3 +100,27 @@ exports.getAllTournaments = async (req, res) => {
   }
 };
 
+exports.finishMatch = async (req, res) => {
+    const { matchId } = req.params;
+    const { score_home, score_away } = req.body;
+
+    try {
+        const result = await tournamentService.finishMatch(matchId, score_home, score_away);
+        res.json(result);
+
+    } catch (err) {
+        console.error(err);
+
+        if (err.code === "NOT_FOUND") {
+            return res.status(404).json({ error: err.message });
+        }
+
+        if (err.code === "ALREADY_FINISHED") {
+            return res.status(400).json({ error: err.message });
+        }
+
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+
