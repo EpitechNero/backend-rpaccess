@@ -163,56 +163,21 @@ async function submitMatchScore(matchId, score1, score2) {
 }
 
 async function computeStandings(tournamentId) {
-  const teams = (await pool.query(`SELECT * FROM teams WHERE tournament_id = $1`, [tournamentId])).rows;
-  const matches = (await pool.query(`SELECT * FROM matches WHERE tournament_id = $1`, [tournamentId])).rows;
+    const teams = (await pool.query(
+        `SELECT id, name, victory_points, total_points, player1_name, player2_name 
+     FROM teams 
+     WHERE tournament_id = $1`,
+        [tournamentId]
+    )).rows;
 
-  const stats = {};
-  for (const t of teams) {
-    stats[t.id] = {
-      team_id: t.id,
-      name: t.name,
-      played: 0,
-      points: 0,
-      scored: 0,
-      conceded: 0,
-      goalaverage: 0,
-    };
-  }
+    teams.sort((a, b) => {
+        if (b.victory_points !== a.victory_points) return b.victory_points - a.victory_points;
+        return b.total_points - a.total_points;
+    });
 
-  for (const m of matches) {
-    if (m.score1 == null || m.score2 == null) continue;
-
-    const t1 = stats[m.team1_id];
-    const t2 = stats[m.team2_id];
-
-    t1.played++;
-    t2.played++;
-
-    t1.scored += m.score1;
-    t1.conceded += m.score2;
-    t2.scored += m.score2;
-    t2.conceded += m.score1;
-
-    if (m.score1 < m.score2) {
-      t1.points += 2;
-    } else {
-      t2.points += 2;
-    }
-  }
-
-  for (const id in stats) {
-    stats[id].goalaverage = stats[id].scored - stats[id].conceded;
-  }
-
-  const list = Object.values(stats);
-
-  list.sort((a, b) => {
-    if (a.points !== b.points) return b.points - a.points;
-    return b.goalaverage - a.goalaverage;
-  });
-
-  return list;
+    return teams;
 }
+
 
 async function getMatchesForUser(tournamentId, email) {
     const sql = `
