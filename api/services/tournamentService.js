@@ -172,7 +172,7 @@ async function computeStandings(tournamentId) {
 
     teams.sort((a, b) => {
         if (b.victory_points !== a.victory_points) return b.victory_points - a.victory_points;
-        return b.total_points - a.total_points;
+        return a.total_points - b.total_points;
     });
 
     return teams;
