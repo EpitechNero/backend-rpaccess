@@ -189,7 +189,7 @@ const selectSuiviBonusForCalendar = async () => {
   }
 };
 
-const updateSuiviCalendarValue = async(email, jour, phrase) => {
+const updateSuiviCalendarValue = async (email, jour, phrase) => {
   if (!/^\d+$/.test(jour)) {
     throw new Error('Jour invalide');
   }
@@ -209,18 +209,19 @@ const updateSuiviCalendarValue = async(email, jour, phrase) => {
   }
 };
 
-const updateSuiviBonusCalendarValue = async(value) => {
+const updateSuiviBonusCalendarValue = async (mail, semaine, gagnant) => {
 
-  const colonneSuivi = `suivi${value}`;
-
-  const query = `UPDATE calendar SET ${colonneSuivi} = TRUE WHERE TRUE`;
+  const query = `UPDATE calendarbonus
+  SET ${semaine} = TRUE,
+  ${gagnant} = '${mail}'
+  WHERE TRUE;`
 
   try {
-    const res = await pool.query(query, [email, phrase]);
+    const res = await pool.query(query)
     logger.info('✅ Statut mis à jour avec succès');
     return res.rows[0];
   } catch (error) {
-    logger.error('❌ Erreur lors de la mise à jour du statut :', error.message);
+    logger.error('❌ Erreur lors de la mise à jour du statut :', error.message, query);
     throw error;
   }
 };
