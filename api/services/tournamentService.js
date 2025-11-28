@@ -244,36 +244,48 @@ async function finishMatch(matchId, score_home, score_away) {
     }
 
     let winnerTeamId = null;
+    let loserTeamId = null;
 
     if (score_home === 0 || score_home < score_away) {
         winnerTeamId = match.team1_id;
-    } else if (score_away === 0 || score_away < score_home) {
+        loserTeamId = match.team2_id;
+    } else {
         winnerTeamId = match.team2_id;
+        loserTeamId = match.team1_id;
     }
 
     await pool.query(
         `UPDATE matches 
-     SET score_home=$1, score_away=$2, played_at=NOW()
-     WHERE id=$3`,
+         SET score_home=$1, score_away=$2, played_at=NOW()
+         WHERE id=$3`,
         [score_home, score_away, matchId]
     );
 
-    await pool.query(
-        `UPDATE teams SET total_points = total_points + $1 WHERE id = $2`,
-        [score_home, match.team1_id]
-    );
+    let winnerPoints = 0;
+    let loserPoints = 0;
 
-    await pool.query(
-        `UPDATE teams SET total_points = total_points + $1 WHERE id = $2`,
-        [score_away, match.team2_id]
-    );
-
-    if (winnerTeamId) {
-        await pool.query(
-            `UPDATE teams SET victory_points = victory_points + 2 WHERE id = $1`,
-            [winnerTeamId]
-        );
+    if (winnerTeamId === match.team1_id) {
+        loserPoints = score_away;
+        winnerPoints = -score_away + score_home;
+    } else {
+        loserPoints = score_home;
+        winnerPoints = -score_home + score_away;
     }
+
+    await pool.query(
+        `UPDATE teams SET total_points = total_points + $1 WHERE id = $2`,
+        [loserPoints, loserTeamId]
+    );
+
+    await pool.query(
+        `UPDATE teams SET total_points = total_points + $1 WHERE id = $2`,
+        [winnerPoints, winnerTeamId]
+    );
+
+    await pool.query(
+        `UPDATE teams SET victory_points = victory_points + 2 WHERE id = $1`,
+        [winnerTeamId]
+    );
 
     const { rows: updated } = await pool.query(
         `SELECT * FROM matches WHERE id = $1`,
@@ -281,7 +293,8 @@ async function finishMatch(matchId, score_home, score_away) {
     );
 
     return updated[0];
-};
+}
+
 
 
 module.exports = {
