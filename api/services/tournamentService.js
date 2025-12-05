@@ -110,10 +110,8 @@ function commonDays(team1, team2) {
   return common;
 }
 
-// services/tournamentService.js (ou fichier approprié)
 const DAYS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi'];
 
-/** Normalize DB boolean-ish values to strict boolean */
 function toBool(val) {
     if (val === true || val === false) return val;
     if (val === 't' || val === 'true' || val === '1') return true;
@@ -121,13 +119,11 @@ function toBool(val) {
     return !!val;
 }
 
-/** compute intersection of two arrays of strings */
 function intersect(a = [], b = []) {
     const setB = new Set(b || []);
     return (a || []).filter(x => setB.has(x));
 }
 
-/** build days list from player flags on a team row */
 function daysFromPlayerFlags(teamRow) {
     const res = [];
     for (const d of DAYS) {
@@ -139,7 +135,6 @@ function daysFromPlayerFlags(teamRow) {
 }
 
 async function scheduleMatches(tournamentId, rounds = 5) {
-    // select teams, include teams.days if present plus player flags
     const { rows: teams } = await pool.query(
         `SELECT t.*, t.days,
             p1.lundi as player1_lundi, p1.mardi as player1_mardi, p1.mercredi as player1_mercredi, p1.jeudi as player1_jeudi, p1.vendredi as player1_vendredi,
@@ -153,11 +148,8 @@ async function scheduleMatches(tournamentId, rounds = 5) {
     );
 
     if (!teams.length) return [];
-
-    // For each team, compute normalized days array (prefer teams.days if present)
     for (const t of teams) {
         if (Array.isArray(t.days) && t.days.length) {
-            // normalize lower-case strings
             t._days = t.days.map(String).map(s => s.toLowerCase());
         } else {
             t._days = daysFromPlayerFlags(t);
@@ -165,39 +157,32 @@ async function scheduleMatches(tournamentId, rounds = 5) {
     }
 
     const created = [];
-    const scheduledPairs = new Set(); // to avoid mirrored duplicates per round
+    const scheduledPairs = new Set();
 
     for (let r = 1; r <= rounds; r++) {
-        // shuffle teams
         const shuffled = [...teams].sort(() => Math.random() - 0.5);
 
-        // keep a set of teams that already have a match this round (so one match per team per round)
         const usedThisRound = new Set();
 
         for (let i = 0; i < shuffled.length; i++) {
             const a = shuffled[i];
             if (usedThisRound.has(a.id)) continue;
 
-            // try to find opponent j > i not used yet
             let paired = false;
             for (let j = i + 1; j < shuffled.length; j++) {
                 const b = shuffled[j];
                 if (usedThisRound.has(b.id)) continue;
 
-                // canonical unordered key to prevent mirror duplicates in same round
                 const minId = Math.min(a.id, b.id);
                 const maxId = Math.max(a.id, b.id);
                 const key = `${r}:${minId}-${maxId}`;
                 if (scheduledPairs.has(key)) continue;
 
-                // compute common days from team._days arrays
                 const common = intersect(a._days || [], b._days || []);
                 if (common.length === 0) continue;
 
-                // pick a random day among commons
                 const day = common[Math.floor(Math.random() * common.length)];
 
-                // insert match (use team1_id = a.id, team2_id = b.id)
                 const { rows } = await pool.query(
                     `INSERT INTO matches (tournament_id, team1_id, team2_id, round, day, team1_name, team2_name)
            VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -210,9 +195,8 @@ async function scheduleMatches(tournamentId, rounds = 5) {
                 usedThisRound.add(a.id);
                 usedThisRound.add(b.id);
                 paired = true;
-                break; // stop searching opponent for a
+                break;
             }
-            // if not paired we simply leave team without a match this round
         }
     }
 
@@ -234,19 +218,40 @@ async function submitMatchScore(matchId, score1, score2) {
 
 async function computeStandings(tournamentId) {
     const teams = (await pool.query(
-        `SELECT id, name, victory_points, total_points, player1_name, player2_name 
-     FROM teams 
-     WHERE tournament_id = $1`,
+        `SELECT 
+            t.id,
+            t.name,
+            t.victory_points,
+            t.total_points,
+            t.player1_name,
+            t.player2_name,
+            (
+                SELECT COUNT(*) 
+                FROM matches m 
+                WHERE m.played_at IS NOT NULL
+                  AND (m.team1_id = t.id OR m.team2_id = t.id)
+            ) AS matches_played
+        FROM teams t
+        WHERE t.tournament_id = $1`,
         [tournamentId]
     )).rows;
 
+    teams.forEach(t => {
+        t.victory_points = Number(t.victory_points || 0);
+        t.total_points = Number(t.total_points || 0);
+        t.matches_played = Number(t.matches_played || 0);
+    });
+
     teams.sort((a, b) => {
-        if (b.victory_points !== a.victory_points) return b.victory_points - a.victory_points;
+        if (a.victory_points !== b.victory_points)
+            return b.victory_points - a.victory_points;
+
         return a.total_points - b.total_points;
     });
 
     return teams;
 }
+
 
 
 async function getMatchesForUser(tournamentId, email) {
