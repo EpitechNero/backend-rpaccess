@@ -409,32 +409,13 @@ const selectUsageByProcess = async (start, end) => {
   }
 };
 
-function getStartOfLastWeek() {
-    const now = new Date();
-    const day = now.getDay();
-    const diffToMonday = (day + 6) % 7;
-
-    const mondayThisWeek = new Date(now);
-    mondayThisWeek.setDate(now.getDate() - diffToMonday);
-
-    const mondayLastWeek = new Date(mondayThisWeek);
-    mondayLastWeek.setDate(mondayThisWeek.getDate() - 7);
-
-    mondayLastWeek.setHours(0, 0, 0, 0);
-    return mondayLastWeek;
-}
-
-
 const selectAllActivity = async (start, end) => {
     try {
-        const startDate = start !== '1970-01-01T00:00:00.000Z' ? normalizeStartOfDay(start) : getStartOfLastWeek();
-        const endDate = start !== '1970-01-01T00:00:00.000Z' ? normalizeEndOfDay(end) : new Date();
-
         const result = await pool.query(`
             SELECT * FROM activity
             WHERE date_activity >= $1
               AND date_activity < ($2::date + INTERVAL '1 day')
-        `, [startDate, endDate]);
+        `, [normalizeStartOfDay(start) || '1970-01-01', normalizeEndOfDay(end) || new Date()]);
 
         return result.rows;
     } catch (err) {
