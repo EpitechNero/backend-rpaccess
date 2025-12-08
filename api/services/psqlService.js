@@ -409,6 +409,40 @@ const selectUsageByProcess = async (start, end) => {
   }
 };
 
+function getStartOfLastWeek() {
+    const now = new Date();
+    const day = now.getDay();
+    const diffToMonday = (day + 6) % 7;
+
+    const mondayThisWeek = new Date(now);
+    mondayThisWeek.setDate(now.getDate() - diffToMonday);
+
+    const mondayLastWeek = new Date(mondayThisWeek);
+    mondayLastWeek.setDate(mondayThisWeek.getDate() - 7);
+
+    mondayLastWeek.setHours(0, 0, 0, 0);
+    return mondayLastWeek;
+}
+
+
+const selectAllActivity = async (start, end) => {
+    try {
+        const startDate = start !== '1970-01-01T00:00:00.000Z' ? normalizeStartOfDay(start) : getStartOfLastWeek();
+        const endDate = start !== '1970-01-01T00:00:00.000Z' ? normalizeEndOfDay(end) : new Date();
+
+        const result = await pool.query(`
+            SELECT * FROM activity
+            WHERE date_activity >= $1
+              AND date_activity < ($2::date + INTERVAL '1 day')
+        `, [startDate, endDate]);
+
+        return result.rows;
+    } catch (err) {
+        throw err;
+    }
+};
+
+
 const selectUsageByMonth = async () => {
   try {
     const result = await pool.query(`
@@ -789,4 +823,4 @@ async function updateStatus(status) {
   }
 }
 
-module.exports = { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectActivity, selectActivityByUser, selectSuiviForCalendarByUser, selectSuiviBonusForCalendar, updateSuiviCalendarValue, updateSuiviBonusCalendarValue, selectMaquettes, selectReferentielMaquettes, selectDossiers, deleteDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, deleteBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm, syncSheetToDB, insertHistory, selectHistoryByTable, getStatus, updateStatus };
+module.exports = { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectActivity, selectAllActivity, selectActivityByUser, selectSuiviForCalendarByUser, selectSuiviBonusForCalendar, updateSuiviCalendarValue, updateSuiviBonusCalendarValue, selectMaquettes, selectReferentielMaquettes, selectDossiers, deleteDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, deleteBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm, syncSheetToDB, insertHistory, selectHistoryByTable, getStatus, updateStatus };
