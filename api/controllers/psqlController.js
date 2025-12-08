@@ -367,7 +367,7 @@ exports.getTopUsers = async (req, res) => {
 exports.setActivity = async (req, res) => {
   logger.info('📥 Requête reçue pour insertActivity :', JSON.stringify(req.body));
   try {
-    const result = await insertActivity();
+    const result = await insertActivity(req.body);
     res.status(201).json({ message: 'Activité insérée avec succès', data: result });
   } catch (error) {
     res.status(500).json({
