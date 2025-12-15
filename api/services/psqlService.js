@@ -412,17 +412,17 @@ const selectUsageByProcess = async (start, end) => {
 const selectAllActivity = async (start, end) => {
     try {
         const result = await pool.query(`
-            SELECT * FROM activity
-            WHERE date_activity >= $1
-              AND date_activity < ($2::date + INTERVAL '1 day')
-        `, [normalizeStartOfDay(start) || '1970-01-01', normalizeEndOfDay(end) || new Date()]);
+      SELECT *
+      FROM activity
+      WHERE date_activity::date BETWEEN $1::date AND $2::date
+      ORDER BY date_activity ASC
+    `, [start || '1970-01-01', end || new Date().toISOString().split('T')[0]]);
 
         return result.rows;
     } catch (err) {
         throw err;
     }
 };
-
 
 const selectUsageByMonth = async () => {
   try {
