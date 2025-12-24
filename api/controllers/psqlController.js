@@ -1,5 +1,35 @@
 const logger = require('../utils/logger');
-const { selectAll, selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, selectSuiviBonusForCalendar, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectList, selectActivity, selectAllActivity, selectActivityByUser, selectMaquettes, selectReferentielMaquettes, selectDossiers, deleteDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, deleteBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateSuiviCalendarValue, selectSuiviForCalendarByUser, updateSuiviBonusCalendarValue, updateBaseDocu, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, insertForm, selectServices, selectAvgServices, selectForm, syncSheetToDB, insertHistory, selectHistoryByTable, getStatus, updateStatus } = require('../services/psqlService.js');
+const { genericSelect, selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, selectSuiviBonusForCalendar, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectList, selectActivity, selectAllActivity, selectActivityByUser, selectMaquettes, selectReferentielMaquettes, selectDossiers, deleteDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, deleteBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateSuiviCalendarValue, selectSuiviForCalendarByUser, updateSuiviBonusCalendarValue, updateBaseDocu, insertActivity, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, syncSheetToDB, insertHistory, selectHistoryByTable, getStatus, updateStatus } = require('../services/psqlService.js');
+
+exports.getGenericSelect = async (req, res) => {
+    try {
+        const { table } = req.params;
+        const { where, orderBy, limit, offset, columns, ...rest } = req.query;
+
+        /**
+         * values seront passées sous forme :
+         * ?where=email_user=$1&value1=test@mail.com
+         */
+        const values = Object.keys(rest)
+            .filter(k => k.startsWith('value'))
+            .map(k => rest[k]);
+
+        const result = await genericSelect(table.toUpperCase(), {
+            where,
+            orderBy,
+            limit: limit ? Number(limit) : undefined,
+            offset: offset ? Number(offset) : undefined,
+            columns,
+            values
+        });
+
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
 
 exports.getTable = async (req, res) => {
     const { table } = req.query;
@@ -382,127 +412,6 @@ exports.setActivity = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       error: 'Erreur serveur lors de l\'insertion de l\'activité',
-      details: error.message,
-    });
-  }
-};
-
-exports.getForm = async (req, res) => {
-  try {
-    const form = await selectForm();
-    res.status(200).json(form);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.getCountForm = async (req, res) => {
-  try {
-    const countForm = await selectCountForm();
-    res.status(200).json({ success: true, countForm });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-};
-
-exports.getMoyenneNotes = async (req, res) => {
-  try {
-    const moyenneNotes = await selectAvgNotes();
-    res.status(200).json({ success: true, moyenneNotes });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-};
-
-exports.getMoyenneNotesZendesk = async (req, res) => {
-  try {
-    const moyenneNotes = await selectAvgNotesZendesk();
-    res.status(200).json({ success: true, moyenneNotes });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-};
-
-exports.getMots = async (req, res) => {
-  try {
-    const mots = await selectMots();
-    res.status(200).json(mots);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.getComments = async (req, res) => {
-  try {
-    const comments = await selectComments();
-    res.status(200).json(comments);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.getPortail = async (req, res) => {
-  try {
-    const portail = await selectPortail();
-    res.status(200).json(portail);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.getCommentsPortail = async (req, res) => {
-  try {
-    const commentsPortail = await selectCommentsPortail();
-    res.status(200).json(commentsPortail);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.getZendesk = async (req, res) => {
-  try {
-    const zendesk = await selectZendesk();
-    res.status(200).json(zendesk);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.getCommentsZendesk = async (req, res) => {
-  try {
-    const commentsZendesk = await selectCommentsZendesk();
-    res.status(200).json(commentsZendesk);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.getServices = async (req, res) => {
-  try {
-    const services = await selectServices();
-    res.status(200).json(services);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.getMoyenneService = async (req, res) => {
-  try {
-    const moyenneService = await selectAvgServices();
-    res.status(200).json({ success: true, moyenneService });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-};
-
-exports.setForm = async (req, res) => {
-  logger.info('📥 Requête reçue pour setForm :', JSON.stringify(req.body));
-  try {
-    const result = await insertForm(req.body);
-    res.status(201).json({ message: 'Formulaire inséré avec succès', data: result });
-  } catch (error) {
-    res.status(500).json({
-      error: 'Erreur serveur lors de l\'insertion du formulaire',
       details: error.message,
     });
   }

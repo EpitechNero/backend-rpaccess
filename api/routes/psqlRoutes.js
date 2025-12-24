@@ -3,7 +3,7 @@ const router = express.Router();
 const controller = require('../controllers/psqlController');
 const jwtMiddleware = require('../middlewares/jwtMiddleware');
 
-router.get('/gettable', controller.getTable);
+router.get('/:table', controller.getGenericSelect);
 
 router.get('/getusers', jwtMiddleware, controller.getUsers);
 router.get('/getuser/:usermail', jwtMiddleware, controller.getUserByMail);
@@ -44,20 +44,6 @@ router.get('/getusagebyprocess', controller.getUsageByProcess);
 router.get('/getusagebymonth', controller.getUsageByMonth);
 router.get('/getmaquettesbyregion', controller.getMaquettesByRegion);
 router.get('/gettopusers', controller.getTopUsers);
-
-router.get('/getform', jwtMiddleware,  controller.getForm);
-router.get('/getcountform', jwtMiddleware,  controller.getCountForm);
-router.get('/getmoyennenotes', jwtMiddleware,  controller.getMoyenneNotes);
-router.get('/getmoyennenoteszendesk', jwtMiddleware, controller.getMoyenneNotesZendesk);
-router.get('/getmots', jwtMiddleware, controller.getMots);
-router.get('/getcomments', jwtMiddleware, controller.getComments);
-router.get('/getportail', jwtMiddleware, controller.getPortail);
-router.get('/getcommentsportail', jwtMiddleware, controller.getCommentsPortail);
-router.get('/getzendesk', jwtMiddleware, controller.getZendesk);
-router.get('/getcommentszendesk', jwtMiddleware, controller.getCommentsZendesk);
-router.get('/getservices', jwtMiddleware, controller.getServices);
-router.get('/getmoyenneservice', jwtMiddleware, controller.getMoyenneService);
-router.post('/create-form', jwtMiddleware, controller.setForm);
 
 router.post('/create-activity', jwtMiddleware, controller.setActivity);
 router.post('/sync-tables', jwtMiddleware, controller.syncTableFromSheet);

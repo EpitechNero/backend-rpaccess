@@ -11,16 +11,44 @@ const TABLES = {
     CALENDAR_BONUS: 'calendarbonus'
 };
 
-const selectAll = async (tableKey) => {
+const genericSelect = async (tableKey, options = {}) => {
     const tableName = TABLES[tableKey];
     if (!tableName) {
         throw new Error('Table non autorisée');
     }
 
+    const {
+        where,      // string SQL (ex: "email_user = $1")
+        values = [],// valeurs des paramètres
+        orderBy,    // string SQL (ex: "created_at DESC")
+        limit,
+        offset,
+        columns = '*'
+    } = options;
+
+    let query = `SELECT ${columns} FROM ${tableName}`;
+
+    if (where) {
+        query += ` WHERE ${where}`;
+    }
+
+    if (orderBy) {
+        query += ` ORDER BY ${orderBy}`;
+    }
+
+    if (limit) {
+        query += ` LIMIT ${limit}`;
+    }
+
+    if (offset) {
+        query += ` OFFSET ${offset}`;
+    }
+
     try {
-        const res = await pool.query(`SELECT * FROM ${tableName}`);
-        return res.rows;
+        const res = await pool.query(query, values);
+        return where ? res.rows[0] : res.rows;
     } catch (error) {
+        logger.error('❌ Erreur SQL', { query, values, error: error.message });
         throw error;
     }
 };
@@ -91,6 +119,50 @@ const selectSuiviBonusForCalendar = async () => {
     }
 };
 
+const selectList = async () => {
+    try {
+        const res = await pool.query('SELECT * FROM list ORDER BY title_list');
+        console.log('✅ Liste récupérée avec succès');
+        return res.rows;
+    } catch (error) {
+        console.error('❌ Erreur lors de la récupération des bots :', error);
+        throw error;
+    }
+}
+
+const selectBaseDocu = async () => {
+    try {
+        const res = await pool.query('SELECT pole_basedocu, service_basedocu, projet_basedocu, sousprojet_basedocu, type_basedocu, titre_basedocu, link_basedocu, date_basedocu FROM basedocu');
+        console.log('✅ Base documentaire récupérée avec succès');
+        return res.rows;
+    } catch (error) {
+        console.error('❌ Erreur lors de la récupération de la base documentaire :', error);
+        throw error;
+    }
+};
+
+const selectReferentielMaquettes = async () => {
+    try {
+        const res = await pool.query('SELECT * FROM referentiel_maquettes ORDER BY region_referentiel_maquettes, territoire_referentiel_maquettes');
+        console.log('✅ Référentiel des maquettes récupéré avec succès');
+        return res.rows;
+    } catch (error) {
+        console.error('❌ Erreur lors de la récupération du référentiel des maquettes :', error);
+        throw error;
+    }
+};
+
+const selectDossiers = async () => {
+    try {
+        const res = await pool.query('SELECT societe_dossiers, annee_dossiers, region_dossiers, titre_dossiers, link_dossiers FROM dossiers');
+        console.log('✅ Dossiers permanents récupérés avec succès');
+        return res.rows;
+    } catch (error) {
+        console.error('❌ Erreur lors de la récupération des dossiers permanents :', error);
+        throw error;
+    }
+};
+
 const selectUserByMail = async (usermail) => {
   try {
     const res = await pool.query('SELECT * FROM users WHERE email_user = $1', [usermail]);
@@ -100,6 +172,72 @@ const selectUserByMail = async (usermail) => {
     console.error('❌ Erreur lors de la récupération de l\'utilisateur :', error);
     throw error;
   }
+};
+
+const selectCentreDeCoutsById = async (id) => {
+    try {
+        const res = await pool.query('SELECT * FROM centredecout WHERE id_centredecout = $1', [id]);
+        console.log('✅ Centre de coûts récupéré avec succès');
+        return res.rows[0];
+    } catch (error) {
+        console.error('❌ Erreur lors de la récupération du centre de coûts :', error);
+        throw error;
+    }
+};
+
+const selectEOTPById = async (id) => {
+    try {
+        const res = await pool.query('SELECT * FROM eotp WHERE id_eotp = $1', [id]);
+        console.log('✅ EOTP récupéré avec succès');
+        return res.rows[0];
+    } catch (error) {
+        console.error('❌ Erreur lors de la récupération de l\'EOTP :', error);
+        throw error;
+    }
+};
+
+const selectActivityByUser = async (email) => {
+    try {
+        const res = await pool.query('SELECT * FROM activity WHERE email_activity = $1', [email]);
+        console.log('✅ Activité récupérée avec succès');
+        return res.rows;
+    } catch (error) {
+        console.error('❌ Erreur lors de la récupération de l\'activité :', error);
+        throw error;
+    }
+};
+
+const selectBaseDocuBySheetId = async (SheetId) => {
+    try {
+        const sheetData = await pool.query('SELECT * FROM basedocu WHERE link_basedocu ILIKE($1)', [`%${SheetId}%`]);
+        console.log('✅ Base documentaire récupérée avec succès');
+        return sheetData.rows[0];
+    } catch (error) {
+        console.error('❌ Erreur lors de la récupération de la base documentaire :', error);
+        throw error;
+    }
+};
+
+const selectSuiviForCalendarByUser = async (email) => {
+    try {
+        const res = await pool.query('SELECT * FROM calendar WHERE mail = $1', [email]);
+        console.log('✅ Suivi Calendrier récupéré avec succès');
+        return res.rows;
+    } catch (error) {
+        console.error('❌ Erreur lors de la récupération des maquettes :', error);
+        throw error;
+    }
+};
+
+const selectDossierById = async (SheetId) => {
+    try {
+        const res = await pool.query('SELECT * FROM dossiers WHERE link_dossiers ILIKE($1)', [`%${SheetId}%`]);
+        console.log('✅ Dossier récupéré avec succès');
+        return res.rows[0];
+    } catch (error) {
+        console.error('❌ Erreur lors de la récupération du dossier :', error);
+        throw error;
+    }
 };
 
 const insertUser = async (userData) => {
@@ -130,17 +268,6 @@ const updateUser = async (userData) => {
   }
 };
 
-const selectCentreDeCoutsById = async (id) => {
-  try {
-    const res = await pool.query('SELECT * FROM centredecout WHERE id_centredecout = $1', [id]);
-    console.log('✅ Centre de coûts récupéré avec succès');
-    return res.rows[0];
-  } catch (error) {
-    console.error('❌ Erreur lors de la récupération du centre de coûts :', error);
-    throw error;
-  }
-};
-
 const insertCentreDeCouts = async (centreData) => {
   try {
     const res = await pool.query(
@@ -155,17 +282,6 @@ const insertCentreDeCouts = async (centreData) => {
   }
 };
 
-const selectEOTPById = async (id) => {
-  try {
-    const res = await pool.query('SELECT * FROM eotp WHERE id_eotp = $1', [id]);
-    console.log('✅ EOTP récupéré avec succès');
-    return res.rows[0];
-  } catch (error) {
-    console.error('❌ Erreur lors de la récupération de l\'EOTP :', error);
-    throw error;
-  }
-};
-
 const insertEOTP = async (eotpData) => {
   try {
     const res = await pool.query(
@@ -176,39 +292,6 @@ const insertEOTP = async (eotpData) => {
     return res.rows[0];
   } catch (error) {
     console.error('❌ Erreur lors de l\'insertion de l\'EOTP :', error);
-    throw error;
-  }
-};
-
-const selectList = async () => {
-  try {
-    const res = await pool.query('SELECT * FROM list ORDER BY title_list');
-    console.log('✅ Liste récupérée avec succès');
-    return res.rows;
-  } catch (error) {
-    console.error('❌ Erreur lors de la récupération des bots :', error);
-    throw error;
-  }
-}
-
-const selectActivityByUser = async (email) => {
-  try {
-    const res = await pool.query('SELECT * FROM activity WHERE email_activity = $1', [email]);
-    console.log('✅ Activité récupérée avec succès');
-    return res.rows;
-  } catch (error) {
-    console.error('❌ Erreur lors de la récupération de l\'activité :', error);
-    throw error;
-  }
-};
-
-const selectSuiviForCalendarByUser = async (email) => {
-  try {
-    const res = await pool.query('SELECT * FROM calendar WHERE mail = $1', [email]);
-    console.log('✅ Suivi Calendrier récupéré avec succès');
-    return res.rows;
-  } catch (error) {
-    console.error('❌ Erreur lors de la récupération des maquettes :', error);
     throw error;
   }
 };
@@ -250,28 +333,6 @@ const updateSuiviBonusCalendarValue = async (mail, semaine, gagnant) => {
   }
 };
 
-const selectReferentielMaquettes = async () => {
-  try {
-    const res = await pool.query('SELECT * FROM referentiel_maquettes ORDER BY region_referentiel_maquettes, territoire_referentiel_maquettes');
-    console.log('✅ Référentiel des maquettes récupéré avec succès');
-    return res.rows;
-  } catch (error) {
-    console.error('❌ Erreur lors de la récupération du référentiel des maquettes :', error);
-    throw error;
-  }
-};
-
-const selectDossiers = async () => {
-  try {
-    const res = await pool.query('SELECT societe_dossiers, annee_dossiers, region_dossiers, titre_dossiers, link_dossiers FROM dossiers');
-    console.log('✅ Dossiers permanents récupérés avec succès');
-    return res.rows;
-  } catch (error) {
-    console.error('❌ Erreur lors de la récupération des dossiers permanents :', error);
-    throw error;
-  }
-};
-
 const deleteDossiers = async () => {
   try {
     const res = await pool.query('DELETE FROM dossiers WHERE 1=1');
@@ -279,17 +340,6 @@ const deleteDossiers = async () => {
     return res.rows;
   } catch (error) {
     console.error('❌ Erreur lors de la suppression des dossiers permanents :', error);
-    throw error;
-  }
-};
-
-const selectDossierById = async (SheetId) => {
-  try {
-    const res = await pool.query('SELECT * FROM dossiers WHERE link_dossiers ILIKE($1)', [`%${SheetId}%`]);
-    console.log('✅ Dossier récupéré avec succès');
-    return res.rows[0];
-  } catch (error) {
-    console.error('❌ Erreur lors de la récupération du dossier :', error);
     throw error;
   }
 };
@@ -322,17 +372,6 @@ const updateDossier = async (dossierData) => {
   }
 };
 
-const selectBaseDocu = async () => {
-  try {
-    const res = await pool.query('SELECT pole_basedocu, service_basedocu, projet_basedocu, sousprojet_basedocu, type_basedocu, titre_basedocu, link_basedocu, date_basedocu FROM basedocu');
-    console.log('✅ Base documentaire récupérée avec succès');
-    return res.rows;
-  } catch (error) {
-    console.error('❌ Erreur lors de la récupération de la base documentaire :', error);
-    throw error;
-  }
-};
-
 const deleteBaseDocu = async () => {
   try {
     const res = await pool.query('DELETE FROM basedocu WHERE 1=1');
@@ -340,17 +379,6 @@ const deleteBaseDocu = async () => {
     return res.rows;
   } catch (error) {
     console.error('❌ Erreur lors de la suppression de la base documentaire :', error);
-    throw error;
-  }
-};
-
-const selectBaseDocuBySheetId = async (SheetId) => {
-  try {
-    const sheetData = await pool.query('SELECT * FROM basedocu WHERE link_basedocu ILIKE($1)', [`%${SheetId}%`]);
-    console.log('✅ Base documentaire récupérée avec succès');
-    return sheetData.rows[0];
-  } catch (error) {
-    console.error('❌ Erreur lors de la récupération de la base documentaire :', error);
     throw error;
   }
 };
@@ -509,202 +537,6 @@ const normalizeEndOfDay = (date) => {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
 };
 
-const selectForm = async () => {
-  try {
-    const result = await pool.query(`SELECT * FROM form`);
-    return result.rows;
-  } catch (err) {
-    throw err
-  }
-};
-
-const selectCountForm = async () => {
-  try {
-    const result = await pool.query(`SELECT COUNT(*) FROM form`);
-    return result.rows[0];
-  } catch (err) {
-    throw err
-  }
-};
-
-const selectAvgNotes = async () => {
-  try {
-    const result = await pool.query(`SELECT ROUND(AVG(note_form),1) FROM form`);
-    return result.rows[0];
-  } catch (err) {
-    throw err
-  }
-};
-
-const selectAvgNotesZendesk = async () => {
-  try {
-    const result = await pool.query(`SELECT ROUND(AVG(note_zendesk_form),1) FROM form`);
-    return result.rows[0];
-  } catch (err) {
-    throw err
-  }
-};
-
-const selectMots = async () => {
-  try {
-    const result = await pool.query(`SELECT mot, SUM(somme_ponderation) AS somme_ponderation FROM(SELECT mot1_form AS mot, SUM(ponderation) AS somme_ponderation FROM (SELECT LOWER(mot1_form) AS mot1_form, 3  AS ponderation FROM form) GROUP BY mot1_form UNION SELECT mot2_form AS mot, SUM(ponderation) AS somme_ponderation FROM (SELECT LOWER(mot2_form) AS mot2_form, 2  AS ponderation FROM form) GROUP BY mot2_form UNION SELECT mot3_form AS mot, SUM(ponderation) AS somme_ponderation FROM (SELECT LOWER(mot3_form) AS mot3_form, 1  AS ponderation FROM form) GROUP BY mot3_form) GROUP BY mot ORDER BY somme_ponderation DESC LIMIT 20`);
-    return result.rows;
-  } catch (err) {
-    throw err
-  }
-};
-
-const selectComments = async () => {
-  try {
-    const result = await pool.query(`SELECT mail_form, commentaire_form FROM form`);
-    return result.rows;
-  } catch (err) {
-    throw err
-  }
-}
-
-const selectPortail = async () => {
-  try {
-    const result = await pool.query(`SELECT portail_form,COUNT(portail_form) FROM form GROUP BY portail_form`);
-    return result.rows;
-  } catch (err) {
-    throw err
-  }
-}
-
-const selectCommentsPortail = async () => {
-  try {
-    const result = await pool.query(`SELECT portail_form, raison_portail_form FROM form WHERE raison_portail_form IS NOT NULL`);
-    return result.rows;
-  } catch (err) {
-    throw err
-  }
-}
-
-const selectZendesk = async () => {
-  try {
-    const result = await pool.query(`SELECT zendesk_form,COUNT(zendesk_form) FROM form GROUP BY zendesk_form`);
-    return result.rows;
-  } catch (err) {
-    throw err
-  }
-}
-
-const selectCommentsZendesk = async () => {
-  try {
-    const result = await pool.query(`SELECT zendesk_form, raison_zendesk_form FROM form WHERE raison_zendesk_form IS NOT NULL`);
-    return result.rows;
-  } catch (err) {
-    throw err
-  }
-}
-
-const selectServices = async () => {
-  try {
-    const result = await pool.query(`SELECT 'Reversements'  AS service, COUNT(*) FROM form WHERE service_reac_rever_form IS NOT NULL AND service_exper_rever_form IS NOT NULL UNION SELECT 'AMOA & RPA' AS service, COUNT(*) FROM form WHERE service_reac_amoa_form IS NOT NULL AND service_exper_amoa_form IS NOT NULL UNION SELECT 'Activité bancaire clientèle' AS service, COUNT(*) FROM form WHERE service_reac_actbanc_form IS NOT NULL AND service_exper_actbanc_form IS NOT NULL UNION SELECT 'Dépenses spé & fact manu' AS service, COUNT(*) FROM form WHERE service_reac_depspe_form IS NOT NULL AND service_exper_depspe_form IS NOT NULL UNION SELECT 'Cautions bancaires' AS service, COUNT(*) FROM form WHERE service_reac_caubanc_form IS NOT NULL AND service_exper_caubanc_form IS NOT NULL UNION SELECT 'Compta géné & gestion immo' AS service, COUNT(*) FROM form WHERE service_reac_comptag_form IS NOT NULL AND service_exper_comptag_form IS NOT NULL UNION SELECT 'Fiscalité locale' AS service, COUNT(*) FROM form WHERE service_reac_fiscal_form IS NOT NULL AND service_exper_fiscal_form IS NOT NULL`);
-    return result.rows;
-  } catch (err) {
-    throw err;
-  }
-};
-
-const selectAvgServices = async () => {
-  try {
-    const result = await pool.query(`SELECT 'Reversements' AS service, ROUND(AVG(service_reac_rever_form),1) AS Reactivite , ROUND(AVG(service_exper_rever_form),1) AS Expertise, COUNT(*) FROM form WHERE service_reac_rever_form IS NOT NULL AND service_exper_rever_form IS NOT NULL UNION 
-      SELECT 'AMOA & RPA' AS service, ROUND(AVG(service_reac_amoa_form),1) AS Reactivite , ROUND(AVG(service_exper_amoa_form),1) AS Expertise, COUNT(*) FROM form WHERE service_reac_amoa_form IS NOT NULL AND service_exper_amoa_form IS NOT NULL UNION 
-      SELECT 'Activité bancaire clientèle' AS service, ROUND(AVG(service_reac_actbanc_form),1) AS Reactivite , ROUND(AVG(service_exper_actbanc_form),1) AS Expertise, COUNT(*) FROM form WHERE service_reac_actbanc_form IS NOT NULL AND service_exper_actbanc_form IS NOT NULL UNION 
-      SELECT 'Dépenses spécifiques et factures manuelles' AS service, ROUND(AVG(service_reac_depspe_form),1) AS Reactivite , ROUND(AVG(service_exper_depspe_form),1) AS Expertise, COUNT(*) FROM form WHERE service_reac_depspe_form IS NOT NULL AND service_exper_depspe_form IS NOT NULL UNION 
-      SELECT 'Cautions bancaires' AS service, ROUND(AVG(service_reac_caubanc_form),1) AS Reactivite , ROUND(AVG(service_exper_caubanc_form),1) AS Expertise, COUNT(*) FROM form WHERE service_reac_caubanc_form IS NOT NULL AND service_exper_caubanc_form IS NOT NULL UNION 
-      SELECT 'Comptabilité Générale / Gestion des immobilisations' AS service, ROUND(AVG(service_reac_comptag_form),1) AS Reactivite , ROUND(AVG(service_exper_comptag_form),1) AS Expertise, COUNT(*) FROM form WHERE service_reac_comptag_form IS NOT NULL AND service_exper_comptag_form IS NOT NULL UNION 
-      SELECT 'Fiscalité locale' AS service, ROUND(AVG(service_reac_fiscal_form),1) AS Reactivite , ROUND(AVG(service_exper_fiscal_form),1) AS Expertise, COUNT(*) FROM form WHERE service_reac_fiscal_form IS NOT NULL AND service_exper_fiscal_form IS NOT NULL`);
-    return result.rows;
-  } catch (err) {
-    throw err;
-  }
-};
-
-const insertForm = async (formData) => {
-  try {
-    const services = formData.services || [];
-    const getService = (name) => services.find(s => s.name === name) || { checked: false, ratings: { reactivity: null, expertise: null } };
-    const getRating = (service, key) => service && service.checked ? service.ratings[key] : null;
-
-    const rever = getService('Reversements');
-    const amoa = getService('AMOA & RPA');
-    const actbanc = getService('Activité bancaire clientèle');
-    const depspe = getService('Dépenses spécifiques et factures manuelles');
-    const caubanc = getService('Cautions bancaires');
-    const comptag = getService('Comptabilité Générale / Gestion des immobilisations');
-    const fiscal = getService('Fiscalité locale');
-
-    rever.ratings.reactivity = getRating(rever, 'reactivity');
-    rever.ratings.expertise = getRating(rever, 'expertise');
-    amoa.ratings.reactivity = getRating(amoa, 'reactivity');
-    amoa.ratings.expertise = getRating(amoa, 'expertise');
-    actbanc.ratings.reactivity = getRating(actbanc, 'reactivity');
-    actbanc.ratings.expertise = getRating(actbanc, 'expertise');
-    depspe.ratings.reactivity = getRating(depspe, 'reactivity');
-    depspe.ratings.expertise = getRating(depspe, 'expertise');
-    caubanc.ratings.reactivity = getRating(caubanc, 'reactivity');
-    caubanc.ratings.expertise = getRating(caubanc, 'expertise');
-    comptag.ratings.reactivity = getRating(comptag, 'reactivity');
-    comptag.ratings.expertise = getRating(comptag, 'expertise');
-    fiscal.ratings.reactivity = getRating(fiscal, 'reactivity');
-    fiscal.ratings.expertise = getRating(fiscal, 'expertise');
-
-    const res = await pool.query(
-      `INSERT INTO form (
-        note_form, mot1_form, mot2_form, mot3_form, portail_form, raison_portail_form, zendesk_form, raison_zendesk_form,
-        service_reac_rever_form, service_exper_rever_form,
-        service_reac_amoa_form, service_exper_amoa_form,
-        service_reac_actbanc_form, service_exper_actbanc_form,
-        service_reac_depspe_form, service_exper_depspe_form,
-        service_reac_caubanc_form, service_exper_caubanc_form,
-        service_reac_comptag_form, service_exper_comptag_form,
-        service_reac_fiscal_form, service_exper_fiscal_form,
-        mail_form, region_form, service_form, commentaire_form, note_zendesk_form
-      ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8,
-        $9, $10,
-        $11, $12,
-        $13, $14,
-        $15, $16,
-        $17, $18,
-        $19, $20,
-        $21, $22,
-        $23, $24, $25, $26, $27
-      ) RETURNING *`,
-      [
-        formData.satisfactionLevel,
-        formData.mot1,
-        formData.mot2,
-        formData.mot3,
-        formData.portail,
-        formData.portailReason,
-        formData.zendesk,
-        formData.zendeskReason,
-        rever.ratings.reactivity, rever.ratings.expertise,
-        amoa.ratings.reactivity, amoa.ratings.expertise,
-        actbanc.ratings.reactivity, actbanc.ratings.expertise,
-        depspe.ratings.reactivity, depspe.ratings.expertise,
-        caubanc.ratings.reactivity, caubanc.ratings.expertise,
-        comptag.ratings.reactivity, comptag.ratings.expertise,
-        fiscal.ratings.reactivity, fiscal.ratings.expertise,
-        formData.email,
-        formData.region,
-        formData.service,
-        formData.comments,
-        formData.zendeskSatisfactionLevel
-      ]
-    );
-    logger.info('✅ Formulaire inséré avec succès', JSON.stringify(res.rows[0]));
-    return res.rows[0];
-  } catch (error) {
-    logger.error('❌ Erreur lors de l\'insertion du formulaire :', error.message);
-    throw error;
-  }
-};
-
 async function syncSheetToDB(id, range, tableName) {
   const sheetData = await readGoogleSheet(id, range);
 
@@ -828,4 +660,4 @@ async function updateStatus(status) {
   }
 }
 
-module.exports = { selectAll, selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectActivity, selectAllActivity, selectActivityByUser, selectSuiviForCalendarByUser, selectSuiviBonusForCalendar, updateSuiviCalendarValue, updateSuiviBonusCalendarValue, selectMaquettes, selectReferentielMaquettes, selectDossiers, deleteDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, deleteBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm, syncSheetToDB, insertHistory, selectHistoryByTable, getStatus, updateStatus };
+module.exports = { genericSelect, selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectActivity, selectAllActivity, selectActivityByUser, selectSuiviForCalendarByUser, selectSuiviBonusForCalendar, updateSuiviCalendarValue, updateSuiviBonusCalendarValue, selectMaquettes, selectReferentielMaquettes, selectDossiers, deleteDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, deleteBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, syncSheetToDB, insertHistory, selectHistoryByTable, getStatus, updateStatus };
