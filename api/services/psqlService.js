@@ -2,6 +2,30 @@ const { pool } = require('../config/psql.js');
 const { google, oAuth2Client } = require('../config/google');
 const logger = require('../utils/logger');
 
+const TABLES = {
+    EOTP: 'eotp',
+    CENTRE_COUT: 'centredecout',
+    USERS: 'users',
+    ACTIVITY: 'activity',
+    MAQUETTES: 'maquettes',
+    CALENDAR_BONUS: 'calendarbonus'
+};
+
+const selectAll = async (tableKey) => {
+    const tableName = TABLES[tableKey];
+    if (!tableName) {
+        throw new Error('Table non autorisée');
+    }
+
+    try {
+        const res = await pool.query(`SELECT * FROM ${tableName}`);
+        return res.rows;
+    } catch (error) {
+        throw error;
+    }
+};
+
+
 const selectUsers = async () => {
   try {
     const res = await pool.query('SELECT * FROM users');
@@ -11,6 +35,60 @@ const selectUsers = async () => {
     console.error('❌ Erreur lors de la récupération des utilisateurs :', error);
     throw error;
   }
+};
+
+const selectCentreDesCouts = async () => {
+    try {
+        const res = await pool.query('SELECT * FROM centredecout');
+        console.log('✅ Centres de couts récupérés avec succès');
+        return res.rows;
+    } catch (error) {
+        console.error('❌ Erreur lors de la récupération des centres de couts :', error);
+        throw error;
+    }
+};
+
+const selectEOTP = async () => {
+    try {
+        const res = await pool.query('SELECT * FROM eotp');
+        console.log('✅ EOTP récupérés avec succès');
+        return res.rows;
+    } catch (error) {
+        console.error('❌ Erreur lors de la récupération des eotp :', error);
+        throw error;
+    }
+};
+
+const selectActivity = async () => {
+    try {
+        const res = await pool.query('SELECT * FROM activity');
+        console.log('✅ Activité récupérée avec succès');
+        return res.rows;
+    } catch (error) {
+        console.error('❌ Erreur lors de la récupération de l\'activité :', error);
+        throw error;
+    }
+};
+
+const selectMaquettes = async () => {
+    try {
+        const res = await pool.query('SELECT * FROM maquettes');
+        console.log('✅ Maquettes récupérée avec succès');
+        return res.rows;
+    } catch (error) {
+        console.error('❌ Erreur lors de la récupération des maquettes :', error);
+        throw error;
+    }
+};
+
+const selectSuiviBonusForCalendar = async () => {
+    try {
+        const res = await pool.query('SELECT * FROM calendarbonus');
+        return res.rows;
+    } catch (error) {
+        console.error('❌ Erreur lors de la récupération des maquettes :', error);
+        throw error;
+    }
 };
 
 const selectUserByMail = async (usermail) => {
@@ -52,17 +130,6 @@ const updateUser = async (userData) => {
   }
 };
 
-const selectCentreDesCouts = async () => {
-  try {
-    const res = await pool.query('SELECT * FROM centredecout');
-    console.log('✅ Centres de couts récupérés avec succès');
-    return res.rows;
-  } catch (error) {
-    console.error('❌ Erreur lors de la récupération des centres de couts :', error);
-    throw error;
-  }
-};
-
 const selectCentreDeCoutsById = async (id) => {
   try {
     const res = await pool.query('SELECT * FROM centredecout WHERE id_centredecout = $1', [id]);
@@ -84,17 +151,6 @@ const insertCentreDeCouts = async (centreData) => {
     return res.rows[0];
   } catch (error) {
     console.error('❌ Erreur lors de l\'insertion du centre de coûts :', error);
-    throw error;
-  }
-};
-
-const selectEOTP = async () => {
-  try {
-    const res = await pool.query('SELECT * FROM eotp');
-    console.log('✅ EOTP récupérés avec succès');
-    return res.rows;
-  } catch (error) {
-    console.error('❌ Erreur lors de la récupération des eotp :', error);
     throw error;
   }
 };
@@ -135,17 +191,6 @@ const selectList = async () => {
   }
 }
 
-const selectActivity = async () => {
-  try {
-    const res = await pool.query('SELECT * FROM activity');
-    console.log('✅ Activité récupérée avec succès');
-    return res.rows;
-  } catch (error) {
-    console.error('❌ Erreur lors de la récupération de l\'activité :', error);
-    throw error;
-  }
-};
-
 const selectActivityByUser = async (email) => {
   try {
     const res = await pool.query('SELECT * FROM activity WHERE email_activity = $1', [email]);
@@ -157,31 +202,10 @@ const selectActivityByUser = async (email) => {
   }
 };
 
-const selectMaquettes = async () => {
-  try {
-    const res = await pool.query('SELECT * FROM maquettes');
-    console.log('✅ Maquettes récupérée avec succès');
-    return res.rows;
-  } catch (error) {
-    console.error('❌ Erreur lors de la récupération des maquettes :', error);
-    throw error;
-  }
-};
-
 const selectSuiviForCalendarByUser = async (email) => {
   try {
     const res = await pool.query('SELECT * FROM calendar WHERE mail = $1', [email]);
     console.log('✅ Suivi Calendrier récupéré avec succès');
-    return res.rows;
-  } catch (error) {
-    console.error('❌ Erreur lors de la récupération des maquettes :', error);
-    throw error;
-  }
-};
-
-const selectSuiviBonusForCalendar = async () => {
-  try {
-    const res = await pool.query('SELECT * FROM calendarbonus');
     return res.rows;
   } catch (error) {
     console.error('❌ Erreur lors de la récupération des maquettes :', error);
@@ -804,4 +828,4 @@ async function updateStatus(status) {
   }
 }
 
-module.exports = { selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectActivity, selectAllActivity, selectActivityByUser, selectSuiviForCalendarByUser, selectSuiviBonusForCalendar, updateSuiviCalendarValue, updateSuiviBonusCalendarValue, selectMaquettes, selectReferentielMaquettes, selectDossiers, deleteDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, deleteBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm, syncSheetToDB, insertHistory, selectHistoryByTable, getStatus, updateStatus };
+module.exports = { selectAll, selectUsers, selectUserByMail, insertUser, updateUser, selectCentreDesCouts, selectCentreDeCoutsById, insertCentreDeCouts, selectEOTP, selectEOTPById, insertEOTP, selectActivity, selectAllActivity, selectActivityByUser, selectSuiviForCalendarByUser, selectSuiviBonusForCalendar, updateSuiviCalendarValue, updateSuiviBonusCalendarValue, selectMaquettes, selectReferentielMaquettes, selectDossiers, deleteDossiers, selectDossierById, insertDossier, updateDossier, selectBaseDocu, deleteBaseDocu, selectBaseDocuBySheetId, insertBaseDocu, updateBaseDocu, insertActivity, selectList, selectBot, selectMaquettesByRegion, selectTopUsers, selectUsageByMonth, selectUsageByProcess, selectCountForm, selectAvgNotes, selectAvgNotesZendesk, selectMots, selectComments, selectPortail, selectCommentsPortail, selectZendesk, selectCommentsZendesk, selectServices, selectAvgServices, insertForm, selectForm, syncSheetToDB, insertHistory, selectHistoryByTable, getStatus, updateStatus };

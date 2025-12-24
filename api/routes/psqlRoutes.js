@@ -3,6 +3,8 @@ const router = express.Router();
 const controller = require('../controllers/psqlController');
 const jwtMiddleware = require('../middlewares/jwtMiddleware');
 
+router.get('/gettable', controller.getTable);
+
 router.get('/getusers', jwtMiddleware, controller.getUsers);
 router.get('/getuser/:usermail', jwtMiddleware, controller.getUserByMail);
 router.post('/createuser', jwtMiddleware, controller.createUser);
