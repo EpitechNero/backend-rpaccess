@@ -14,10 +14,6 @@ exports.createTicket = async (req, res) => {
             const token = await uploadAttachment(file);
             return token;
           } catch (err) {
-            logger.error('❌ Erreur upload fichier', {
-              filename: file.originalname,
-              error: err.response?.data || err.message,
-            });
             throw err;
           }
         })
@@ -41,9 +37,6 @@ exports.createTicket = async (req, res) => {
     });
 
   } catch (error) {
-    logger.error('💥 Erreur lors de la création du ticket', {
-      error: error.response?.data || error.message,
-    });
     res.status(500).json({
       message: 'Erreur lors de la création du ticket.',
       error: error.message,

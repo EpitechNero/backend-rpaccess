@@ -48,7 +48,6 @@ const genericSelect = async (tableKey, options = {}) => {
         const res = await pool.query(query, values);
         return where ? res.rows[0] : res.rows;
     } catch (error) {
-        logger.error('❌ Erreur SQL', { query, values, error: error.message });
         throw error;
     }
 };
@@ -308,10 +307,8 @@ const updateSuiviCalendarValue = async (email, jour, phrase) => {
 
   try {
     const res = await pool.query(query, [email, phrase]);
-    logger.info('✅ Statut mis à jour avec succès');
     return res.rows[0];
   } catch (error) {
-    logger.error('❌ Erreur lors de la mise à jour du statut :', error.message);
     throw error;
   }
 };
@@ -325,10 +322,8 @@ const updateSuiviBonusCalendarValue = async (mail, semaine, gagnant) => {
 
   try {
     const res = await pool.query(query)
-    logger.info('✅ Statut mis à jour avec succès');
     return res.rows[0];
   } catch (error) {
-    logger.error('❌ Erreur lors de la mise à jour du statut :', error.message, query);
     throw error;
   }
 };
@@ -416,10 +411,8 @@ const insertActivity = async (activity) => {
   try {
     const res = await pool.query('INSERT INTO activity (type_activity, nom_activity, prenom_activity, email_activity, process_activity, region_activity, date_activity) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
       [activity.type, activity.nom, activity.prenom, activity.email, activity.process, activity.region, new Date(activity.date)]);
-    logger.info('✅ Activité insérée avec succès', JSON.stringify(res.rows[0]));
     return res.rows[0];
   } catch (error) {
-    logger.error('❌ Erreur lors de l\'insertion de l\'activité :', error.message);
     throw error;
   }
 };
@@ -598,17 +591,8 @@ async function readGoogleSheet(id, range) {
       return obj;
     });
 
-    logger.info('✅ Données extraites depuis Google Sheets', {
-      nbRows: data.length,
-      id,
-    });
-
     return data;
   } catch (error) {
-    logger.error('❌ Erreur lors de la lecture du Google Sheet', {
-      error: error.response?.data || error.message,
-      id,
-    });
     throw error;
   }
 }
@@ -619,10 +603,8 @@ async function insertHistory(historyData) {
       'INSERT INTO history (dataname_history, succes_history, type_history, date_lancement_history, date_fin_history) VALUES ($1, $2, $3, $4, $5) RETURNING *',
       [historyData.dataname, historyData.succes, historyData.type, historyData.date_lancement, historyData.date_fin]
     );
-    logger.info('✅ Historique inséré avec succès', JSON.stringify(res.rows[0]));
     return res.rows[0];
   } catch (error) {
-    logger.error('❌ Erreur lors de l\'insertion de l\'historique :', error.message);
     throw error;
   }
 }
@@ -630,10 +612,8 @@ async function insertHistory(historyData) {
 async function selectHistoryByTable(table) {
   try {
     const res = await pool.query('SELECT * FROM history WHERE dataname_history = $1 ORDER BY date_lancement_history DESC LIMIT 3', [table]);
-    logger.info('✅ Historique récupéré avec succès');
     return res.rows;
   } catch (error) {
-    logger.error('❌ Erreur lors de la récupération de l\'historique :', error.message);
     throw error;
   }
 }
@@ -641,10 +621,8 @@ async function selectHistoryByTable(table) {
 async function getStatus() {
   try {
     const res = await pool.query('SELECT estactive_activation FROM activationrpa WHERE id_activation = 1');
-    logger.info('✅ Statut récupéré avec succès');
     return res.rows[0];
   } catch (error) {
-    logger.error('❌ Erreur lors de la récupération du statut :', error.message);
     throw error;
   }
 }
@@ -652,10 +630,8 @@ async function getStatus() {
 async function updateStatus(status) {
   try {
     const res = await pool.query('UPDATE activationrpa SET estactive_activation = $1 WHERE id_activation = 1 RETURNING *', [status]);
-    logger.info('✅ Statut mis à jour avec succès');
     return res.rows[0];
   } catch (error) {
-    logger.error('❌ Erreur lors de la mise à jour du statut :', error.message);
     throw error;
   }
 }

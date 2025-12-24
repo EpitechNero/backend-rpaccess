@@ -16,16 +16,8 @@ async function copyDriveFile(fileId, targetFolderId, filename) {
       supportsAllDrives: true,
     });
 
-    logger.info('📁 Fichier copié dans Google Drive', {
-      newFileId: response.data.id,
-      filename,
-    });
-
     return response.data.id;
   } catch (error) {
-    logger.error('❌ Erreur lors de la copie du fichier dans Google Drive', {
-      error: error.response?.data || error.message,
-    });
     throw error;
   }
 }
@@ -51,17 +43,9 @@ async function uploadDriveFile(fileBuffer, fileName) {
       supportsAllDrives: true,
     });
 
-    logger.info('📁 Fichier uploadé dans Google Drive', {
-      newFileId: res.data.id,
-      filename: fileName,
-    });
-
     return res.data.id;
 
   } catch (error) {
-    logger.error('❌ Erreur lors de l\'upload du fichier dans Google Drive', {
-      error: error.response?.data || error.message,
-    });
     throw error;
   }
 }
@@ -93,17 +77,8 @@ async function readGoogleSheet(fileId, range) {
       return obj;
     });
 
-    logger.info('✅ Données extraites depuis Google Sheets', {
-      nbRows: data.length,
-      fileId,
-    });
-
     return data;
   } catch (error) {
-    logger.error('❌ Erreur lors de la lecture du Google Sheet', {
-      error: error.response?.data || error.message,
-      fileId,
-    });
     throw error;
   }
 }

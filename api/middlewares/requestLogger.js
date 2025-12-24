@@ -10,7 +10,7 @@ const requestLogger = (req, res, next) => {
       url: req.originalUrl,
       status: res.statusCode,
       duration: `${durationMs}ms`,
-      body: req.body,
+      body: req.originalUrl == 'zendesk/create-ticket' ? 'Body html ticket Zendesk' : req.body,
     });
   });
 

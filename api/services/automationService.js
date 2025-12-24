@@ -9,12 +9,8 @@ async function getAuthToken() {
       apiKey: config.apiKey,
     });
 
-    logger.info('✅ Authentification réussie avec Automation Anywhere');
     return response.data.token;
   } catch (error) {
-    logger.error('❌ Erreur d\'authentification AA', {
-      error: error.response?.data || error.message,
-    });
     throw error;
   }
 }
@@ -78,7 +74,6 @@ async function launchBot(bot, inputData) {
   const token = await getAuthToken();
 
   if (!bot) {
-    logger.error("❌ bot est undefined dans buildBotInput");
     return {};
   }
 
@@ -95,11 +90,7 @@ async function launchBot(bot, inputData) {
 
   if (botInput && Object.keys(botInput).length > 0) {
     payload.botInput = botInput;
-  } else {
-    logger.info("📭 Pas de variables d'input à envoyer");
   }
-
-  logger.info("📝 Payload préparé :", JSON.stringify(payload, null, 2));
 
   try {
     const response = await axios.post(
@@ -113,12 +104,8 @@ async function launchBot(bot, inputData) {
       }
     );
 
-    logger.info('🤖 Bot lancé avec succès', { bot });
     return response.data;
   } catch (error) {
-    logger.error('❌ Erreur lors du lancement du bot', {
-      error: error.response?.data || error.message,
-    });
     throw error;
   }
 }
@@ -149,12 +136,8 @@ async function checkBotStatus() {
       }
     );
 
-    logger.info('📊 Statut du bot récupéré');
     return response.data;
   } catch (error) {
-    logger.error('❌ Erreur lors de la récupération du statut du bot', {
-      error: error.response?.data || error.message,
-    });
     throw error;
   }
 }

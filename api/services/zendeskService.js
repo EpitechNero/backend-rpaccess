@@ -19,12 +19,6 @@ const uploadAttachment = async (file) => {
   const fileStream = bufferToStream(file.buffer);
 
   try {
-    logger.info('🚀 Upload binaire vers Zendesk', {
-      filename: safeFilename,
-      size: file.buffer.length,
-      mimetype: file.mimetype,
-    });
-
     const response = await axios.post(
       `https://${config.domain}/api/v2/uploads.json?filename=${encodeURIComponent(safeFilename)}`,
       fileStream,
@@ -40,23 +34,12 @@ const uploadAttachment = async (file) => {
     );
 
     if (!response.data?.upload?.token) {
-      logger.error('Réponse inattendue Zendesk', { data: response.data });
       throw new Error('Upload Zendesk: réponse inattendue');
     }
-
-    logger.info('✅ Upload réussi', {
-      filename: safeFilename,
-      token: response.data.upload.token,
-      size: file.buffer.length,
-    });
 
     return response.data.upload.token;
 
   } catch (error) {
-    logger.error('❌ Erreur upload Zendesk', {
-      filename: safeFilename,
-      error: error.response?.data || error.message,
-    });
     throw error;
   }
 };
@@ -106,18 +89,9 @@ const createZendeskTicketWithAttachment = async (
       throw new Error('Réponse Zendesk invalide');
     }
 
-    logger.info('🎟️ Ticket créé avec succès', {
-      ticketId,
-      nbFichiers: uploadTokens.length,
-      hasAttachments: uploadTokens.length > 0,
-    });
-
     return ticketId;
 
   } catch (error) {
-    logger.error('💥 Erreur création ticket Zendesk', {
-      error: error.response?.data || error.message,
-    });
     throw error;
   }
 };

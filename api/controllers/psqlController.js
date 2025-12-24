@@ -207,7 +207,6 @@ exports.getSuiviBonusForCalendar = async (req, res) => {
 };
 
 exports.updateSuiviCalendar = async (req, res) => {
-  logger.info('📥 Requête reçue pour insertActivity :', JSON.stringify(req.body));
   try {
     const result = await updateSuiviCalendarValue(req.body.mail, req.body.jour, req.body.phrase);
     res.status(201).json({ message: 'Donnée insérée avec succès', data: result });
@@ -220,7 +219,6 @@ exports.updateSuiviCalendar = async (req, res) => {
 };
 
 exports.updateSuiviBonusCalendar = async (req, res) => {
-  logger.info('📥 Requête reçue pour insertActivity :', JSON.stringify(req.body));
   try {
     const result = await updateSuiviBonusCalendarValue(req.body.mail, req.body.semaine, req.body.gagnant);
     res.status(201).json({ message: 'Donnée insérée avec succès', data: result });
@@ -405,7 +403,6 @@ exports.getTopUsers = async (req, res) => {
 };
 
 exports.setActivity = async (req, res) => {
-  logger.info('📥 Requête reçue pour insertActivity :', JSON.stringify(req.body));
   try {
     const result = await insertActivity(req.body);
     res.status(201).json({ message: 'Activité insérée avec succès', data: result });
@@ -433,7 +430,6 @@ exports.syncTableFromSheet = async (req, res) => {
 };
 
 exports.setHistory = async (req, res) => {
-  logger.info('📥 Requête reçue pour setHistory :', JSON.stringify(req.body));
   try {
     const result = await insertHistory(req.body);
     res.status(201).json({ message: 'Historique inséré avec succès', data: result });

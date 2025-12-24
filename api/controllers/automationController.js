@@ -7,13 +7,6 @@ exports.launchBot = async (req, res) => {
     await launchBot(bot, botInput);
     res.status(200).json({ message: 'Bot lancé avec succès !' });
   } catch (error) {
-    logger.error('❌ Erreur dans controller.launchBot', {
-      type: typeof error,
-      isAxiosError: !!error.isAxiosError,
-      message: error.message || 'Pas de message',
-      stack: error.stack || 'Pas de stack',
-      errorString: JSON.stringify(error, Object.getOwnPropertyNames(error)),
-    });
     res.status(500).json({ error: error.message || 'Erreur inconnue' });
   }
 };
