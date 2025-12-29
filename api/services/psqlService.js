@@ -56,7 +56,6 @@ const genericSelect = async (tableKey, options = {}) => {
 const selectUsers = async () => {
   try {
     const res = await pool.query('SELECT * FROM users');
-    console.log('✅ Utilisateurs récupérés avec succès');
     return res.rows;
   } catch (error) {
     console.error('❌ Erreur lors de la récupération des utilisateurs :', error);
@@ -67,7 +66,6 @@ const selectUsers = async () => {
 const selectCentreDesCouts = async () => {
     try {
         const res = await pool.query('SELECT * FROM centredecout');
-        console.log('✅ Centres de couts récupérés avec succès');
         return res.rows;
     } catch (error) {
         console.error('❌ Erreur lors de la récupération des centres de couts :', error);
@@ -78,7 +76,6 @@ const selectCentreDesCouts = async () => {
 const selectEOTP = async () => {
     try {
         const res = await pool.query('SELECT * FROM eotp');
-        console.log('✅ EOTP récupérés avec succès');
         return res.rows;
     } catch (error) {
         console.error('❌ Erreur lors de la récupération des eotp :', error);
@@ -89,7 +86,6 @@ const selectEOTP = async () => {
 const selectActivity = async () => {
     try {
         const res = await pool.query('SELECT * FROM activity');
-        console.log('✅ Activité récupérée avec succès');
         return res.rows;
     } catch (error) {
         console.error('❌ Erreur lors de la récupération de l\'activité :', error);
@@ -100,7 +96,6 @@ const selectActivity = async () => {
 const selectMaquettes = async () => {
     try {
         const res = await pool.query('SELECT * FROM maquettes');
-        console.log('✅ Maquettes récupérée avec succès');
         return res.rows;
     } catch (error) {
         console.error('❌ Erreur lors de la récupération des maquettes :', error);
@@ -121,7 +116,6 @@ const selectSuiviBonusForCalendar = async () => {
 const selectList = async () => {
     try {
         const res = await pool.query('SELECT * FROM list ORDER BY title_list');
-        console.log('✅ Liste récupérée avec succès');
         return res.rows;
     } catch (error) {
         console.error('❌ Erreur lors de la récupération des bots :', error);
@@ -132,7 +126,6 @@ const selectList = async () => {
 const selectBaseDocu = async () => {
     try {
         const res = await pool.query('SELECT pole_basedocu, service_basedocu, projet_basedocu, sousprojet_basedocu, type_basedocu, titre_basedocu, link_basedocu, date_basedocu FROM basedocu');
-        console.log('✅ Base documentaire récupérée avec succès');
         return res.rows;
     } catch (error) {
         console.error('❌ Erreur lors de la récupération de la base documentaire :', error);
@@ -143,7 +136,6 @@ const selectBaseDocu = async () => {
 const selectReferentielMaquettes = async () => {
     try {
         const res = await pool.query('SELECT * FROM referentiel_maquettes ORDER BY region_referentiel_maquettes, territoire_referentiel_maquettes');
-        console.log('✅ Référentiel des maquettes récupéré avec succès');
         return res.rows;
     } catch (error) {
         console.error('❌ Erreur lors de la récupération du référentiel des maquettes :', error);
@@ -154,7 +146,6 @@ const selectReferentielMaquettes = async () => {
 const selectDossiers = async () => {
     try {
         const res = await pool.query('SELECT societe_dossiers, annee_dossiers, region_dossiers, titre_dossiers, link_dossiers FROM dossiers');
-        console.log('✅ Dossiers permanents récupérés avec succès');
         return res.rows;
     } catch (error) {
         console.error('❌ Erreur lors de la récupération des dossiers permanents :', error);
@@ -165,7 +156,6 @@ const selectDossiers = async () => {
 const selectUserByMail = async (usermail) => {
   try {
     const res = await pool.query('SELECT * FROM users WHERE email_user = $1', [usermail]);
-    console.log('✅ Utilisateur récupéré avec succès');
     return res.rows[0];
   } catch (error) {
     console.error('❌ Erreur lors de la récupération de l\'utilisateur :', error);
@@ -176,7 +166,6 @@ const selectUserByMail = async (usermail) => {
 const selectCentreDeCoutsById = async (id) => {
     try {
         const res = await pool.query('SELECT * FROM centredecout WHERE id_centredecout = $1', [id]);
-        console.log('✅ Centre de coûts récupéré avec succès');
         return res.rows[0];
     } catch (error) {
         console.error('❌ Erreur lors de la récupération du centre de coûts :', error);
@@ -187,7 +176,6 @@ const selectCentreDeCoutsById = async (id) => {
 const selectEOTPById = async (id) => {
     try {
         const res = await pool.query('SELECT * FROM eotp WHERE id_eotp = $1', [id]);
-        console.log('✅ EOTP récupéré avec succès');
         return res.rows[0];
     } catch (error) {
         console.error('❌ Erreur lors de la récupération de l\'EOTP :', error);
@@ -198,7 +186,6 @@ const selectEOTPById = async (id) => {
 const selectActivityByUser = async (email) => {
     try {
         const res = await pool.query('SELECT * FROM activity WHERE email_activity = $1', [email]);
-        console.log('✅ Activité récupérée avec succès');
         return res.rows;
     } catch (error) {
         console.error('❌ Erreur lors de la récupération de l\'activité :', error);
@@ -209,7 +196,6 @@ const selectActivityByUser = async (email) => {
 const selectBaseDocuBySheetId = async (SheetId) => {
     try {
         const sheetData = await pool.query('SELECT * FROM basedocu WHERE link_basedocu ILIKE($1)', [`%${SheetId}%`]);
-        console.log('✅ Base documentaire récupérée avec succès');
         return sheetData.rows[0];
     } catch (error) {
         console.error('❌ Erreur lors de la récupération de la base documentaire :', error);
@@ -220,7 +206,6 @@ const selectBaseDocuBySheetId = async (SheetId) => {
 const selectSuiviForCalendarByUser = async (email) => {
     try {
         const res = await pool.query('SELECT * FROM calendar WHERE mail = $1', [email]);
-        console.log('✅ Suivi Calendrier récupéré avec succès');
         return res.rows;
     } catch (error) {
         console.error('❌ Erreur lors de la récupération des maquettes :', error);
@@ -231,7 +216,6 @@ const selectSuiviForCalendarByUser = async (email) => {
 const selectDossierById = async (SheetId) => {
     try {
         const res = await pool.query('SELECT * FROM dossiers WHERE link_dossiers ILIKE($1)', [`%${SheetId}%`]);
-        console.log('✅ Dossier récupéré avec succès');
         return res.rows[0];
     } catch (error) {
         console.error('❌ Erreur lors de la récupération du dossier :', error);
@@ -245,7 +229,6 @@ const insertUser = async (userData) => {
       'INSERT INTO users (nom_user, prenom_user, email_user, est_responsable_user, service_user) VALUES ($1, $2, $3, $4, $5) RETURNING *',
       [userData.nom, userData.prenom, userData.email, userData.est_responsable, userData.service]
     );
-    console.log('✅ Utilisateur inséré avec succès', JSON.stringify(res.rows[0]));
     return res.rows[0];
   } catch (error) {
     console.error('❌ Erreur lors de l\'insertion de l\'utilisateur :', error);
@@ -259,7 +242,6 @@ const updateUser = async (userData) => {
       'UPDATE users SET nom_user = $1, prenom_user = $2, email_user = $3, est_responsable_user = $4, service_user = $5 WHERE id_user = $6 RETURNING *',
       [userData.nom, userData.prenom, userData.email, userData.est_responsable, userData.service, userData.id]
     );
-    console.log('✅ Utilisateur mis à jour avec succès', JSON.stringify(res.rows[0]));
     return res.rows[0];
   } catch (error) {
     console.error('❌ Erreur lors de la mise à jour de l\'utilisateur :', error);
@@ -273,7 +255,6 @@ const insertCentreDeCouts = async (centreData) => {
       'INSERT INTO centredecout (id_centredecout) VALUES ($1) RETURNING *',
       [centreData.id_centredecout]
     );
-    console.log('✅ Centre de coûts inséré avec succès', JSON.stringify(res.rows[0]));
     return res.rows[0];
   } catch (error) {
     console.error('❌ Erreur lors de l\'insertion du centre de coûts :', error);
@@ -287,7 +268,6 @@ const insertEOTP = async (eotpData) => {
       'INSERT INTO eotp (id_eotp) VALUES ($1) RETURNING *',
       [eotpData.id_eotp]
     );
-    console.log('✅ EOTP inséré avec succès', JSON.stringify(res.rows[0]));
     return res.rows[0];
   } catch (error) {
     console.error('❌ Erreur lors de l\'insertion de l\'EOTP :', error);

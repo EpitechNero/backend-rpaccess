@@ -58,7 +58,7 @@ async function authMiddleware(req, res, next) {
         });
 
         req.user = decoded;
-        console.log('Utilisateur authentifié:', req.user);
+        console.log('Utilisateur authentifié:', req.user.name);
 
         next();
     } catch (error) {
